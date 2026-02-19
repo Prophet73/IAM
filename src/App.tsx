@@ -3,6 +3,7 @@ import { ProductCard } from './components/ProductCard'
 import { DataBookDemo } from './components/DataBookDemo'
 import { DemoAIHub } from './components/DemoAIHub'
 import { DemoAutoprotocol } from './components/DemoAutoprotocol'
+import { DemoCostManager } from './components/DemoCostManager'
 
 function App() {
   return (
@@ -149,7 +150,7 @@ function Products() {
           <ProductCard
             key={p.id}
             product={p}
-            demo={p.id === 'aihub' ? <DemoAIHub /> : p.id === 'databook' ? <DataBookDemo /> : p.id === 'autoprotocol' ? <DemoAutoprotocol /> : undefined}
+            demo={p.id === 'aihub' ? <DemoAIHub /> : p.id === 'databook' ? <DataBookDemo /> : p.id === 'autoprotocol' ? <DemoAutoprotocol /> : p.id === 'costmanager' ? <DemoCostManager /> : undefined}
           />
         ))}
       </div>

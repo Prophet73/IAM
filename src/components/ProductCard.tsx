@@ -2,9 +2,9 @@ import { useState } from 'react'
 import type { Product } from '../data/products'
 
 const statusConfig = {
-  production: { label: 'PRODUCTION', bg: 'bg-green-soft', text: 'text-green' },
-  pilot: { label: 'ПИЛОТ', bg: 'bg-amber-soft', text: 'text-amber' },
-  prototype: { label: 'ПРОТОТИП', bg: 'bg-purple-soft', text: 'text-purple' },
+  production: { label: 'PRODUCTION', bg: 'bg-surface-3', text: 'text-muted' },
+  pilot: { label: 'ПИЛОТ', bg: 'bg-surface-3', text: 'text-muted' },
+  prototype: { label: 'ПРОТОТИП', bg: 'bg-surface-3', text: 'text-muted' },
 }
 
 export function ProductCard({ product, demo }: { product: Product; demo?: React.ReactNode }) {
@@ -27,10 +27,9 @@ export function ProductCard({ product, demo }: { product: Product; demo?: React.
           <span className={`px-2.5 py-0.5 rounded text-[0.7rem] font-bold tracking-wide ${status.bg} ${status.text}`}>
             {status.label}
           </span>
-          <span
-            className={`text-lg text-muted transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
-          >
-            &#9662;
+          <span className={`px-3.5 py-1.5 rounded-lg text-[0.78rem] font-semibold transition-all flex items-center gap-1.5 ${open ? 'bg-accent/15 text-accent' : 'bg-accent text-white shadow-md shadow-accent/25 hover:shadow-lg hover:shadow-accent/30'}`}>
+            {open ? 'Свернуть' : 'Подробнее'}
+            <span className={`text-[0.7rem] transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>&#9662;</span>
           </span>
         </div>
       </button>

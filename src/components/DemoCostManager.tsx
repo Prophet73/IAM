@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
 type Screen = 'dashboard' | 'project' | 'analogs' | 'report' | 'ai' | 'deflators'
@@ -397,6 +397,22 @@ function PgProject() {
   )
 }
 
+/* ── FilterSection (extracted to avoid re-creation during render) ── */
+function FilterSection({ id, title, children, openSections, toggleSection }: {
+  id: string; title: string; children: React.ReactNode;
+  openSections: Set<string>; toggleSection: (s: string) => void
+}) {
+  return (
+    <div className="border border-slate-200 rounded-xl overflow-hidden">
+      <button onClick={() => toggleSection(id)} className="w-full flex items-center justify-between px-4 py-3 bg-white text-[0.78rem] font-semibold text-slate-700 cursor-pointer border-none hover:bg-slate-50 transition-colors">
+        <span>{title}</span>
+        {openSections.has(id) ? <I.ChevronDown /> : <I.ChevronRight />}
+      </button>
+      {openSections.has(id) && <div className="px-4 pb-4 bg-white border-t border-slate-100">{children}</div>}
+    </div>
+  )
+}
+
 /* ===== ANALOGS ===== */
 function PgAnalogs() {
   const [openSections, setOpenSections] = useState<Set<string>>(new Set(['location', 'chars']))
@@ -418,16 +434,6 @@ function PgAnalogs() {
       struct: [{ l: 'Конструктив', v: 34, c: '#059669' }, { l: 'Фасад/Отделка', v: 20, c: '#10B981' }, { l: 'Инж. системы', v: 21, c: '#34D399' }, { l: 'Прочие', v: 25, c: '#A7F3D0' }] },
   ]
 
-  const FilterSection = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (
-    <div className="border border-slate-200 rounded-xl overflow-hidden">
-      <button onClick={() => toggleSection(id)} className="w-full flex items-center justify-between px-4 py-3 bg-white text-[0.78rem] font-semibold text-slate-700 cursor-pointer border-none hover:bg-slate-50 transition-colors">
-        <span>{title}</span>
-        {openSections.has(id) ? <I.ChevronDown /> : <I.ChevronRight />}
-      </button>
-      {openSections.has(id) && <div className="px-4 pb-4 bg-white border-t border-slate-100">{children}</div>}
-    </div>
-  )
-
   return (
     <div className="p-6">
       {/* Reference selector */}
@@ -447,14 +453,14 @@ function PgAnalogs() {
         {/* Filters */}
         <div className="space-y-3">
           <div className="text-[0.82rem] font-bold text-slate-800 mb-1">Фильтры поиска</div>
-          <FilterSection id="location" title="📍 Локация">
+          <FilterSection id="location" title="📍 Локация" openSections={openSections} toggleSection={toggleSection}>
             <div className="space-y-2 pt-2">
               <div><div className="text-[0.68rem] text-slate-500 mb-1">Регион</div><div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-[0.75rem] text-slate-700">Москва и МО</div></div>
               <div><div className="text-[0.68rem] text-slate-500 mb-1">Город</div><div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-[0.75rem] text-slate-700">Все</div></div>
               <div><div className="text-[0.68rem] text-slate-500 mb-1">Класс</div><div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-[0.75rem] text-slate-700">Комфорт / Бизнес</div></div>
             </div>
           </FilterSection>
-          <FilterSection id="chars" title="📐 Характеристики">
+          <FilterSection id="chars" title="📐 Характеристики" openSections={openSections} toggleSection={toggleSection}>
             <div className="space-y-2 pt-2">
               <div><div className="text-[0.68rem] text-slate-500 mb-1">Тип объекта</div><div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-[0.75rem] text-slate-700">Жилой комплекс</div></div>
               <div className="grid grid-cols-2 gap-2">
@@ -467,7 +473,7 @@ function PgAnalogs() {
               </div>
             </div>
           </FilterSection>
-          <FilterSection id="cost" title="💰 Стоимость">
+          <FilterSection id="cost" title="💰 Стоимость" openSections={openSections} toggleSection={toggleSection}>
             <div className="space-y-2 pt-2">
               <div className="grid grid-cols-2 gap-2">
                 <div><div className="text-[0.68rem] text-slate-500 mb-1">₽/м², от</div><div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-[0.75rem] text-slate-700">100 000</div></div>
@@ -925,7 +931,7 @@ function PgDeflators() {
               </tr>
             </thead>
             <tbody>
-              {deflators.map((d, i) => (
+              {deflators.map((d) => (
                 <tr key={d.year} className={`border-t border-slate-100 text-[0.78rem] hover:bg-slate-50/50 ${d.year === 2022 ? 'bg-[#059669]/5' : ''}`}>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2">

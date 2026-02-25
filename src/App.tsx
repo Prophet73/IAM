@@ -13,10 +13,10 @@ function App() {
       <Competence />
       <Products />
       <Architecture />
-      <BusinessValue />
       <Methodology />
+      <BusinessValue />
       <Research />
-      <Career />
+      <Lab />
       <Contact />
     </>
   )
@@ -30,13 +30,11 @@ function Nav() {
         <div className="font-bold text-[0.95rem]">Никита Хроменок</div>
         <div className="hidden md:flex gap-6">
           {[
-            ['#competence', 'Компетенции'],
+            ['#competence', 'Опыт'],
             ['#products', 'Продукты'],
-            ['#code', 'Код'],
             ['#architecture', 'Архитектура'],
-            ['#value', 'Ценность'],
+            ['#value', 'Подход'],
             ['#research', 'R&D'],
-            ['#career', 'Карьера'],
           ].map(([href, label]) => (
             <a
               key={href}
@@ -56,31 +54,31 @@ function Nav() {
 function Hero() {
   const stats = [
     { num: '10 лет', label: 'в строительстве' },
-    { num: '4', label: 'продукта в production' },
-    { num: '20 млрд \u20BD', label: 'бюджет ключевого объекта' },
-    { num: '8 500+', label: 'предписаний в базе знаний' },
+    { num: '15+', label: 'проектов за 1.5 года' },
+    { num: 'МГСУ', label: 'аспирантура' },
   ]
 
   return (
-    <section className="pt-32 pb-16 text-center relative">
+    <section className="pt-28 pb-10 text-center relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(79,124,255,0.08)_0%,transparent_70%)] pointer-events-none" />
       <div className="max-w-[1080px] mx-auto px-8 relative">
         <div className="inline-block px-4 py-1.5 bg-accent-soft text-accent rounded-full text-[0.78rem] font-semibold tracking-wide mb-6">
-          Цифровизация строительных процессов
+          От процесса к продукту
         </div>
         <h1 className="text-3xl md:text-[2.6rem] font-extrabold leading-tight mb-4 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent">
-          Продукты, которыми строители
+          Знаю стройку изнутри —
           <br />
-          пользуются каждый день
+          делаю инструменты для бизнеса, которых нет на рынке
         </h1>
         <p className="text-base text-muted max-w-[700px] mx-auto mb-10 leading-relaxed">
-          Специалист с 10-летним опытом в строительной отрасли.
-          Проектирую и разрабатываю цифровые решения для автоматизации строительных процессов.
-          4 продукта в промышленной эксплуатации, созданные в формате full-cycle R&D.
+          10 лет в строительном контроле и управлении проектами, аспирантура МГСУ.
+          Не нашёл нужных инструментов — написал сам.
+          Без ТЗ и бюджетов: услышал боль → прототип → обратная связь → продукт.
+          4 инструмента в формате full-cycle R&D, от идеи до production.
         </p>
-        <div className="flex justify-center gap-8 md:gap-12 flex-wrap">
+        <div className="grid grid-cols-3 gap-6 max-w-[480px] mx-auto">
           {stats.map((s) => (
-            <div key={s.label}>
+            <div key={s.label} className="text-center">
               <div className="text-2xl md:text-3xl font-extrabold text-accent">{s.num}</div>
               <div className="text-xs text-muted mt-0.5">{s.label}</div>
             </div>
@@ -91,44 +89,64 @@ function Hero() {
   )
 }
 
-/* ── Competence ── */
+/* ── Competence (merged with Career) ── */
 function Competence() {
-  const cards = [
-    {
-      title: 'Полный цикл строительного контроля',
-      text: 'Карьерный путь от лаборанта МГСУ до заместителя руководителя проекта. Проверка КС-2, ведение исполнительной документации, контроль СМР, приёмка скрытых работ, участие в приёмочных комиссиях.',
-    },
-    {
-      title: 'Строительно-техническая экспертиза',
-      text: 'Подписант экспертных заключений. Крупнейший проект: экспертиза для АО АККУЮ НУКЛЕАР (186 стр.). Финансово-технический аудит, определение стоимости и качества выполненных работ.',
-      highlight: 'АО АККУЮ НУКЛЕАР',
-    },
-    {
-      title: 'ЖК FORIVER — 20 млрд \u20BD',
-      text: '3 года на объекте: 11 корпусов, 1 300 квартир бизнес/премиум-класса. Координация команды 20+ инженеров в роли зам. РП. Методологическая поддержка, контроль качества, участие в получении ЗОС.',
-    },
-    {
-      title: 'Контроль финансовой дисциплины',
-      text: 'Жёсткая проверка объёмов при приёмке КС-2. Выявление завышений, защита позиции заказчика перед генподрядчиком. Опыт на объектах MR Group, Sminex (FORIVER), Савёловский-сити.',
-    },
+  const timeline = [
+    { date: '2016–2017', role: 'Инженер ПТО', place: 'МГСУ \u2022 Парк Зарядье', desc: 'Исполнительная документация, фасады и благоустройство' },
+    { date: '2018–2020', role: 'Строительно-технический эксперт', place: 'Судебная экспертиза', desc: 'Экспертиза и финансово-технический аудит. АО АККУЮ НУКЛЕАР, ВЦ «Павловопосадские платки»' },
+    { date: '2020–2021', role: 'Инженер СК', place: 'ТСК-ТИТУЛ', desc: 'Приёмка работ, проверка КС-2, накопительные. ЖК Discovery (MR Group), Савёловский-сити' },
+    { date: '2021–2024', role: 'Инженер → ведущий инженер СК', place: 'Severin Development', desc: 'ЖК FORIVER (InGrad/Sminex) — 11 корпусов, 3 года на объекте, получение ЗОС' },
+    { date: '2024', role: 'Руководитель группы СК / Департамент качества', place: 'Severin Development', desc: 'Координация 20+ инженеров. Регламенты, шаблоны для проектных команд' },
+    { date: '2024–н.в.', role: 'Департамент цифровой трансформации', place: 'Severin Development', desc: '4 продукта в production, ~10 прототипов. Full-cycle R&D — от идеи до внедрения', active: true },
+  ]
+
+  const edu = [
+    { date: '2014–2018', text: 'Бакалавриат, ПГС' },
+    { date: '2018–2020', text: 'Магистратура, ПГС' },
+    { date: '2021–2025', text: 'Аспирантура, ЭБСиГХ' },
   ]
 
   return (
-    <section id="competence" className="py-16">
+    <section id="competence" className="py-12">
       <div className="max-w-[1080px] mx-auto px-8">
-        <SectionHeader
-          tag="Отраслевая экспертиза"
-          tagColor="bg-green-soft text-green"
-          title="Строительный фундамент"
-          subtitle="Каждый продукт вырос из задач, с которыми я сталкивался лично на протяжении десяти лет работы на строительных площадках."
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {cards.map((c) => (
-            <div key={c.title} className="bg-surface border border-border rounded-xl p-6">
-              <h3 className="text-[0.92rem] font-bold mb-1.5">{c.title}</h3>
-              <p className="text-[0.83rem] text-muted leading-relaxed">{c.text}</p>
+        <div className="bg-surface border border-border rounded-2xl p-6 md:p-8">
+          <div className="flex items-start justify-between mb-5">
+            <h2 className="text-xl md:text-2xl font-bold">Карьерный трек</h2>
+            <span className="px-3 py-1 rounded text-[0.7rem] font-bold tracking-wider uppercase bg-green-soft text-green shrink-0 ml-4">Опыт</span>
+          </div>
+
+          {/* Timeline */}
+          <div className="space-y-0">
+            {timeline.map((t, i) => (
+              <div key={t.date} className="flex gap-4 items-stretch">
+                <div className="w-[80px] shrink-0 text-right">
+                  <div className="text-[0.7rem] font-bold text-accent pt-0.5 leading-tight">{t.date}</div>
+                </div>
+                <div className="flex flex-col items-center shrink-0">
+                  <div className={`w-2.5 h-2.5 rounded-full border-2 border-accent mt-1.5 ${t.active ? 'bg-accent shadow-[0_0_8px_rgba(79,124,255,0.4)]' : 'bg-bg'}`} />
+                  {i < timeline.length - 1 && <div className="w-px flex-1 bg-border" />}
+                </div>
+                <div className="pb-4">
+                  <div className="text-[0.85rem] font-semibold leading-tight">{t.role}</div>
+                  <div className="text-[0.7rem] text-accent/70 font-medium">{t.place}</div>
+                  <div className="text-[0.78rem] text-muted leading-snug mt-0.5">{t.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Education */}
+          <div className="mt-4 pt-4 border-t border-border">
+            <span className="text-[0.7rem] font-bold uppercase text-muted">Образование — НИУ МГСУ</span>
+            <div className="flex gap-6 mt-2 flex-wrap">
+              {edu.map((e) => (
+                <div key={e.date} className="text-[0.8rem]">
+                  <span className="text-accent font-bold text-[0.72rem]">{e.date}</span>
+                  <span className="text-muted ml-1.5">{e.text}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
@@ -140,12 +158,9 @@ function Products() {
   return (
     <section id="products" className="bg-surface py-16">
       <div className="max-w-[1080px] mx-auto px-8">
-        <SectionHeader
-          tag="Продуктовый портфель"
-          tagColor="bg-accent-soft text-accent"
-          title="Экосистема цифровых продуктов"
-          subtitle="Четыре взаимосвязанных решения, объединённых общей инфраструктурой авторизации и данных. Нажмите на карточку для детальной информации."
-        />
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold">Продукты</h2>
+        </div>
         {products.map((p) => (
           <ProductCard
             key={p.id}
@@ -158,16 +173,60 @@ function Products() {
   )
 }
 
+/* ── Lab / Experiments ── */
+function Lab() {
+  const experiments = [
+    { desc: 'RAG-консультант по строительным нормам с гибридным поиском', tags: ['RAG', 'Gemini', 'Embeddings'] },
+    { desc: 'Автоклассификация элементов BIM-моделей через LLM', tags: ['Ollama', 'IFC', 'ML'] },
+    { desc: 'AI-ассистент по документации бизнес-процессов', tags: ['RAG', 'BM25', 'ChromaDB'] },
+    { desc: 'Голосовой ассистент с распознаванием и синтезом речи', tags: ['STT', 'TTS', 'Gemini'] },
+    { desc: 'Real-time перевод аудио на совещаниях', tags: ['Whisper', 'WebSocket', 'Gemini'] },
+    { desc: 'Платформа конкурсов с голосованием и OAuth2', tags: ['FastAPI', 'React', 'OAuth2'] },
+    { desc: 'Канбан-система для AI-контента с автокатегоризацией', tags: ['Next.js', 'FastAPI', 'Gemini'] },
+    { desc: 'Telegram-бот для автоматического создания задач из ссылок', tags: ['aiogram', 'Gemini', 'API'] },
+    { desc: 'AI-сравнение версий PDF-документации с визуализацией', tags: ['PyMuPDF', 'Gemini', 'PDF.js'] },
+    { desc: 'Автоматический анализ стенограмм совещаний из СЭД', tags: ['Gemini', 'API', 'Pydantic'] },
+    { desc: 'Парсинг и структурирование данных из реестров экспертизы', tags: ['Python', 'BeautifulSoup'] },
+    { desc: 'Программная генерация документов по корпоративному брендбуку', tags: ['python-docx'] },
+  ]
+
+  return (
+    <section className="py-12">
+      <div className="max-w-[1080px] mx-auto px-8">
+        <div className="mb-6">
+          <div className="inline-block px-3 py-1 rounded text-[0.7rem] font-bold tracking-wider uppercase mb-3 bg-purple-soft text-purple">
+            Эксперименты
+          </div>
+          <h2 className="text-xl font-bold mb-1">Прототипы и эксперименты</h2>
+          <p className="text-[0.85rem] text-muted">Каждый production-продукт вырос из серии экспериментов. Ниже — задачи, которые решались на пути.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          {experiments.map((e, i) => (
+            <div key={i} className="bg-surface border border-border rounded-lg px-4 py-3 flex flex-col gap-1.5">
+              <div className="text-[0.78rem] text-text-primary leading-snug">{e.desc}</div>
+              <div className="flex flex-wrap gap-1 mt-auto">
+                {e.tags.map((t) => (
+                  <span key={t} className="px-1.5 py-0.5 rounded text-[0.62rem] font-medium bg-surface-3 text-muted">{t}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ── Architecture ── */
 function Architecture() {
   return (
     <section id="architecture" className="py-16">
       <div className="max-w-[1080px] mx-auto px-8">
         <SectionHeader
-          tag="Системная архитектура"
+          tag="Архитектура"
           tagColor="bg-cyan-soft text-cyan"
-          title="Техническая и бизнес-архитектура"
-          subtitle="Единая платформа с общей инфраструктурой авторизации, данных и AI-сервисов."
+          title="Как это устроено под капотом"
+          subtitle="Общая авторизация, общие данные, общий AI-слой. Всё крутится на одной инфраструктуре."
         />
 
         {/* Technical landscape */}
@@ -211,28 +270,6 @@ function Architecture() {
           </div>
         </div>
 
-        {/* Business coverage */}
-        <div className="bg-surface border border-border rounded-2xl p-8">
-          <div className="text-xs font-bold uppercase tracking-wider text-muted text-center mb-6">
-            Покрытие строительного цикла
-          </div>
-          <div className="flex flex-col gap-3 max-w-[820px] mx-auto">
-            <ArchLayer label="Планирование">
-              <ArchItem color="green" title="CostManager — анализ себестоимости, бенчмаркинг объектов-аналогов, обоснование бюджета" wide />
-            </ArchLayer>
-            <ArchLayer label="Строительство">
-              <ArchItem color="green" title="DataBook" sub="База предписаний СК" />
-              <ArchItem color="green" title="Puls" sub="Операционная отчётность" />
-            </ArchLayer>
-            <ArchLayer label="Управление">
-              <ArchItem color="green" title="Автопротокол" sub="Совещания, поручения" />
-              <ArchItem color="green" title="Puls" sub="Портфельный дашборд" />
-            </ArchLayer>
-            <ArchLayer label="Платформа">
-              <ArchItem color="accent" title="AI-Hub — SSO, управление доступами, AI-инструменты, аудит" wide />
-            </ArchLayer>
-          </div>
-        </div>
       </div>
     </section>
   )
@@ -242,18 +279,18 @@ function Architecture() {
 function BusinessValue() {
   const cards = [
     {
-      title: 'Органическое внедрение',
-      text: 'Продукты внедрены без административного давления, без бюджета на change management. Пользователи перешли на инструменты добровольно, потому что они решают реальные задачи.',
-      metric: 'Adoption без приказа сверху',
+      title: 'Без посредников',
+      text: 'Обычная цепочка: бизнес → аналитик → разработчик. На каждом шаге теряется контекст. Когда сам знаешь предметку и сам пишешь код — попадание в потребность точнее.',
+      metric: 'Нулевая потеря контекста',
     },
     {
-      title: 'Минимальные потери при переводе',
-      text: 'Стандартная цепочка: бизнес → аналитик → разработчик. Каждый слой — потеря контекста. Объединение отраслевой экспертизы и технической реализации в одном специалисте исключает потери.',
-      metric: 'Точное попадание в потребность',
+      title: 'Люди пришли сами',
+      text: 'Ни один продукт не внедрялся приказом сверху. DataBook сделал год назад и забыл — а инженеры пользуются каждый день. Это лучшая валидация.',
+      metric: 'Adoption без бюджета',
     },
     {
-      title: 'Скорость: от гипотезы до production',
-      text: 'Полный цикл R&D: выявление потребности → прототипирование → валидация → промышленная эксплуатация. Средний цикл: 2–3 месяца на продукт.',
+      title: 'Быстрый цикл',
+      text: 'От боли до рабочего MVP — 2–3 месяца. Услышал проблему на совещании, за выходные прототип, в понедельник показал, собрал обратную связь, доработал.',
       metric: '4 продукта за 1.5 года (solo)',
     },
   ]
@@ -262,9 +299,9 @@ function BusinessValue() {
     <section id="value" className="bg-surface py-16">
       <div className="max-w-[1080px] mx-auto px-8">
         <SectionHeader
-          tag="Бизнес-ценность"
+          tag="Почему это работает"
           tagColor="bg-green-soft text-green"
-          title="Ключевые преимущества подхода"
+          title="Что даёт совмещение отрасли и разработки"
         />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {cards.map((c) => (
@@ -284,22 +321,86 @@ function BusinessValue() {
 
 /* ── Methodology ── */
 function Methodology() {
+  const oldChain = ['Заказчик', 'Аналитик', 'Разработчик', 'QA', 'Заказчик']
+  const newChain = ['Бизнес-задача', 'Отраслевой эксперт + AI', 'Продукт']
+
   const steps = [
-    { num: '01', title: 'Погружение в предметную область', text: 'Не внешнее исследование, а десятилетний опыт внутри отрасли. Карта болей сформирована на основе личной практики.' },
-    { num: '02', title: 'Быстрое прототипирование', text: 'AI-augmented development: архитектура → MVP за дни. Минимальный набор функций для проверки гипотезы.' },
-    { num: '03', title: 'Валидация через adoption', text: 'Критерий успеха — не метрики, а факт добровольного использования. Продукт предлагается, а не навязывается.' },
-    { num: '04', title: 'Итеративное развитие', text: 'Развитие по обратной связи от реальных пользователей. Приоритизация на основе частоты запросов, а не roadmap.' },
+    { num: '01', title: 'Выявляю потребность', text: 'Не через исследование рынка — а через ежедневную работу внутри процессов. 10 лет в отрасли — понимание задач из первых рук.' },
+    { num: '02', title: 'Быстрый прототип', text: 'AI-инструменты снимают технические ограничения. Архитектура → MVP за дни. Минимально достаточный функционал для проверки гипотезы.' },
+    { num: '03', title: 'Экспертная валидация', text: 'Отраслевая экспертиза позволяет самостоятельно оценить корректность решения. Без промежуточных звеньев — от задачи до результата напрямую.' },
+    { num: '04', title: 'Итеративное развитие', text: 'Развитие по реальным запросам пользователей, не по гипотетическому roadmap. Приоритет — то, что создаёт измеримую ценность.' },
   ]
 
   return (
     <section className="py-16">
       <div className="max-w-[1080px] mx-auto px-8">
         <SectionHeader
-          tag="Методология"
+          tag="Как я делаю продукты"
           tagColor="bg-purple-soft text-purple"
-          title="Подход к разработке продуктов"
+          title="От задачи на площадке до рабочего инструмента"
+          subtitle="Техническая реализация перестаёт быть ограничением. Ключевой дефицит — понимание предметной области."
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+
+        {/* Old vs New model */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {/* Old model */}
+          <div className="bg-surface border border-border rounded-xl p-6 relative overflow-hidden">
+            <div className="absolute inset-0 bg-red/[0.03]" />
+            <div className="relative">
+              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-red mb-3">Линейная модель</div>
+              <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                {oldChain.map((item, i) => (
+                  <span key={i} className="contents">
+                    <span className="px-2.5 py-1 rounded bg-surface-3 text-[0.75rem] text-muted line-through decoration-red/40">{item}</span>
+                    {i < oldChain.length - 1 && <span className="text-muted/40 text-xs">&rarr;</span>}
+                  </span>
+                ))}
+              </div>
+              <div className="space-y-1.5 text-[0.78rem] text-muted">
+                <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Потеря контекста на каждом звене передачи</div>
+                <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Разработчик не владеет предметной областью</div>
+                <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Аналитик не знает возможностей технологий</div>
+                <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Цикл обратной связи — месяцы</div>
+                <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Ускорение одного звена смещает узкое место в следующее</div>
+              </div>
+            </div>
+          </div>
+
+          {/* New model */}
+          <div className="bg-surface border border-accent/30 rounded-xl p-6 relative overflow-hidden">
+            <div className="absolute inset-0 bg-accent/[0.03]" />
+            <div className="relative">
+              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-accent mb-3">Новая модель</div>
+              <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                {newChain.map((item, i) => (
+                  <span key={i} className="contents">
+                    <span className="px-2.5 py-1 rounded bg-accent-soft text-[0.75rem] text-accent font-semibold">{item}</span>
+                    {i < newChain.length - 1 && <span className="text-accent/50 text-xs">&rarr;</span>}
+                  </span>
+                ))}
+              </div>
+              <div className="space-y-1.5 text-[0.78rem] text-muted">
+                <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Эксперт совмещает понимание процесса и реализацию</div>
+                <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> AI снимает технические ограничения</div>
+                <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Валидация встроена в процесс — без промежуточных звеньев</div>
+                <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Цикл обратной связи — дни, а не месяцы</div>
+                <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Ускоряется весь процесс, а не отдельное звено</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Thesis */}
+        <div className="bg-surface-2 border border-border rounded-xl p-5 mb-8 max-w-[820px] mx-auto text-center">
+          <p className="text-[0.88rem] text-text-primary leading-relaxed">
+            AI-инструменты снимают барьер технической реализации. Дефицит смещается: разработчик без отраслевой экспертизы теряет ценность, аналитик без понимания технологий — тоже.{' '}
+            <span className="text-accent font-semibold">Максимальная эффективность — у специалиста на стыке: предметная область + технологии + AI.</span>{' '}
+            Это редкое сочетание, потому что требует двух параллельных карьер.
+          </p>
+        </div>
+
+        {/* Steps */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {steps.map((s) => (
             <div key={s.num} className="bg-surface border border-border rounded-xl p-5">
               <div className="text-3xl font-extrabold text-accent opacity-30 mb-2">{s.num}</div>
@@ -352,10 +453,10 @@ function Research() {
     <section id="research" className="bg-surface py-16">
       <div className="max-w-[1080px] mx-auto px-8">
         <SectionHeader
-          tag="Исследования"
+          tag="R&D"
           tagColor="bg-purple-soft text-purple"
-          title="Непрерывный R&D"
-          subtitle="Систематическое отслеживание и апробация новых технологий. Автоматизированный мониторинг исследований через собственного Telegram-бота с AI-классификацией."
+          title="Чем интересуюсь и что изучаю"
+          subtitle="Слежу за технологиями системно: собственный Telegram-бот с AI-классификацией мониторит новые исследования."
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">
           {items.map((item) => (
@@ -377,75 +478,17 @@ function Research() {
   )
 }
 
-/* ── Career Timeline ── */
-function Career() {
-  const timeline = [
-    { date: '2016 – 2017', title: 'МГСУ \u2022 Парк Зарядье', desc: 'Лаборант кафедры строительных материалов. Инженер ПТО: фасады и благоустройство.' },
-    { date: '2018 – 2020', title: 'Судебная экспертиза', desc: 'Строительно-технический эксперт. АККУЮ НУКЛЕАР (186 стр.). Технадзор, финансовый аудит.' },
-    { date: '2020 – 2021', title: 'ТСК-ТИТУЛ', desc: 'ЖК Discovery (MR Group), Савёловский-сити. 1 200+ квартир. Приёмка ПНР. ЗОС.' },
-    { date: '2021 – 2024', title: 'Severin \u2022 FORIVER', desc: 'Инженер → ведущий → зам. РП. 11 корпусов, 1 300 квартир, 20 млрд \u20BD. Координация 20+ чел. ЗОС.' },
-    { date: '2024', title: 'Severin \u2022 Качество', desc: 'Стандарты и регламенты. Excel-шаблоны отчётности: 15–20 из 60 проектов компании.' },
-    { date: '2024 – н.в.', title: 'Цифровая трансформация', desc: 'Экосистема из 4 продуктов. Стратегия AI-лаборатории. Full-cycle R&D.', active: true },
-  ]
-
-  return (
-    <section id="career" className="py-16">
-      <div className="max-w-[1080px] mx-auto px-8">
-        <SectionHeader
-          tag="Карьерный путь"
-          tagColor="bg-amber-soft text-amber"
-          title="От строительной площадки до экосистемы продуктов"
-        />
-        <div className="timeline-scroll mt-6">
-          <div className="flex gap-0 min-w-max relative">
-            <div className="absolute top-7 left-0 right-0 h-0.5 bg-border" />
-            {timeline.map((t) => (
-              <div key={t.date} className="w-[180px] relative pt-12 shrink-0">
-                <div
-                  className={`absolute top-[22px] left-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2 border-accent z-10 ${
-                    t.active ? 'bg-accent shadow-[0_0_10px_rgba(79,124,255,0.4)]' : 'bg-bg'
-                  }`}
-                />
-                <div className="bg-surface border border-border rounded-xl p-4 mx-1.5 h-full">
-                  <div className="text-[0.68rem] text-accent font-bold mb-1">{t.date}</div>
-                  <div className="text-[0.8rem] font-bold mb-0.5 leading-tight">{t.title}</div>
-                  <div className="text-[0.72rem] text-muted leading-snug">{t.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Education block */}
-        <div className="mt-8 p-5 bg-surface rounded-xl border border-border flex gap-8 flex-wrap">
-          <div>
-            <span className="text-[0.72rem] font-bold uppercase text-muted">Образование</span>
-            <div className="text-[0.85rem] mt-1">
-              <strong>НИУ МГСУ</strong> — Аспирантура (2024), Магистратура (2020), Бакалавриат (2018)
-            </div>
-          </div>
-          <div>
-            <span className="text-[0.72rem] font-bold uppercase text-muted">Публикация</span>
-            <div className="text-[0.85rem] mt-1">
-              «Integrated methodology for environmental risk management...» (2025)
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  )
-}
 
 /* ── Contact ── */
 function Contact() {
   return (
     <section className="text-center py-16 pb-24">
       <div className="max-w-[1080px] mx-auto px-8">
-        <h2 className="text-2xl font-bold mb-3">Открыт к диалогу</h2>
+        <h2 className="text-2xl font-bold mb-3">Контакты</h2>
         <p className="text-muted text-[0.92rem] mb-8">
-          Готов обсудить, как опыт на стыке строительства и технологий
+          Ищу команду, где опыт на стыке стройки и разработки
           <br />
-          может быть полезен вашей команде цифровизации.
+          будет к месту. Открыт к разговору.
         </p>
         <div className="flex justify-center gap-4 flex-wrap">
           {['+7 (926) 897-32-25', 'KhromenokNV@mail.ru', 'Москва'].map((c) => (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 type Screen = 'apps' | 'chat' | 'prompts' | 'tools' | 'monitoring' | 'users' | 'appAccess' | 'adminAi' | 'adminTools'
@@ -19,7 +19,7 @@ const IcoBot = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" st
 const IcoAppWindow = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><circle cx="5" cy="6" r="0.5" fill="currentColor"/><circle cx="7.5" cy="6" r="0.5" fill="currentColor"/></svg>
 const IcoWrench = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
 
-const nav: { key: Screen; icon: () => JSX.Element; label: string; admin?: boolean }[] = [
+const nav: { key: Screen; icon: () => React.JSX.Element; label: string; admin?: boolean }[] = [
   { key: 'apps', icon: Ico.Apps, label: 'Приложения' },
   { key: 'chat', icon: Ico.Chat, label: 'AI-чат' },
   { key: 'prompts', icon: Ico.Prompts, label: 'Промпты' },

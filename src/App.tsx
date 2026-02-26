@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react'
+import { flushSync } from 'react-dom'
 import { products } from './data/products'
 import { ProductCard } from './components/ProductCard'
 import { DataBookDemo } from './components/DataBookDemo'
@@ -24,26 +26,86 @@ function App() {
 
 /* ── Navigation ── */
 function Nav() {
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('theme')
+    if (saved === 'light' || saved === 'dark') return saved
+    if (window.matchMedia('(prefers-color-scheme: light)').matches) return 'light'
+    return 'dark'
+  })
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('light', theme === 'light')
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = (e: React.MouseEvent) => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark'
+    const x = e.clientX
+    const y = e.clientY
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    )
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const doc = document as any
+    if (!doc.startViewTransition) {
+      setTheme(newTheme)
+      return
+    }
+
+    const transition = doc.startViewTransition(() => {
+      flushSync(() => setTheme(newTheme))
+    })
+
+    transition.ready.then(() => {
+      document.documentElement.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`] },
+        { duration: 600, easing: 'ease-in-out', pseudoElement: '::view-transition-new(root)' },
+      )
+    })
+  }
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-bg/85 backdrop-blur-xl border-b border-border py-3">
       <div className="max-w-[1080px] mx-auto px-8 flex justify-between items-center">
         <div className="font-bold text-[0.95rem]">Никита Хроменок</div>
-        <div className="hidden md:flex gap-6">
-          {[
-            ['#competence', 'Опыт'],
-            ['#products', 'Продукты'],
-            ['#architecture', 'Архитектура'],
-            ['#value', 'Подход'],
-            ['#research', 'R&D'],
-          ].map(([href, label]) => (
-            <a
-              key={href}
-              href={href}
-              className="text-muted text-[0.82rem] font-medium hover:text-text-primary transition-colors no-underline"
-            >
-              {label}
-            </a>
-          ))}
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex gap-6">
+            {[
+              ['#competence', 'Опыт'],
+              ['#products', 'Продукты'],
+              ['#architecture', 'Архитектура'],
+              ['#value', 'Подход'],
+              ['#research', 'R&D'],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="text-muted text-sm font-medium hover:text-text-primary transition-colors no-underline"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+          <button
+            onClick={toggleTheme}
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-2 border border-border text-muted hover:text-text-primary transition-colors cursor-pointer"
+            aria-label="Переключить тему"
+          >
+            {theme === 'dark' ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            )}
+          </button>
         </div>
       </div>
     </nav>
@@ -62,10 +124,10 @@ function Hero() {
     <section className="pt-28 pb-10 text-center relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(79,124,255,0.08)_0%,transparent_70%)] pointer-events-none" />
       <div className="max-w-[1080px] mx-auto px-8 relative">
-        <div className="inline-block px-4 py-1.5 bg-accent-soft text-accent rounded-full text-[0.78rem] font-semibold tracking-wide mb-6">
+        <div className="inline-block px-4 py-1.5 bg-accent-soft text-accent rounded-full text-sm font-semibold tracking-wide mb-6">
           От процесса к продукту
         </div>
-        <h1 className="text-3xl md:text-[2.6rem] font-extrabold leading-tight mb-4 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.15] mb-4 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent">
           Знаю стройку изнутри —
           <br />
           делаю инструменты для бизнеса, которых нет на рынке
@@ -112,7 +174,7 @@ function Competence() {
         <div className="bg-surface border border-border rounded-2xl p-6 md:p-8">
           <div className="flex items-start justify-between mb-5">
             <h2 className="text-xl md:text-2xl font-bold">Карьерный трек</h2>
-            <span className="px-3 py-1 rounded text-[0.7rem] font-bold tracking-wider uppercase bg-green-soft text-green shrink-0 ml-4">Опыт</span>
+            <span className="px-3 py-1 rounded text-xs font-bold tracking-wider uppercase bg-green-soft text-green shrink-0 ml-4">Опыт</span>
           </div>
 
           {/* Timeline */}
@@ -120,16 +182,16 @@ function Competence() {
             {timeline.map((t, i) => (
               <div key={t.date} className="flex gap-4 items-stretch">
                 <div className="w-[80px] shrink-0 text-right">
-                  <div className="text-[0.7rem] font-bold text-accent pt-0.5 leading-tight">{t.date}</div>
+                  <div className="text-xs font-bold text-accent pt-0.5 leading-tight">{t.date}</div>
                 </div>
                 <div className="flex flex-col items-center shrink-0">
                   <div className={`w-2.5 h-2.5 rounded-full border-2 border-accent mt-1.5 ${t.active ? 'bg-accent shadow-[0_0_8px_rgba(79,124,255,0.4)]' : 'bg-bg'}`} />
                   {i < timeline.length - 1 && <div className="w-px flex-1 bg-border" />}
                 </div>
                 <div className="pb-4">
-                  <div className="text-[0.85rem] font-semibold leading-tight">{t.role}</div>
-                  <div className="text-[0.7rem] text-accent/70 font-medium">{t.place}</div>
-                  <div className="text-[0.78rem] text-muted leading-snug mt-0.5">{t.desc}</div>
+                  <div className="text-sm font-semibold leading-tight">{t.role}</div>
+                  <div className="text-xs text-accent/70 font-medium">{t.place}</div>
+                  <div className="text-sm text-muted leading-snug mt-0.5">{t.desc}</div>
                 </div>
               </div>
             ))}
@@ -137,11 +199,11 @@ function Competence() {
 
           {/* Education */}
           <div className="mt-4 pt-4 border-t border-border">
-            <span className="text-[0.7rem] font-bold uppercase text-muted">Образование — НИУ МГСУ</span>
+            <span className="text-xs font-bold uppercase text-muted">Образование — НИУ МГСУ</span>
             <div className="flex gap-6 mt-2 flex-wrap">
               {edu.map((e) => (
-                <div key={e.date} className="text-[0.8rem]">
-                  <span className="text-accent font-bold text-[0.72rem]">{e.date}</span>
+                <div key={e.date} className="text-sm">
+                  <span className="text-accent font-bold text-xs">{e.date}</span>
                   <span className="text-muted ml-1.5">{e.text}</span>
                 </div>
               ))}
@@ -159,7 +221,7 @@ function Products() {
     <section id="products" className="bg-surface py-16">
       <div className="max-w-[1080px] mx-auto px-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold">Продукты</h2>
+          <h2 className="text-2xl md:text-3xl font-bold">Продукты</h2>
         </div>
         {products.map((p) => (
           <ProductCard
@@ -194,19 +256,19 @@ function Lab() {
     <section className="py-12">
       <div className="max-w-[1080px] mx-auto px-8">
         <div className="mb-6">
-          <div className="inline-block px-3 py-1 rounded text-[0.7rem] font-bold tracking-wider uppercase mb-3 bg-purple-soft text-purple">
+          <div className="inline-block px-3 py-1 rounded text-xs font-bold tracking-wider uppercase mb-3 bg-purple-soft text-purple">
             Эксперименты
           </div>
-          <h2 className="text-xl font-bold mb-1">Прототипы и эксперименты</h2>
-          <p className="text-[0.85rem] text-muted">Каждый production-продукт вырос из серии экспериментов. Ниже — задачи, которые решались на пути.</p>
+          <h2 className="text-xl md:text-2xl font-bold mb-1">Прототипы и эксперименты</h2>
+          <p className="text-sm text-muted">Каждый production-продукт вырос из серии экспериментов. Ниже — задачи, которые решались на пути.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {experiments.map((e, i) => (
             <div key={i} className="bg-surface border border-border rounded-lg px-4 py-3 flex flex-col gap-1.5">
-              <div className="text-[0.78rem] text-text-primary leading-snug">{e.desc}</div>
+              <div className="text-sm text-text-primary leading-snug">{e.desc}</div>
               <div className="flex flex-wrap gap-1 mt-auto">
                 {e.tags.map((t) => (
-                  <span key={t} className="px-1.5 py-0.5 rounded text-[0.62rem] font-medium bg-surface-3 text-muted">{t}</span>
+                  <span key={t} className="px-1.5 py-0.5 rounded text-xs font-medium bg-surface-3 text-muted">{t}</span>
                 ))}
               </div>
             </div>
@@ -306,9 +368,9 @@ function BusinessValue() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {cards.map((c) => (
             <div key={c.title} className="bg-surface border border-border rounded-xl p-6">
-              <h3 className="text-[0.92rem] font-bold mb-1.5">{c.title}</h3>
-              <p className="text-[0.8rem] text-muted leading-relaxed">{c.text}</p>
-              <div className="mt-3 pt-3 border-t border-border text-[0.78rem] text-green font-semibold">
+              <h3 className="text-[0.95rem] font-bold mb-1.5">{c.title}</h3>
+              <p className="text-sm text-muted leading-relaxed">{c.text}</p>
+              <div className="mt-3 pt-3 border-t border-border text-sm text-green font-semibold">
                 {c.metric}
               </div>
             </div>
@@ -347,16 +409,16 @@ function Methodology() {
           <div className="bg-surface border border-border rounded-xl p-6 relative overflow-hidden">
             <div className="absolute inset-0 bg-red/[0.03]" />
             <div className="relative">
-              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-red mb-3">Линейная модель</div>
+              <div className="text-xs font-bold uppercase tracking-wider text-red mb-3">Линейная модель</div>
               <div className="flex flex-wrap items-center gap-1.5 mb-4">
                 {oldChain.map((item, i) => (
                   <span key={i} className="contents">
-                    <span className="px-2.5 py-1 rounded bg-surface-3 text-[0.75rem] text-muted line-through decoration-red/40">{item}</span>
+                    <span className="px-2.5 py-1 rounded bg-surface-3 text-xs text-muted line-through decoration-red/40">{item}</span>
                     {i < oldChain.length - 1 && <span className="text-muted/40 text-xs">&rarr;</span>}
                   </span>
                 ))}
               </div>
-              <div className="space-y-1.5 text-[0.78rem] text-muted">
+              <div className="space-y-1.5 text-sm text-muted">
                 <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Потеря контекста на каждом звене передачи</div>
                 <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Разработчик не владеет предметной областью</div>
                 <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Аналитик не знает возможностей технологий</div>
@@ -370,16 +432,16 @@ function Methodology() {
           <div className="bg-surface border border-accent/30 rounded-xl p-6 relative overflow-hidden">
             <div className="absolute inset-0 bg-accent/[0.03]" />
             <div className="relative">
-              <div className="text-[0.68rem] font-bold uppercase tracking-wider text-accent mb-3">Новая модель</div>
+              <div className="text-xs font-bold uppercase tracking-wider text-accent mb-3">Новая модель</div>
               <div className="flex flex-wrap items-center gap-1.5 mb-4">
                 {newChain.map((item, i) => (
                   <span key={i} className="contents">
-                    <span className="px-2.5 py-1 rounded bg-accent-soft text-[0.75rem] text-accent font-semibold">{item}</span>
+                    <span className="px-2.5 py-1 rounded bg-accent-soft text-xs text-accent font-semibold">{item}</span>
                     {i < newChain.length - 1 && <span className="text-accent/50 text-xs">&rarr;</span>}
                   </span>
                 ))}
               </div>
-              <div className="space-y-1.5 text-[0.78rem] text-muted">
+              <div className="space-y-1.5 text-sm text-muted">
                 <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Эксперт совмещает понимание процесса и реализацию</div>
                 <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> AI снимает технические ограничения</div>
                 <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Валидация встроена в процесс — без промежуточных звеньев</div>
@@ -392,7 +454,7 @@ function Methodology() {
 
         {/* Thesis */}
         <div className="bg-surface-2 border border-border rounded-xl p-5 mb-8 max-w-[820px] mx-auto text-center">
-          <p className="text-[0.88rem] text-text-primary leading-relaxed">
+          <p className="text-[0.95rem] text-text-primary leading-relaxed">
             AI-инструменты снимают барьер технической реализации. Дефицит смещается: разработчик без отраслевой экспертизы теряет ценность, аналитик без понимания технологий — тоже.{' '}
             <span className="text-accent font-semibold">Максимальная эффективность — у специалиста на стыке: предметная область + технологии + AI.</span>{' '}
             Это редкое сочетание, потому что требует двух параллельных карьер.
@@ -404,8 +466,8 @@ function Methodology() {
           {steps.map((s) => (
             <div key={s.num} className="bg-surface border border-border rounded-xl p-5">
               <div className="text-3xl font-extrabold text-accent opacity-30 mb-2">{s.num}</div>
-              <h4 className="text-[0.85rem] font-bold mb-1.5">{s.title}</h4>
-              <p className="text-[0.76rem] text-muted leading-relaxed">{s.text}</p>
+              <h4 className="text-sm font-bold mb-1.5">{s.title}</h4>
+              <p className="text-sm text-muted leading-relaxed">{s.text}</p>
             </div>
           ))}
         </div>
@@ -461,11 +523,11 @@ function Research() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">
           {items.map((item) => (
             <div key={item.title} className="bg-bg border border-border rounded-xl p-5">
-              <h4 className="text-[0.85rem] font-bold mb-1">{item.title}</h4>
-              <p className="text-[0.76rem] text-muted leading-relaxed">{item.text}</p>
+              <h4 className="text-sm font-bold mb-1">{item.title}</h4>
+              <p className="text-sm text-muted leading-relaxed">{item.text}</p>
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {item.tags.map((t) => (
-                  <span key={t.label} className={`px-1.5 py-0.5 rounded text-[0.66rem] font-semibold ${t.color}`}>
+                  <span key={t.label} className={`px-1.5 py-0.5 rounded text-xs font-semibold ${t.color}`}>
                     {t.label}
                   </span>
                 ))}
@@ -484,15 +546,15 @@ function Contact() {
   return (
     <section className="text-center py-16 pb-24">
       <div className="max-w-[1080px] mx-auto px-8">
-        <h2 className="text-2xl font-bold mb-3">Контакты</h2>
-        <p className="text-muted text-[0.92rem] mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold mb-3">Контакты</h2>
+        <p className="text-muted text-[0.95rem] mb-8">
           Ищу команду, где опыт на стыке стройки и разработки
           <br />
           будет к месту. Открыт к разговору.
         </p>
         <div className="flex justify-center gap-4 flex-wrap">
           {['+7 (926) 897-32-25', 'KhromenokNV@mail.ru', 'Москва'].map((c) => (
-            <div key={c} className="px-6 py-2.5 bg-surface border border-border rounded-lg text-[0.85rem]">
+            <div key={c} className="px-6 py-2.5 bg-surface border border-border rounded-lg text-sm">
               {c}
             </div>
           ))}
@@ -516,11 +578,11 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-10">
-      <div className={`inline-block px-3 py-1 rounded text-[0.7rem] font-bold tracking-wider uppercase mb-3 ${tagColor}`}>
+      <div className={`inline-block px-3 py-1 rounded text-xs font-bold tracking-wider uppercase mb-3 ${tagColor}`}>
         {tag}
       </div>
-      <h2 className="text-2xl font-bold mb-2">{title}</h2>
-      {subtitle && <p className="text-muted text-[0.92rem] max-w-[620px]">{subtitle}</p>}
+      <h2 className="text-2xl md:text-3xl font-bold mb-2">{title}</h2>
+      {subtitle && <p className="text-muted text-[0.95rem] max-w-[620px]">{subtitle}</p>}
     </div>
   )
 }
@@ -528,7 +590,7 @@ function SectionHeader({
 function ArchLayer({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-stretch gap-3 flex-col md:flex-row">
-      <div className="md:w-[110px] md:min-w-[110px] flex items-center md:justify-end text-[0.7rem] font-bold uppercase tracking-wide text-muted md:text-right md:pr-2">
+      <div className="md:w-[110px] md:min-w-[110px] flex items-center md:justify-end text-xs font-bold uppercase tracking-wide text-muted md:text-right md:pr-2">
         {label}
       </div>
       <div className="flex-1 flex gap-2 flex-wrap">{children}</div>
@@ -557,10 +619,10 @@ function ArchItem({
 }) {
   return (
     <div
-      className={`${wide ? 'flex-[3]' : 'flex-1'} min-w-[130px] px-3 py-2.5 rounded-lg text-[0.78rem] font-semibold text-center border ${archColors[color]}`}
+      className={`${wide ? 'flex-[3]' : 'flex-1'} min-w-[130px] px-3 py-2.5 rounded-lg text-sm font-semibold text-center border ${archColors[color]}`}
     >
       {title}
-      {sub && <small className="block text-[0.66rem] font-normal opacity-70 mt-0.5">{sub}</small>}
+      {sub && <small className="block text-xs font-normal opacity-70 mt-0.5">{sub}</small>}
     </div>
   )
 }

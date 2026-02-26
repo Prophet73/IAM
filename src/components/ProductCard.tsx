@@ -24,12 +24,12 @@ export function ProductCard({ product, demo }: { product: Product; demo?: React.
           <div className="text-sm text-muted mt-1">{product.oneliner}</div>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <span className={`px-2.5 py-0.5 rounded text-[0.7rem] font-bold tracking-wide ${status.bg} ${status.text}`}>
+          <span className={`px-2.5 py-0.5 rounded text-xs font-bold tracking-wide ${status.bg} ${status.text}`}>
             {status.label}
           </span>
-          <span className={`px-3.5 py-1.5 rounded-lg text-[0.78rem] font-semibold transition-all flex items-center gap-1.5 ${open ? 'bg-accent/15 text-accent' : 'bg-accent text-white shadow-md shadow-accent/25 hover:shadow-lg hover:shadow-accent/30'}`}>
+          <span className={`px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 ${open ? 'bg-accent/15 text-accent' : 'bg-accent text-white shadow-md shadow-accent/25 hover:shadow-lg hover:shadow-accent/30'}`}>
             {open ? 'Свернуть' : 'Подробнее'}
-            <span className={`text-[0.7rem] transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>&#9662;</span>
+            <span className={`text-xs transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>&#9662;</span>
           </span>
         </div>
       </button>
@@ -42,7 +42,7 @@ export function ProductCard({ product, demo }: { product: Product; demo?: React.
               {product.metrics.map((m, i) => (
                 <div key={i} className="text-center min-w-[100px]">
                   <div className="text-xl font-extrabold text-green">{m.value}</div>
-                  <div className="text-[0.7rem] text-muted mt-0.5">{m.label}</div>
+                  <div className="text-xs text-muted mt-0.5">{m.label}</div>
                 </div>
               ))}
             </div>
@@ -59,7 +59,7 @@ export function ProductCard({ product, demo }: { product: Product; demo?: React.
               {product.tech.map((t) => (
                 <span
                   key={t}
-                  className="px-2 py-0.5 bg-surface-3 border border-border rounded text-[0.7rem] text-muted font-medium"
+                  className="px-2 py-0.5 bg-surface-3 border border-border rounded text-xs text-muted font-medium"
                 >
                   {t}
                 </span>
@@ -92,10 +92,10 @@ export function ProductCard({ product, demo }: { product: Product; demo?: React.
 function FlowBlock({ label, color, text }: { label: string; color: string; text: string }) {
   return (
     <div className="bg-surface-2 rounded-lg p-4">
-      <div className={`text-[0.68rem] font-bold uppercase tracking-wider mb-1.5 ${color}`}>
+      <div className={`text-xs font-bold uppercase tracking-wider mb-1.5 ${color}`}>
         {label}
       </div>
-      <p className="text-[0.82rem] text-muted leading-relaxed">{text}</p>
+      <p className="text-sm text-muted leading-relaxed">{text}</p>
     </div>
   )
 }

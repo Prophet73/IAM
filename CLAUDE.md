@@ -5,11 +5,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Development Commands
 
 ```bash
-npm run dev        # Start Vite dev server with HMR
+npm run dev        # Start Vite dev server with HMR (port 3001)
 npm run build      # TypeScript check (tsc -b) + Vite production build → ./dist/
 npm run lint       # ESLint on all .ts/.tsx files
 npm run preview    # Preview production build locally
 ```
+
+Dev server runs on **http://localhost:3001**.
 
 No test framework is configured.
 

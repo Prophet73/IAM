@@ -179,20 +179,20 @@ function Hero() {
             <div className="inline-block px-3 py-1 bg-accent-soft text-accent rounded-full text-xs font-semibold tracking-widest uppercase mb-6">
               От процесса к продукту
             </div>
-            <h1 className="font-display text-3xl md:text-4xl font-extrabold leading-[1.2] mb-5 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent">
+            <h1 className="font-display text-[1.75rem] md:text-[2rem] font-extrabold leading-[1.25] mb-5 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent">
               Знаю стройку изнутри — делаю инструменты для бизнеса, которых нет на рынке
             </h1>
-            <p className="text-[0.95rem] text-muted mb-6 leading-relaxed">
+            <p className="text-[0.95rem] text-text-primary/70 mb-8 leading-relaxed">
               10 лет в строительном контроле — понимаю отрасль изнутри, не по описанию.
               Нужных инструментов не было, написал сам: 4 продукта в production и 12+ прототипов
               за полтора года, в одиночку и без ТЗ сверху.
             </p>
-            <div className="flex items-center gap-2 text-sm text-muted">
-              {stats.map((s, i) => (
-                <span key={s.label} className="contents">
-                  {i > 0 && <span className="text-border mx-1">·</span>}
-                  <span><span className="text-accent font-bold">{s.num}</span> {s.label}</span>
-                </span>
+            <div className="grid grid-cols-3 gap-3">
+              {stats.map((s) => (
+                <div key={s.label} className="bg-surface border border-border rounded-xl p-3 text-center">
+                  <div className="text-lg font-extrabold text-accent font-display leading-tight">{s.num}</div>
+                  <div className="text-xs text-text-primary/50 mt-1 leading-tight">{s.label}</div>
+                </div>
               ))}
             </div>
           </div>
@@ -200,11 +200,11 @@ function Hero() {
           {/* Правая колонка — как я думаю */}
           <div className="lg:border-l lg:border-border lg:pl-12">
             <div className="border-l-2 border-accent/30 pl-5">
-              <p className="text-[0.95rem] leading-relaxed text-muted">
+              <p className="text-[0.95rem] leading-relaxed text-text-primary/75">
                 «Знаю изнутри» — это не строчка в резюме. Это значит понимать где система
                 ломается до того как это попадёт в отчёт, видеть узкое место раньше дедлайна.
               </p>
-              <p className="text-[0.95rem] leading-relaxed text-muted mt-4">
+              <p className="text-[0.95rem] leading-relaxed text-text-primary/75 mt-4">
                 Hands-on — не про то чтобы делать всё самому. Про то чтобы оставаться
                 достаточно близко к работе: задавать команде вопросы которые имеют смысл,
                 принимать решения на основе реальности а не её описания.

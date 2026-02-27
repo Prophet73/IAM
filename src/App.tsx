@@ -172,41 +172,47 @@ function Hero() {
       <div className="absolute -top-[100px] right-[-200px] w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(79,124,255,0.08)_0%,transparent_70%)] pointer-events-none animate-[heroOrb_8s_ease-in-out_infinite]" />
       <div className="max-w-[1080px] mx-auto px-8 relative w-full flex flex-col flex-1">
 
-        {/* Основной контент — вертикально по центру */}
-        <div className="flex-1 flex flex-col justify-center py-12">
-          <div className="inline-block px-3 py-1 bg-accent-soft text-accent rounded-full text-xs font-semibold tracking-widest uppercase mb-6 self-start">
-            От процесса к продукту
-          </div>
-          <h1 className="font-display text-3xl md:text-4xl font-extrabold leading-[1.2] mb-5 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent max-w-[640px]">
-            Знаю стройку изнутри — делаю инструменты для бизнеса, которых нет на рынке
-          </h1>
-          <p className="text-[0.95rem] text-muted max-w-[520px] mb-6 leading-relaxed">
-            10 лет в строительном контроле — понимаю отрасль изнутри, не по описанию.
-            Нужных инструментов не было, написал сам: 4 продукта в production и 12+ прототипов
-            за полтора года, в одиночку и без ТЗ сверху.
-          </p>
-          <div className="flex items-center gap-2 text-sm text-muted">
-            {stats.map((s, i) => (
-              <span key={s.label} className="contents">
-                {i > 0 && <span className="text-border mx-1">·</span>}
-                <span><span className="text-accent font-bold">{s.num}</span> {s.label}</span>
-              </span>
-            ))}
-          </div>
-        </div>
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center py-12">
 
-        {/* Философия — внизу экрана перед скроллом */}
-        <div className="border-t border-border py-8">
-          <div className="max-w-[560px] border-l-2 border-accent/25 pl-5">
-            <p className="text-[0.95rem] leading-relaxed text-muted">
-              Hands-on — это не про «сделать самому». Это про то чтобы оставаться достаточно
-              близко к работе: понимать где система ломается раньше чем это попадёт в отчёт,
-              задавать команде вопросы которые имеют смысл, принимать решения на основе
-              реальности а не её описания.
+          {/* Левая колонка — кто я и что делаю */}
+          <div>
+            <div className="inline-block px-3 py-1 bg-accent-soft text-accent rounded-full text-xs font-semibold tracking-widest uppercase mb-6">
+              От процесса к продукту
+            </div>
+            <h1 className="font-display text-3xl md:text-4xl font-extrabold leading-[1.2] mb-5 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent">
+              Знаю стройку изнутри — делаю инструменты для бизнеса, которых нет на рынке
+            </h1>
+            <p className="text-[0.95rem] text-muted mb-6 leading-relaxed">
+              10 лет в строительном контроле — понимаю отрасль изнутри, не по описанию.
+              Нужных инструментов не было, написал сам: 4 продукта в production и 12+ прототипов
+              за полтора года, в одиночку и без ТЗ сверху.
             </p>
+            <div className="flex items-center gap-2 text-sm text-muted">
+              {stats.map((s, i) => (
+                <span key={s.label} className="contents">
+                  {i > 0 && <span className="text-border mx-1">·</span>}
+                  <span><span className="text-accent font-bold">{s.num}</span> {s.label}</span>
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
 
+          {/* Правая колонка — как я думаю */}
+          <div className="lg:border-l lg:border-border lg:pl-12">
+            <div className="border-l-2 border-accent/30 pl-5">
+              <p className="text-[0.95rem] leading-relaxed text-muted">
+                «Знаю изнутри» — это не строчка в резюме. Это значит понимать где система
+                ломается до того как это попадёт в отчёт, видеть узкое место раньше дедлайна.
+              </p>
+              <p className="text-[0.95rem] leading-relaxed text-muted mt-4">
+                Hands-on — не про то чтобы делать всё самому. Про то чтобы оставаться
+                достаточно близко к работе: задавать команде вопросы которые имеют смысл,
+                принимать решения на основе реальности а не её описания.
+              </p>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
   )

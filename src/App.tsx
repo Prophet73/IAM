@@ -13,13 +13,13 @@ function App() {
     <>
       <Nav />
       <Hero />
-      <Competence />
       <Products />
       <Architecture />
       <Methodology />
       <BusinessValue />
       <Research />
       <Lab />
+      <Career />
       <Contact />
     </>
   )
@@ -109,11 +109,11 @@ function Nav() {
   }, [theme])
 
   const navLinks = [
-    ['#competence', 'competence', 'Опыт'],
     ['#products', 'products', 'Продукты'],
     ['#architecture', 'architecture', 'Архитектура'],
     ['#value', 'value', 'Подход'],
     ['#research', 'research', 'R&D'],
+    ['#career', 'career', 'Опыт'],
   ]
 
   return (
@@ -162,9 +162,10 @@ function Nav() {
 /* ── Hero ── */
 function Hero() {
   const stats = [
-    { num: '10 лет', label: 'в строительстве' },
-    { num: '15+', label: 'проектов за 1.5 года' },
-    { num: 'МГСУ', label: 'аспирантура' },
+    { num: '4', label: 'продукта\nв production' },
+    { num: '12+', label: 'прототипов\nза 1.5 года' },
+    { num: '10+', label: 'лет в\nстроительстве' },
+    { num: 'МГСУ', label: 'Аспирантура' },
   ]
 
   return (
@@ -173,6 +174,7 @@ function Hero() {
 
       <div className="w-full pt-14">
         <div className="max-w-[1080px] mx-auto px-8 py-10">
+          {/* Верхняя строка: текст + философия */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
 
             {/* Левая колонка */}
@@ -181,38 +183,42 @@ function Hero() {
                 От процесса к продукту
               </div>
               <h1 className="font-display text-[1.75rem] md:text-[2rem] font-extrabold leading-[1.25] mb-5 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent">
-                Знаю стройку изнутри — делаю инструменты для бизнеса, которых нет на рынке
+                От проблемы на стройке до инженерного MVP за недели
               </h1>
-              <p className="text-[0.95rem] text-text-primary/70 mb-8 leading-relaxed">
-                10 лет в строительном контроле — понимаю отрасль изнутри, не по описанию.
-                Нужных инструментов не было, написал сам: 4 продукта в production и 12+ прототипов
-                за полтора года, в одиночку и без ТЗ сверху.
+              <p className="text-[0.95rem] text-text-primary/70 leading-relaxed">
+                10 лет в стройконтроле — это умение видеть, где процесс сломается, ещё до того,
+                как проблема попадёт в отчёт. Когда готовых инструментов не нашлось — начал
+                создавать их сам. Мой подход: прямой диалог с людьми на объекте, быстрые
+                эксперименты и вывод рабочих решений в production.
               </p>
-              <div className="grid grid-cols-3 gap-3">
-                {stats.map((s) => (
-                  <div key={s.label} className="bg-surface border border-border rounded-xl p-3 text-center">
-                    <div className="text-lg font-extrabold text-accent font-display leading-tight">{s.num}</div>
-                    <div className="text-xs text-text-primary/50 mt-1 leading-tight">{s.label}</div>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Правая колонка */}
             <div className="lg:border-l lg:border-border lg:pl-12 flex items-center">
-              <div className="border-l-2 border-accent/30 pl-5">
+              <div>
                 <p className="text-[0.95rem] leading-relaxed text-text-primary/75">
-                  «Знаю изнутри» — это не строчка в резюме. Это значит понимать где система
-                  ломается до того как это попадёт в отчёт, видеть узкое место раньше дедлайна.
+                  «Знать изнутри» — значит предвидеть узкие места задолго до дедлайна. Это
+                  позволяет проектировать решения, которые с первого касания лечат реальную
+                  боль, а не проверяют гипотезы аналитиков.
                 </p>
                 <p className="text-[0.95rem] leading-relaxed text-text-primary/75 mt-4">
-                  Hands-on — не про то чтобы делать всё самому. Про то чтобы оставаться
-                  достаточно близко к работе: задавать команде вопросы которые имеют смысл,
-                  принимать решения на основе реальности а не её описания.
+                  «Hands-on» — это не делать всё самому. Это быстро собрать работающий прототип
+                  и показать его пользователям. Рабочий прототип становится живым ТЗ, устраняя
+                  главную проблему IT: потерю смысла при передаче задачи от бизнеса к разработке.
                 </p>
               </div>
             </div>
 
+          </div>
+
+          {/* Нижняя строка: плитки по центру */}
+          <div className="flex justify-center gap-3 mt-10">
+            {stats.map((s) => (
+              <div key={s.label} className="bg-surface border border-border rounded-xl p-4 text-center w-[130px]">
+                <div className={`${s.sm ? 'text-sm' : 'text-lg'} font-extrabold text-accent font-display leading-tight`}>{s.num}</div>
+                <div className="text-xs text-text-primary/50 mt-1 leading-tight whitespace-pre-line">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -220,67 +226,6 @@ function Hero() {
   )
 }
 
-/* ── Competence (merged with Career) ── */
-function Competence() {
-  const timeline = [
-    { date: '2016–2017', role: 'Инженер ПТО', place: 'МГСУ \u2022 Парк Зарядье', desc: 'Исполнительная документация, фасады и благоустройство' },
-    { date: '2018–2020', role: 'Строительно-технический эксперт', place: 'Судебная экспертиза', desc: 'Экспертиза и финансово-технический аудит. АО АККУЮ НУКЛЕАР, ВЦ «Павловопосадские платки»' },
-    { date: '2020–2021', role: 'Инженер СК', place: 'ТСК-ТИТУЛ', desc: 'Приёмка работ, проверка КС-2, накопительные. ЖК Discovery (MR Group), Савёловский-сити' },
-    { date: '2021–2024', role: 'Инженер → ведущий инженер СК', place: 'Severin Development', desc: 'ЖК FORIVER (InGrad/Sminex) — 11 корпусов, 3 года на объекте, получение ЗОС' },
-    { date: '2024', role: 'Руководитель группы СК / Департамент качества', place: 'Severin Development', desc: 'Координация 20+ инженеров. Регламенты, шаблоны для проектных команд' },
-    { date: '2024–н.в.', role: 'Департамент цифровой трансформации', place: 'Severin Development', desc: '4 продукта в production, ~10 прототипов. Full-cycle R&D — от идеи до внедрения', active: true },
-  ]
-
-  const edu = [
-    { date: '2014–2018', text: 'Бакалавриат, ПГС' },
-    { date: '2018–2020', text: 'Магистратура, ПГС' },
-    { date: '2021–2025', text: 'Аспирантура, ЭБСиГХ' },
-  ]
-
-  return (
-    <section id="competence" className="py-10">
-      <div className="max-w-[1080px] mx-auto px-8">
-        <Reveal>
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-display text-base font-bold uppercase tracking-widest text-muted">Карьерный трек</h2>
-            <span className="px-2.5 py-0.5 rounded text-xs font-bold tracking-wider uppercase bg-green-soft text-green">Опыт</span>
-          </div>
-
-          {/* Timeline */}
-          <div>
-            {timeline.map((t, i) => (
-              <div key={t.date} className="flex gap-4 items-stretch">
-                <div className="w-[76px] shrink-0 text-right pt-0.5">
-                  <div className="text-xs font-semibold text-accent leading-tight">{t.date}</div>
-                </div>
-                <div className="flex flex-col items-center shrink-0">
-                  <div className={`w-2 h-2 rounded-full border-2 border-accent mt-1 ${t.active ? 'bg-accent animate-[pulseGlow_2s_ease-in-out_infinite]' : 'bg-bg'}`} />
-                  {i < timeline.length - 1 && <div className="w-px flex-1 bg-border mt-1" />}
-                </div>
-                <div className={`${i < timeline.length - 1 ? 'pb-3' : 'pb-0'}`}>
-                  <div className="text-sm font-semibold leading-tight">{t.role}</div>
-                  <div className="text-xs text-accent/60 font-medium">{t.place}</div>
-                  <div className="text-xs text-muted leading-snug mt-0.5">{t.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Education */}
-          <div className="mt-4 pt-4 border-t border-border flex flex-wrap items-center gap-x-6 gap-y-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted">НИУ МГСУ</span>
-            {edu.map((e) => (
-              <div key={e.date} className="text-xs">
-                <span className="text-accent font-semibold">{e.date}</span>
-                <span className="text-muted ml-1.5">{e.text}</span>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
 
 /* ── Products ── */
 function Products() {
@@ -635,6 +580,62 @@ function Research() {
             ))}
           </div>
         </Reveal>
+      </div>
+    </section>
+  )
+}
+
+
+/* ── Career ── */
+function Career() {
+  const timeline = [
+    { date: '2016–2017', role: 'Инженер ПТО', place: 'МГСУ \u2022 Парк Зарядье', desc: 'Исполнительная документация, фасады и благоустройство' },
+    { date: '2018–2020', role: 'Строительно-технический эксперт', place: 'Судебная экспертиза', desc: 'Экспертиза и финансово-технический аудит. АО АККУЮ НУКЛЕАР, ВЦ «Павловопосадские платки»' },
+    { date: '2020–2021', role: 'Инженер СК', place: 'ТСК-ТИТУЛ', desc: 'Приёмка работ, проверка КС-2, накопительные. ЖК Discovery (MR Group), Савёловский-сити' },
+    { date: '2021–2024', role: 'Инженер → ведущий инженер СК', place: 'Severin Development', desc: 'ЖК FORIVER (InGrad/Sminex) — 11 корпусов, 3 года на объекте, получение ЗОС' },
+    { date: '2024', role: 'Руководитель группы СК / Департамент качества', place: 'Severin Development', desc: 'Координация 20+ инженеров. Регламенты, шаблоны для проектных команд' },
+    { date: '2024–н.в.', role: 'Департамент цифровой трансформации', place: 'Severin Development', desc: '4 продукта в production, ~10 прототипов. Full-cycle R&D — от идеи до внедрения', active: true },
+  ]
+
+  const edu = [
+    { date: '2014–2018', text: 'Бакалавриат, ПГС' },
+    { date: '2018–2020', text: 'Магистратура, ПГС' },
+    { date: '2021–2025', text: 'Аспирантура, ЭБСиГХ' },
+  ]
+
+  return (
+    <section id="career" className="py-10">
+      <div className="max-w-[1080px] mx-auto px-8">
+        <div className="mb-5">
+          <h2 className="font-display text-base font-bold uppercase tracking-widest text-muted">Опыт</h2>
+        </div>
+        <div>
+          {timeline.map((t, i) => (
+            <div key={t.date} className="flex gap-4 items-stretch">
+              <div className="w-[76px] shrink-0 text-right pt-0.5">
+                <div className="text-xs font-semibold text-accent leading-tight">{t.date}</div>
+              </div>
+              <div className="flex flex-col items-center shrink-0">
+                <div className={`w-2 h-2 rounded-full border-2 border-accent mt-1 ${t.active ? 'bg-accent' : 'bg-bg'}`} />
+                {i < timeline.length - 1 && <div className="w-px flex-1 bg-border mt-1" />}
+              </div>
+              <div className={`${i < timeline.length - 1 ? 'pb-3' : 'pb-0'}`}>
+                <div className="text-sm font-semibold leading-tight">{t.role}</div>
+                <div className="text-xs text-accent/60 font-medium">{t.place}</div>
+                <div className="text-xs text-muted leading-snug mt-0.5">{t.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 pt-4 border-t border-border flex flex-wrap items-center gap-x-6 gap-y-1">
+          <span className="text-xs font-bold uppercase tracking-wider text-muted">НИУ МГСУ</span>
+          {edu.map((e) => (
+            <div key={e.date} className="text-xs">
+              <span className="text-accent font-semibold">{e.date}</span>
+              <span className="text-muted ml-1.5">{e.text}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   )

@@ -13,6 +13,7 @@ function App() {
     <>
       <Nav />
       <Hero />
+      <Philosophy />
       <Competence />
       <Products />
       <Architecture />
@@ -175,15 +176,12 @@ function Hero() {
           От процесса к продукту
         </div>
         <h1 className="font-display text-4xl md:text-5xl font-extrabold leading-[1.15] mb-4 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent max-w-[720px]">
-          Знаю стройку изнутри —
-          <br />
-          делаю инструменты для бизнеса, которых нет на рынке
+          Знаю стройку изнутри — делаю инструменты для бизнеса, которых нет на рынке
         </h1>
-        <p className="text-base text-muted max-w-[620px] mb-8 leading-relaxed">
-          10 лет в строительном контроле и управлении проектами, аспирантура МГСУ.
-          Не нашёл нужных инструментов — написал сам.
-          Без ТЗ и бюджетов: услышал боль → прототип → обратная связь → продукт.
-          4 инструмента в формате full-cycle R&D, от идеи до production.
+        <p className="text-base text-muted max-w-[580px] mb-8 leading-relaxed">
+          10 лет в строительном контроле — понимаю отрасль изнутри, не по описанию.
+          Нужных инструментов не было, написал сам: 4 продукта в production и 12+ прототипов
+          за полтора года, в одиночку и без ТЗ сверху.
         </p>
         <div className="w-12 h-px bg-border mb-6" />
         <div className="flex items-center gap-2 text-sm text-muted">
@@ -194,6 +192,42 @@ function Hero() {
             </span>
           ))}
         </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Philosophy ── */
+function Philosophy() {
+  const items = [
+    {
+      num: '01',
+      text: 'Строительный контроль не прощает теорий: конструкция либо стоит, либо нет. Этот принцип я перенёс в разработку.',
+    },
+    {
+      num: '02',
+      text: 'Я не разделяю «придумать» и «построить». Когда понимаешь каждый уровень системы — решения получаются другими.',
+    },
+    {
+      num: '03',
+      text: 'Ищу роль с настоящей ответственностью за результат: R&D, продукт или их пересечение — там где делают, а не координируют.',
+    },
+  ]
+
+  return (
+    <section className="py-12 border-b border-border">
+      <div className="max-w-[1080px] mx-auto px-8">
+        <Reveal stagger className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+          {items.map((item) => (
+            <div key={item.num} className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-px bg-accent/60" />
+                <span className="text-xs font-bold tracking-widest text-accent/50 font-display">{item.num}</span>
+              </div>
+              <p className="text-[0.95rem] leading-relaxed text-text-primary">{item.text}</p>
+            </div>
+          ))}
+        </Reveal>
       </div>
     </section>
   )
@@ -272,7 +306,8 @@ function Products() {
       <div className="max-w-[1080px] mx-auto px-8">
         <Reveal>
           <div className="mb-8">
-            <h2 className="font-display text-2xl md:text-3xl font-bold">Продукты</h2>
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Продукты</h2>
+            <p className="text-muted text-[0.95rem]">Четыре инструмента, написанных с нуля под реальные задачи строительного бизнеса.</p>
           </div>
         </Reveal>
         <Reveal stagger>
@@ -435,7 +470,7 @@ function BusinessValue() {
         <Reveal stagger>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {cards.map((c) => (
-              <div key={c.title} className="bg-surface border border-border rounded-xl p-6 relative overflow-hidden transition-transform hover:-translate-y-0.5">
+              <div key={c.title} className="bg-bg border border-border rounded-xl p-6 relative overflow-hidden transition-transform hover:-translate-y-0.5">
                 <div className="absolute top-3 right-4 text-4xl font-extrabold font-display text-border/30 leading-none select-none">{c.num}</div>
                 <h3 className="text-[0.95rem] font-bold mb-1.5 relative">{c.title}</h3>
                 <p className="text-sm text-muted leading-relaxed relative">{c.text}</p>
@@ -631,9 +666,10 @@ function Contact() {
         <Reveal>
           <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-start">
             <div>
-              <h2 className="font-display text-xl md:text-2xl font-bold mb-2">Открыт к сотрудничеству</h2>
+              <h2 className="font-display text-xl md:text-2xl font-bold mb-2">Давайте поговорим</h2>
               <p className="text-muted text-sm mb-5 max-w-[440px]">
-                Ищу команду, где опыт на стыке стройки и разработки будет к месту. Открыт к разговору.
+                Ищу роль в R&D или продуктовом направлении — там где нужно не координировать разработку, а делать её.
+                Руководящая позиция или автономный проект — главное, чтобы было что строить.
               </p>
               <div className="flex flex-col gap-2.5">
                 <a

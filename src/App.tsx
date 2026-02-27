@@ -169,21 +169,20 @@ function Hero() {
   ]
 
   return (
-    <section className="pt-28 pb-10 relative overflow-hidden">
+    <section className="pt-24 pb-10 relative overflow-hidden">
       <div className="absolute -top-[100px] right-[-200px] w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(79,124,255,0.08)_0%,transparent_70%)] pointer-events-none animate-[heroOrb_8s_ease-in-out_infinite]" />
       <div className="max-w-[1080px] mx-auto px-8 relative">
-        <div className="inline-block px-4 py-1.5 bg-accent-soft text-accent rounded-full text-sm font-semibold tracking-wide mb-6">
+        <div className="inline-block px-3 py-1 bg-accent-soft text-accent rounded-full text-xs font-semibold tracking-widest uppercase mb-5">
           От процесса к продукту
         </div>
-        <h1 className="font-display text-4xl md:text-5xl font-extrabold leading-[1.15] mb-4 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent max-w-[720px]">
+        <h1 className="font-display text-3xl md:text-4xl font-extrabold leading-[1.2] mb-4 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent max-w-[640px]">
           Знаю стройку изнутри — делаю инструменты для бизнеса, которых нет на рынке
         </h1>
-        <p className="text-base text-muted max-w-[580px] mb-8 leading-relaxed">
+        <p className="text-[0.95rem] text-muted max-w-[520px] mb-6 leading-relaxed">
           10 лет в строительном контроле — понимаю отрасль изнутри, не по описанию.
           Нужных инструментов не было, написал сам: 4 продукта в production и 12+ прототипов
           за полтора года, в одиночку и без ТЗ сверху.
         </p>
-        <div className="w-12 h-px bg-border mb-6" />
         <div className="flex items-center gap-2 text-sm text-muted">
           {stats.map((s, i) => (
             <span key={s.label} className="contents">
@@ -199,34 +198,18 @@ function Hero() {
 
 /* ── Philosophy ── */
 function Philosophy() {
-  const items = [
-    {
-      num: '01',
-      text: 'Строительный контроль не прощает теорий: конструкция либо стоит, либо нет. Этот принцип я перенёс в разработку.',
-    },
-    {
-      num: '02',
-      text: 'Я не разделяю «придумать» и «построить». Когда понимаешь каждый уровень системы — решения получаются другими.',
-    },
-    {
-      num: '03',
-      text: 'Ищу роль с настоящей ответственностью за результат: R&D, продукт или их пересечение — там где делают, а не координируют.',
-    },
-  ]
-
   return (
-    <section className="py-12 border-b border-border">
+    <section className="py-10 border-b border-border">
       <div className="max-w-[1080px] mx-auto px-8">
-        <Reveal stagger className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-          {items.map((item) => (
-            <div key={item.num} className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-px bg-accent/60" />
-                <span className="text-xs font-bold tracking-widest text-accent/50 font-display">{item.num}</span>
-              </div>
-              <p className="text-[0.95rem] leading-relaxed text-text-primary">{item.text}</p>
-            </div>
-          ))}
+        <Reveal>
+          <div className="max-w-[560px] border-l-2 border-accent/25 pl-5">
+            <p className="text-[0.95rem] leading-relaxed text-muted">
+              Hands-on — это не про «сделать самому». Это про то чтобы оставаться достаточно
+              близко к работе: понимать где система ломается раньше чем это попадёт в отчёт,
+              задавать команде вопросы которые имеют смысл, принимать решения на основе
+              реальности а не её описания.
+            </p>
+          </div>
         </Reveal>
       </div>
     </section>

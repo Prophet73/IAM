@@ -280,6 +280,16 @@ html.light body::before {
   background: var(--color-muted);
 }
 
+/* ── Product ecosystem detail card animation ── */
+@keyframes detailCardIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.detail-card-in {
+  animation: detailCardIn 0.22s ease-out both;
+}
+
 /* ── Scroll progress bar ── */
 .scroll-progress {
   position: fixed;

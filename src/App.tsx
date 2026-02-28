@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { flushSync } from 'react-dom'
 import { products } from './data/products'
-import { ProductCard } from './components/ProductCard'
+import { ProductsEcosystem } from './components/ProductsEcosystem'
 import { Reveal } from './components/Reveal'
 import { DataBookDemo } from './components/DataBookDemo'
 import { DemoAIHub } from './components/DemoAIHub'
@@ -233,19 +233,21 @@ function Products() {
     <section id="products" className="bg-surface py-16">
       <div className="max-w-[1080px] mx-auto px-8">
         <Reveal>
-          <div className="mb-8">
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Продукты</h2>
-            <p className="text-muted text-[0.95rem]">Четыре инструмента, написанных с нуля под реальные задачи строительного бизнеса.</p>
+          <div className="mb-10">
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Экосистема продуктов</h2>
+            <p className="text-muted text-[0.95rem]">Четыре production-решения и R&D прототип на едином инфраструктурном ядре.</p>
           </div>
         </Reveal>
-        <Reveal stagger>
-          {products.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              demo={p.id === 'aihub' ? <DemoAIHub /> : p.id === 'databook' ? <DataBookDemo /> : p.id === 'autoprotocol' ? <DemoAutoprotocol /> : p.id === 'costmanager' ? <DemoCostManager /> : undefined}
-            />
-          ))}
+        <Reveal>
+          <ProductsEcosystem
+            products={products}
+            demos={{
+              aihub:        <DemoAIHub />,
+              databook:     <DataBookDemo />,
+              autoprotocol: <DemoAutoprotocol />,
+              costmanager:  <DemoCostManager />,
+            }}
+          />
         </Reveal>
       </div>
     </section>

@@ -81,4 +81,21 @@ export const products: Product[] = [
     demoText: 'Демонстрация доступна по запросу',
     demoSubject: 'DataBook Demo',
   },
+  {
+    id: 'puls',
+    name: 'Puls',
+    oneliner: 'Платформа оперативного контроля строительных объектов',
+    status: 'prototype',
+    metrics: [
+      { value: '5', label: 'ролей: инженер, РП, ПМЮ, директор, admin' },
+      { value: '20+', label: 'экранов и рабочих процессов' },
+      { value: 'Full-stack', label: 'FastAPI + React + PostgreSQL' },
+    ],
+    pain: 'Инженеры и руководители проектов ведут статусы, предписания и рапорты в разрозненных чатах и таблицах. Нет единой точки оперативного контроля по объектам.',
+    solution: 'Многоролевая платформа: инженеры заполняют рапорты и предписания, РП управляют задачами и прогрессом по смене, директор видит портфельный дашборд. Авторизация через AI-Hub SSO.',
+    result: 'Активная разработка: HTML-прототипы для всех ролей, React-фронтенд, REST API на FastAPI. Органично встроен в экосистему через единый SSO.',
+    tech: ['FastAPI', 'React 18', 'TypeScript', 'PostgreSQL', 'TanStack Query', 'Zustand', 'Alembic', 'JWT', 'Docker', 'Tailwind CSS'],
+    demoText: 'Прототип в активной разработке — архитектура и UI по запросу',
+    demoSubject: 'Puls Demo',
+  },
 ]

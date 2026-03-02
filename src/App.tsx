@@ -7,6 +7,7 @@ import { DataBookDemo } from './components/DataBookDemo'
 import { DemoAIHub } from './components/DemoAIHub'
 import { DemoAutoprotocol } from './components/DemoAutoprotocol'
 import { DemoCostManager } from './components/DemoCostManager'
+import { DemoPuls } from './components/DemoPuls'
 
 function App() {
   return (
@@ -14,11 +15,8 @@ function App() {
       <Nav />
       <Hero />
       <Products />
-      <Architecture />
-      <Methodology />
-      <BusinessValue />
+      <Approach />
       <Research />
-      <Lab />
       <Career />
       <Contact />
     </>
@@ -110,8 +108,7 @@ function Nav() {
 
   const navLinks = [
     ['#products', 'products', 'Продукты'],
-    ['#architecture', 'architecture', 'Архитектура'],
-    ['#value', 'value', 'Подход'],
+    ['#approach', 'approach', 'Подход'],
     ['#research', 'research', 'R&D'],
     ['#career', 'career', 'Опыт'],
   ]
@@ -119,16 +116,16 @@ function Nav() {
   return (
     <>
       <ScrollProgress />
-      <nav className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-border py-3 transition-all duration-300 ${scrolled ? 'bg-bg/95 shadow-sm' : 'bg-bg/85'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'py-3 backdrop-blur-xl bg-bg/90 shadow-sm border-b border-border' : 'py-5 bg-transparent'}`}>
         <div className="max-w-[1080px] mx-auto px-8 flex justify-between items-center">
           <div className="font-display font-bold text-[0.95rem]">Никита Хроменок</div>
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex gap-6">
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex bg-surface-2/50 p-1 rounded-xl border border-border/50">
               {navLinks.map(([href, id, label]) => (
                 <a
                   key={href}
                   href={href}
-                  className={`text-sm font-medium transition-colors no-underline ${activeSection === id ? 'text-accent' : 'text-muted hover:text-text-primary'}`}
+                  className={`text-sm font-medium transition-all duration-200 no-underline px-3 py-1.5 rounded-lg ${activeSection === id ? 'bg-surface text-accent shadow-sm' : 'text-muted hover:text-text-primary'}`}
                 >
                   {label}
                 </a>
@@ -162,9 +159,9 @@ function Nav() {
 /* ── Hero ── */
 function Hero() {
   const stats = [
-    { num: '4', label: 'продукта\nв production' },
-    { num: '12+', label: 'прототипов\nза 1.5 года' },
-    { num: '10+', label: 'лет в\nстроительстве' },
+    { num: '4', label: 'продукта в production' },
+    { num: '12+', label: 'прототипов за 1.5 года' },
+    { num: '10+', label: 'лет в строительстве' },
     { num: 'МГСУ', label: 'Аспирантура' },
   ]
 
@@ -178,45 +175,82 @@ function Hero() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
 
             {/* Левая колонка */}
-            <div>
+            <div className="animate-[fadeIn_0.8s_ease-out_both]">
               <div className="inline-block px-3 py-1 bg-accent-soft text-accent rounded-full text-xs font-semibold tracking-widest uppercase mb-6">
                 От процесса к продукту
               </div>
-              <h1 className="font-display text-[1.75rem] md:text-[2rem] font-extrabold leading-[1.25] mb-5 bg-gradient-to-br from-text-primary to-accent bg-clip-text text-transparent">
-                От проблемы на стройке до инженерного MVP за недели
+              <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5">
+                <span className="bg-gradient-to-br from-text-primary to-text-primary/80 bg-clip-text text-transparent">Продуктовая разработка и </span>
+                <span className="bg-gradient-to-r from-accent to-purple bg-clip-text text-transparent">цифровизация строительства</span>
               </h1>
-              <p className="text-[0.95rem] text-text-primary/70 leading-relaxed">
-                10 лет в стройконтроле — это умение видеть, где процесс сломается, ещё до того,
-                как проблема попадёт в отчёт. Когда готовых инструментов не нашлось — начал
-                создавать их сам. Мой подход: прямой диалог с людьми на объекте, быстрые
-                эксперименты и вывод рабочих решений в production.
+              <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-6">
+                Совмещаю 10-летний инженерный опыт в строительстве с full-stack разработкой.
+                Создаю и внедряю инструменты, которые автоматизируют процессы и сокращают
+                издержки, не плодя IT-зоопарк.
               </p>
+              {/* CTA кнопки */}
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="#products"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 hover:shadow-lg hover:shadow-accent/20"
+                >
+                  Экосистема продуктов
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </a>
+                <a
+                  href="#research"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
+                >
+                  R&D подход
+                </a>
+              </div>
             </div>
 
-            {/* Правая колонка */}
-            <div className="lg:border-l lg:border-border lg:pl-12 flex items-center">
-              <div>
-                <p className="text-[0.95rem] leading-relaxed text-text-primary/75">
-                  «Знать изнутри» — значит предвидеть узкие места задолго до дедлайна. Это
-                  позволяет проектировать решения, которые с первого касания лечат реальную
-                  боль, а не проверяют гипотезы аналитиков.
-                </p>
-                <p className="text-[0.95rem] leading-relaxed text-text-primary/75 mt-4">
-                  «Hands-on» — это не делать всё самому. Это быстро собрать работающий прототип
-                  и показать его пользователям. Рабочий прототип становится живым ТЗ, устраняя
-                  главную проблему IT: потерю смысла при передаче задачи от бизнеса к разработке.
-                </p>
+            {/* Правая колонка — карточки */}
+            <div className="flex flex-col gap-4 justify-center animate-[fadeIn_0.8s_ease-out_0.2s_both]">
+              {/* Карточка 1: Знать изнутри */}
+              <div className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-5 flex gap-4">
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-sm font-bold mb-1">Знать изнутри</div>
+                  <p className="text-[0.85rem] text-muted leading-relaxed">
+                    Предвидеть узкие места задолго до дедлайна. Проектировать решения, которые
+                    с первого касания лечат реальную боль, а не проверяют гипотезы аналитиков.
+                  </p>
+                </div>
+              </div>
+
+              {/* Карточка 2: Hands-on */}
+              <div className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-5 flex gap-4">
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-green-soft flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green">
+                    <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-sm font-bold mb-1">Hands-on</div>
+                  <p className="text-[0.85rem] text-muted leading-relaxed">
+                    Быстро собрать работающий прототип и показать пользователям. Рабочий прототип
+                    становится живым ТЗ, устраняя потерю смысла при передаче от бизнеса к разработке.
+                  </p>
+                </div>
               </div>
             </div>
 
           </div>
 
-          {/* Нижняя строка: плитки по центру */}
-          <div className="flex justify-center gap-3 mt-10">
+          {/* Нижняя строка: статистика */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
             {stats.map((s) => (
-              <div key={s.label} className="bg-surface border border-border rounded-xl p-4 text-center w-[130px]">
-                <div className={`${s.sm ? 'text-sm' : 'text-lg'} font-extrabold text-accent font-display leading-tight`}>{s.num}</div>
-                <div className="text-xs text-text-primary/50 mt-1 leading-tight whitespace-pre-line">{s.label}</div>
+              <div key={s.label} className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-4 flex items-center gap-4">
+                <div className="text-2xl font-extrabold text-accent font-display leading-none shrink-0">{s.num}</div>
+                <div className="text-xs text-muted leading-snug">{s.label}</div>
               </div>
             ))}
           </div>
@@ -230,11 +264,11 @@ function Hero() {
 /* ── Products ── */
 function Products() {
   return (
-    <section id="products" className="bg-surface py-16">
-      <div className="max-w-[1080px] mx-auto px-8">
+    <section id="products" className="bg-surface py-14 border-t border-border/50">
+      <div className="max-w-[1280px] mx-auto px-8">
         <Reveal>
-          <div className="mb-10">
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Экосистема продуктов</h2>
+          <div className="mb-8">
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-1">Экосистема продуктов</h2>
             <p className="text-muted text-[0.95rem]">Четыре production-решения и R&D прототип на едином инфраструктурном ядре.</p>
           </div>
         </Reveal>
@@ -246,6 +280,7 @@ function Products() {
               databook:     <DataBookDemo />,
               autoprotocol: <DemoAutoprotocol />,
               costmanager:  <DemoCostManager />,
+              puls:         <DemoPuls />,
             }}
           />
         </Reveal>
@@ -254,8 +289,116 @@ function Products() {
   )
 }
 
-/* ── Lab / Experiments ── */
-function Lab() {
+/* ── Approach (Methodology + BusinessValue) ── */
+function Approach() {
+  const steps = [
+    { num: '01', title: 'Выявление узких мест', text: 'Изнутри процессов, без "исследований рынка".' },
+    { num: '02', title: 'Сборка MVP', text: 'Фокус на решении задачи, а не на перфекционизме кода.' },
+    { num: '03', title: 'Валидация', text: 'Пользователи голосуют использованием.' },
+    { num: '04', title: 'Масштабирование', text: 'Перевод успешных гипотез на единое ядро.' },
+  ]
+
+  const cards = [
+    {
+      num: '01',
+      title: 'Единая инфраструктура',
+      text: (
+        <>
+          Не пложу зоопарк систем. Все продукты заведены под{' '}
+          <span className="text-text-primary font-semibold">единую точку входа (AI-Hub)</span>{' '}
+          с корпоративной авторизацией (SSO/ADFS). Общие паттерны и единая база пользователей
+          позволяют не писать бэкенд с нуля для каждой новой идеи.
+        </>
+      ),
+      metric: 'Снижение Time-to-Market до недель',
+    },
+    {
+      num: '02',
+      title: 'Прямой контакт с реальностью',
+      text: (
+        <>
+          Убираю эффект «испорченного телефона». Обычная цепочка передачи ТЗ от бизнеса к
+          разработчику теряет контекст. Совмещение 10-летнего опыта стройконтроля и написания
+          кода позволяет делать продукты, которые{' '}
+          <span className="text-text-primary font-semibold">с первого касания лечат реальную боль.</span>
+        </>
+      ),
+      metric: 'Organic adoption без админ. ресурса',
+    },
+    {
+      num: '03',
+      title: 'Быстрый цикл проверки',
+      text: (
+        <>
+          От проблемы на площадке до рабочего MVP —{' '}
+          <span className="text-text-primary font-semibold">недели, а не кварталы.</span>{' '}
+          Выделяю суть бизнес-требования, быстро собираю работающий инструмент и сразу отдаю
+          в поля. Продукт выживает только если инженеры начинают им пользоваться каждый день.
+        </>
+      ),
+      metric: '4 продукта в production за 1.5 года',
+    },
+  ]
+
+  return (
+    <section id="approach" className="py-16">
+      <div className="max-w-[1080px] mx-auto px-8">
+
+        {/* Methodology */}
+        <Reveal>
+          <SectionHeader
+            tag="Как я делаю продукты"
+            tagColor="bg-purple-soft text-purple"
+            title="От задачи на площадке до рабочего инструмента"
+            subtitle="Техническая реализация перестаёт быть ограничением. Ключевой дефицит — понимание предметной области."
+          />
+        </Reveal>
+        <Reveal stagger>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+            {steps.map((s) => (
+              <div key={s.num} className="bg-surface-2/40 backdrop-blur-sm border border-border/60 rounded-xl p-5 relative overflow-hidden">
+                <div className="absolute -bottom-2 -right-2 text-6xl font-extrabold font-display text-text-primary opacity-5 select-none">{s.num}</div>
+                <div className="relative z-10">
+                  <h4 className="text-sm font-bold mb-1.5">{s.title}</h4>
+                  <p className="text-sm text-muted leading-relaxed">{s.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* Business Value */}
+        <Reveal>
+          <SectionHeader
+            tag="Почему это работает"
+            tagColor="bg-green-soft text-green"
+            title="Что даёт совмещение отрасли и разработки"
+          />
+        </Reveal>
+        <Reveal stagger>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {cards.map((c) => (
+              <div key={c.title} className="bg-surface-2/50 backdrop-blur-sm border border-border/60 rounded-xl p-6 relative overflow-hidden hover:border-green/40 hover:-translate-y-1 transition-all duration-300">
+                <div className="absolute -right-4 -bottom-6 text-[8rem] font-extrabold font-display text-text-primary/5 leading-none select-none z-0">{c.num}</div>
+                <div className="relative z-10">
+                  <h3 className="text-[0.95rem] font-bold mb-1.5">{c.title}</h3>
+                  <p className="text-sm text-muted leading-relaxed">{c.text}</p>
+                  <div className="mt-3 pt-3 border-t border-border text-sm text-green font-semibold">
+                    {c.metric}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
+      </div>
+    </section>
+  )
+}
+
+/* ── Research (R&D + Experiments) ── */
+function Research() {
   const experiments = [
     { desc: 'RAG-консультант по строительным нормам с гибридным поиском', tags: ['RAG', 'Gemini', 'Embeddings'] },
     { desc: 'Автоклассификация элементов BIM-моделей через LLM', tags: ['Ollama', 'IFC', 'ML'] },
@@ -271,256 +414,6 @@ function Lab() {
     { desc: 'Программная генерация документов по корпоративному брендбуку', tags: ['python-docx'] },
   ]
 
-  return (
-    <section className="py-12">
-      <div className="max-w-[1080px] mx-auto px-8">
-        <Reveal>
-          <div className="mb-6">
-            <div className="inline-block px-3 py-1 rounded text-xs font-bold tracking-wider uppercase mb-3 bg-purple-soft text-purple">
-              Эксперименты
-            </div>
-            <h2 className="font-display text-xl md:text-2xl font-bold mb-1">Прототипы и эксперименты</h2>
-            <p className="text-sm text-muted">Каждый production-продукт вырос из серии экспериментов. Ниже — задачи, которые решались на пути.</p>
-          </div>
-        </Reveal>
-        <Reveal stagger>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {experiments.map((e, i) => (
-              <div key={i} className="bg-surface border border-border rounded-lg px-4 py-3 flex flex-col gap-1.5 transition-colors hover:border-accent/20">
-                <div className="text-sm text-text-primary leading-snug">{e.desc}</div>
-                <div className="flex flex-wrap gap-1 mt-auto">
-                  {e.tags.map((t) => (
-                    <span key={t} className="px-1.5 py-0.5 rounded text-xs font-medium bg-surface-3 text-muted">{t}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
-/* ── Architecture ── */
-function Architecture() {
-  return (
-    <section id="architecture" className="py-16">
-      <div className="max-w-[1080px] mx-auto px-8">
-        <Reveal>
-          <SectionHeader
-            tag="Архитектура"
-            tagColor="bg-cyan-soft text-cyan"
-            title="Как это устроено под капотом"
-            subtitle="Общая авторизация, общие данные, общий AI-слой. Всё крутится на одной инфраструктуре."
-          />
-        </Reveal>
-
-        {/* Technical landscape */}
-        <Reveal>
-          <div className="bg-surface border border-border rounded-2xl p-8 mb-6">
-            <div className="text-xs font-bold uppercase tracking-wider text-muted text-center mb-6">
-              Технический ландшафт
-            </div>
-            <div className="flex flex-col gap-3 max-w-[820px] mx-auto">
-              <ArchLayer label="Потребители">
-                <ArchItem color="amber" title="Инженеры СК" sub="DataBook, Puls" />
-                <ArchItem color="amber" title="Экономисты" sub="CostManager" />
-                <ArchItem color="amber" title="Руководители" sub="Автопротокол" />
-                <ArchItem color="amber" title="Все сотрудники" sub="AI-Hub, AI-чат" />
-              </ArchLayer>
-              <div className="arch-arrow">&darr; SSO / OAuth2 + PKCE &darr;</div>
-              <ArchLayer label="Авторизация">
-                <ArchItem color="accent" title="AI-Hub — OAuth2 Authorization Server, RBAC, ADFS/OIDC, аудит" sub="Единая точка входа и управления доступами" wide />
-              </ArchLayer>
-              <div className="arch-arrow">&darr;</div>
-              <ArchLayer label="Приложения">
-                <ArchItem color="green" title="DataBook" sub="NLP-поиск" />
-                <ArchItem color="green" title="CostManager" sub="Аналитика смет" />
-                <ArchItem color="green" title="Автопротокол" sub="ML-транскрипция" />
-                <ArchItem color="green" title="Puls" sub="ERP (прототип)" />
-              </ArchLayer>
-              <div className="arch-arrow">&darr;</div>
-              <ArchLayer label="AI / ML слой">
-                <ArchItem color="purple" title="Gemini API" sub="Генерация, классификация" />
-                <ArchItem color="purple" title="Ollama" sub="Локальный инференс" />
-                <ArchItem color="purple" title="WhisperX + pyannote" sub="Speech pipeline" />
-                <ArchItem color="purple" title="Embeddings" sub="Векторный поиск" />
-              </ArchLayer>
-              <div className="arch-arrow">&darr;</div>
-              <ArchLayer label="Инфраструктура">
-                <ArchItem color="cyan" title="PostgreSQL" sub="СУБД" />
-                <ArchItem color="cyan" title="Redis" sub="Очереди, кеш" />
-                <ArchItem color="cyan" title="Celery" sub="Async-задачи" />
-                <ArchItem color="cyan" title="Docker + Nginx" sub="Контейнеризация" />
-                <ArchItem color="cyan" title="GitHub Actions" sub="CI/CD" />
-              </ArchLayer>
-            </div>
-          </div>
-        </Reveal>
-
-      </div>
-    </section>
-  )
-}
-
-/* ── Business Value ── */
-function BusinessValue() {
-  const cards = [
-    {
-      num: '01',
-      title: 'Без посредников',
-      text: 'Обычная цепочка: бизнес → аналитик → разработчик. На каждом шаге теряется контекст. Когда сам знаешь предметку и сам пишешь код — попадание в потребность точнее.',
-      metric: 'Нулевая потеря контекста',
-    },
-    {
-      num: '02',
-      title: 'Люди пришли сами',
-      text: 'Ни один продукт не внедрялся приказом сверху. DataBook сделал год назад и забыл — а инженеры пользуются каждый день. Это лучшая валидация.',
-      metric: 'Adoption без бюджета',
-    },
-    {
-      num: '03',
-      title: 'Быстрый цикл',
-      text: 'От боли до рабочего MVP — 2–3 месяца. Услышал проблему на совещании, за выходные прототип, в понедельник показал, собрал обратную связь, доработал.',
-      metric: '4 продукта за 1.5 года (solo)',
-    },
-  ]
-
-  return (
-    <section id="value" className="bg-surface py-16">
-      <div className="max-w-[1080px] mx-auto px-8">
-        <Reveal>
-          <SectionHeader
-            tag="Почему это работает"
-            tagColor="bg-green-soft text-green"
-            title="Что даёт совмещение отрасли и разработки"
-          />
-        </Reveal>
-        <Reveal stagger>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {cards.map((c) => (
-              <div key={c.title} className="bg-bg border border-border rounded-xl p-6 relative overflow-hidden transition-transform hover:-translate-y-0.5">
-                <div className="absolute top-3 right-4 text-4xl font-extrabold font-display text-border/30 leading-none select-none">{c.num}</div>
-                <h3 className="text-[0.95rem] font-bold mb-1.5 relative">{c.title}</h3>
-                <p className="text-sm text-muted leading-relaxed relative">{c.text}</p>
-                <div className="mt-3 pt-3 border-t border-border text-sm text-green font-semibold relative">
-                  {c.metric}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
-/* ── Methodology ── */
-function Methodology() {
-  const oldChain = ['Заказчик', 'Аналитик', 'Разработчик', 'QA', 'Заказчик']
-  const newChain = ['Бизнес-задача', 'Отраслевой эксперт + AI', 'Продукт']
-
-  const steps = [
-    { num: '01', title: 'Выявляю потребность', text: 'Не через исследование рынка — а через ежедневную работу внутри процессов. 10 лет в отрасли — понимание задач из первых рук.' },
-    { num: '02', title: 'Быстрый прототип', text: 'AI-инструменты снимают технические ограничения. Архитектура → MVP за дни. Минимально достаточный функционал для проверки гипотезы.' },
-    { num: '03', title: 'Экспертная валидация', text: 'Отраслевая экспертиза позволяет самостоятельно оценить корректность решения. Без промежуточных звеньев — от задачи до результата напрямую.' },
-    { num: '04', title: 'Итеративное развитие', text: 'Развитие по реальным запросам пользователей, не по гипотетическому roadmap. Приоритет — то, что создаёт измеримую ценность.' },
-  ]
-
-  return (
-    <section className="py-16">
-      <div className="max-w-[1080px] mx-auto px-8">
-        <Reveal>
-          <SectionHeader
-            tag="Как я делаю продукты"
-            tagColor="bg-purple-soft text-purple"
-            title="От задачи на площадке до рабочего инструмента"
-            subtitle="Техническая реализация перестаёт быть ограничением. Ключевой дефицит — понимание предметной области."
-          />
-        </Reveal>
-
-        {/* Old vs New model */}
-        <Reveal stagger>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            {/* Old model */}
-            <div className="bg-surface border border-border rounded-xl p-6 relative overflow-hidden">
-              <div className="absolute inset-0 bg-red/[0.03]" />
-              <div className="relative">
-                <div className="text-xs font-bold uppercase tracking-wider text-red mb-3">Линейная модель</div>
-                <div className="flex flex-wrap items-center gap-1.5 mb-4">
-                  {oldChain.map((item, i) => (
-                    <span key={i} className="contents">
-                      <span className="px-2.5 py-1 rounded bg-surface-3 text-xs text-muted line-through decoration-red/40">{item}</span>
-                      {i < oldChain.length - 1 && <span className="text-muted/40 text-xs">&rarr;</span>}
-                    </span>
-                  ))}
-                </div>
-                <div className="space-y-1.5 text-sm text-muted">
-                  <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Потеря контекста на каждом звене передачи</div>
-                  <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Разработчик не владеет предметной областью</div>
-                  <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Аналитик не знает возможностей технологий</div>
-                  <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Цикл обратной связи — месяцы</div>
-                  <div className="flex items-start gap-2"><span className="text-red shrink-0">&#x2717;</span> Ускорение одного звена смещает узкое место в следующее</div>
-                </div>
-              </div>
-            </div>
-
-            {/* New model */}
-            <div className="bg-surface border border-accent/30 rounded-xl p-6 relative overflow-hidden">
-              <div className="absolute inset-0 bg-accent/[0.03]" />
-              <div className="relative">
-                <div className="text-xs font-bold uppercase tracking-wider text-accent mb-3">Новая модель</div>
-                <div className="flex flex-wrap items-center gap-1.5 mb-4">
-                  {newChain.map((item, i) => (
-                    <span key={i} className="contents">
-                      <span className="px-2.5 py-1 rounded bg-accent-soft text-xs text-accent font-semibold">{item}</span>
-                      {i < newChain.length - 1 && <span className="text-accent/50 text-xs">&rarr;</span>}
-                    </span>
-                  ))}
-                </div>
-                <div className="space-y-1.5 text-sm text-muted">
-                  <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Эксперт совмещает понимание процесса и реализацию</div>
-                  <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> AI снимает технические ограничения</div>
-                  <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Валидация встроена в процесс — без промежуточных звеньев</div>
-                  <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Цикл обратной связи — дни, а не месяцы</div>
-                  <div className="flex items-start gap-2"><span className="text-green shrink-0">&#x2713;</span> Ускоряется весь процесс, а не отдельное звено</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Reveal>
-
-        {/* Thesis */}
-        <Reveal>
-          <div className="bg-surface-2 border border-border rounded-xl p-5 mb-8 max-w-[820px] mx-auto text-center">
-            <p className="text-[0.95rem] text-text-primary leading-relaxed">
-              AI-инструменты снимают барьер технической реализации. Дефицит смещается: разработчик без отраслевой экспертизы теряет ценность, аналитик без понимания технологий — тоже.{' '}
-              <span className="text-accent font-semibold">Максимальная эффективность — у специалиста на стыке: предметная область + технологии + AI.</span>{' '}
-              Это редкое сочетание, потому что требует двух параллельных карьер.
-            </p>
-          </div>
-        </Reveal>
-
-        {/* Steps */}
-        <Reveal stagger>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {steps.map((s) => (
-              <div key={s.num} className="bg-surface border border-border rounded-xl p-5">
-                <div className="text-3xl font-extrabold font-display text-accent opacity-30 mb-2">{s.num}</div>
-                <h4 className="text-sm font-bold mb-1.5">{s.title}</h4>
-                <p className="text-sm text-muted leading-relaxed">{s.text}</p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  )
-}
-
-/* ── Research ── */
-function Research() {
   const items = [
     {
       title: 'AI-агенты и мультиагентные системы',
@@ -543,9 +436,9 @@ function Research() {
       tags: [{ label: 'CUDA', color: 'bg-cyan-soft text-cyan' }, { label: 'PyTorch', color: 'bg-cyan-soft text-cyan' }, { label: 'Docker', color: 'bg-cyan-soft text-cyan' }],
     },
     {
-      title: 'Научная деятельность',
-      text: 'Аспирантура МГСУ. Публикация: «Integrated methodology for environmental risk management in the life cycle of buildings» (2025).',
-      tags: [{ label: 'ORCID', color: 'bg-amber-soft text-amber' }, { label: 'МГСУ', color: 'bg-amber-soft text-amber' }],
+      title: 'Аспирантура и мат. аппарат',
+      text: 'Аспирантура МГСУ (ЭБСиГХ). Академический навык: структурировать сложную задачу, работать с данными и строить модели. Даёт системный подход к R&D — не только склеивать API, но и понимать что и зачем.',
+      tags: [{ label: 'МГСУ', color: 'bg-amber-soft text-amber' }, { label: 'Системотехника', color: 'bg-amber-soft text-amber' }, { label: 'Мат. моделирование', color: 'bg-amber-soft text-amber' }],
     },
     {
       title: 'AI-ассистированная разработка',
@@ -576,6 +469,31 @@ function Research() {
                     <span key={t.label} className={`px-1.5 py-0.5 rounded text-xs font-semibold ${t.color}`}>
                       {t.label}
                     </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
+        {/* Experiments */}
+        <Reveal>
+          <div className="mt-14 mb-6 pt-14 border-t border-border">
+            <div className="inline-block px-3 py-1 rounded text-xs font-bold tracking-wider uppercase mb-3 bg-purple-soft text-purple">
+              Эксперименты
+            </div>
+            <h3 className="font-display text-xl md:text-2xl font-bold mb-1">Прототипы и эксперименты</h3>
+            <p className="text-sm text-muted">Каждый production-продукт вырос из серии экспериментов. Ниже — задачи, которые решались на пути.</p>
+          </div>
+        </Reveal>
+        <Reveal stagger>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {experiments.map((e, i) => (
+              <div key={i} className="bg-surface-2 border border-border rounded-lg px-4 py-3 flex flex-col gap-1.5 transition-colors hover:border-accent/20">
+                <div className="text-sm text-text-primary leading-snug">{e.desc}</div>
+                <div className="flex flex-wrap gap-1 mt-auto">
+                  {e.tags.map((t) => (
+                    <span key={t} className="px-1.5 py-0.5 rounded text-xs font-medium bg-surface-3 text-muted">{t}</span>
                   ))}
                 </div>
               </div>
@@ -654,8 +572,8 @@ function Contact() {
             <div>
               <h2 className="font-display text-xl md:text-2xl font-bold mb-2">Давайте поговорим</h2>
               <p className="text-muted text-sm mb-5 max-w-[440px]">
-                Ищу роль в R&D или продуктовом направлении — там где нужно не координировать разработку, а делать её.
-                Руководящая позиция или автономный проект — главное, чтобы было что строить.
+                Открыт к обсуждению форматов: R&D лаборатория, продуктовая разработка, автономный проект.
+                Ищу задачи, где нужно не раздавать поручения подрядчикам, а вести техническую реализацию руками и головой.
               </p>
               <div className="flex flex-col gap-2.5">
                 <a
@@ -712,46 +630,6 @@ function SectionHeader({
       </div>
       <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">{title}</h2>
       {subtitle && <p className="text-muted text-[0.95rem] max-w-[620px]">{subtitle}</p>}
-    </div>
-  )
-}
-
-function ArchLayer({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-stretch gap-3 flex-col md:flex-row">
-      <div className="md:w-[110px] md:min-w-[110px] flex items-center md:justify-end text-xs font-bold uppercase tracking-wide text-muted md:text-right md:pr-2">
-        {label}
-      </div>
-      <div className="flex-1 flex gap-2 flex-wrap">{children}</div>
-    </div>
-  )
-}
-
-const archColors = {
-  accent: 'bg-accent-soft border-accent/25 text-accent',
-  green: 'bg-green-soft border-green/25 text-green',
-  purple: 'bg-purple-soft border-purple/25 text-purple',
-  cyan: 'bg-cyan-soft border-cyan/25 text-cyan',
-  amber: 'bg-amber-soft border-amber/25 text-amber',
-}
-
-function ArchItem({
-  color,
-  title,
-  sub,
-  wide,
-}: {
-  color: keyof typeof archColors
-  title: string
-  sub?: string
-  wide?: boolean
-}) {
-  return (
-    <div
-      className={`${wide ? 'flex-[3]' : 'flex-1'} min-w-[130px] px-3 py-2.5 rounded-lg text-sm font-semibold text-center border ${archColors[color]}`}
-    >
-      {title}
-      {sub && <small className="block text-xs font-normal opacity-70 mt-0.5">{sub}</small>}
     </div>
   )
 }

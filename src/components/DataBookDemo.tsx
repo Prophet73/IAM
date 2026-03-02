@@ -724,8 +724,8 @@ function PgSettings() {
             <div className="text-[0.65rem] text-slate-400">Записей в базе</div>
           </div>
           <div className="bg-slate-50 rounded-xl p-3 text-center">
-            <div className="text-xl font-extrabold" style={{ color: BRAND }}>1 240</div>
-            <div className="text-[0.65rem] text-slate-400">Терминов в словаре</div>
+            <div className="text-xl font-extrabold" style={{ color: BRAND }}>GIN</div>
+            <div className="text-[0.65rem] text-slate-400">Индекс tsvector</div>
           </div>
           <div className="bg-slate-50 rounded-xl p-3 text-center">
             <div className="text-xl font-extrabold text-green-600">12 мс</div>
@@ -734,13 +734,14 @@ function PgSettings() {
         </div>
         <div className="bg-slate-50 rounded-xl p-4 space-y-2">
           {[
-            ['Полнотекстовый поиск', 'PostgreSQL FTS + лемматизация'],
-            ['Язык', 'Русский (строительная терминология)'],
-            ['Дедупликация', 'Cosine similarity > 0.92'],
+            ['Полнотекстовый поиск', 'PostgreSQL tsvector + GIN-индекс'],
+            ['Конфигурация', 'russian + pymorphy2 лемматизация'],
+            ['Fuzzy matching', 'pg_trgm (триграммы, порог 0.3)'],
+            ['Дедупликация', 'TF-IDF + cosine similarity > 0.92'],
           ].map(([label, value]) => (
             <div key={label} className="flex items-center text-[0.75rem]">
               <span className="text-slate-400 w-[200px] shrink-0">{label}:</span>
-              <span className="text-slate-700 text-[0.72rem]">{value}</span>
+              <span className="text-slate-700 font-mono text-[0.72rem]">{value}</span>
             </div>
           ))}
         </div>

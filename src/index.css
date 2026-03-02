@@ -50,6 +50,10 @@ html {
   scroll-behavior: smooth;
 }
 
+section[id] {
+  scroll-margin-top: 72px;
+}
+
 body {
   font-family: var(--font-sans);
   background: var(--color-bg);
@@ -109,15 +113,6 @@ body {
   border-radius: 3px;
 }
 
-/* Architecture connector arrows */
-.arch-arrow {
-  text-align: center;
-  color: var(--color-muted);
-  font-size: 0.75rem;
-  padding: 0.15rem 0;
-  opacity: 0.5;
-}
-
 /* DataBook demo search highlight */
 mark {
   background: var(--color-accent-soft);
@@ -149,7 +144,7 @@ body.demo-modal-open {
 
 /* Sminex CRM animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 

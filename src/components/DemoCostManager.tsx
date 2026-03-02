@@ -779,19 +779,101 @@ function PgReport() {
   )
 }
 
+/* ── Classifier tree ── */
+const classifierSample = [
+  { code: '4', name: 'Фундаменты и Конструкции подземной части', level: 0 },
+  { code: '4.1', name: 'Устройство свайных оснований', level: 1 },
+  { code: '4.3', name: 'Монолитные ростверки и фундаментные плиты', level: 1 },
+  { code: '4.3.1', name: 'Устройство монолитных ленточных фундаментов', level: 2 },
+  { code: '4.3.1.1', name: 'Бетон B25, арматура A500C и A240, К_арм. 60-80 кг/м³', level: 3 },
+  { code: '4.3.1.2', name: 'Бетон B30, арматура A500C и A240, К_арм. 80-100 кг/м³', level: 3 },
+  { code: '4.3.3', name: 'Устройство монолитных фундаментных плит', level: 2 },
+  { code: '4.3.3.1', name: 'Бетон B25, арматура A500C и A240, К_арм. 100-140 кг/м³', level: 3 },
+  { code: '4.4', name: 'Монолитные ЖБК подземной части', level: 1 },
+  { code: '4.4.1', name: 'Устройство монолитных стен подземной части', level: 2 },
+  { code: '4.4.1.1', name: 'Бетон B25, арматура A500C и A240, К_арм. 80-110 кг/м³', level: 3 },
+  { code: '4.5', name: 'Гидроизоляция конструкций подземной части', level: 1 },
+]
+
+const classifierStats = [
+  { code: '1', name: 'ПИР и Разрешительная документация' },
+  { code: '2', name: 'Подготовительные работы и Врем. сооружения' },
+  { code: '3', name: 'Земляные работы и Ограждение котлована' },
+  { code: '4', name: 'Фундаменты и Конструкции подземной части' },
+  { code: '5', name: 'Надземные несущие конструкции (КР)' },
+  { code: '6', name: 'Общестроительные работы (АР)' },
+  { code: '7', name: 'Отделочные работы (АИ)' },
+  { code: '8', name: 'Внутренние инженерные системы (ВИС)' },
+  { code: '9', name: 'Наружные инженерные сети (НС)' },
+  { code: '10', name: 'Благоустройство' },
+  { code: '11', name: 'Технологические решения и Спецоборуд.' },
+  { code: '12', name: 'Сопутствующие расходы' },
+  { code: '13', name: 'Непредвиденные расходы' },
+  { code: '14', name: 'Инфляция' },
+]
+
+function ClassifierTree() {
+  const [expanded, setExpanded] = useState(false)
+  const levelColors = ['text-slate-800 font-bold', 'text-slate-700 font-semibold', 'text-slate-600', 'text-slate-500 text-[0.65rem]']
+  const levelBg = [`${BRAND}15`, `${BRAND}08`, '#f1f5f9', '#f8fafc']
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 p-4 mb-5">
+      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between text-left cursor-pointer border-none bg-transparent">
+        <div>
+          <div className="text-[0.78rem] font-bold text-slate-800">Иерархия классификатора</div>
+          <div className="text-[0.65rem] text-slate-400">14 разделов · 4 уровня глубины · {'>'}600 позиций</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="px-2 py-0.5 rounded text-[0.62rem] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">populate_categories.py</span>
+          {expanded ? <I.ChevronDown /> : <I.ChevronRight />}
+        </div>
+      </button>
+      {expanded && (
+        <div className="mt-3 border-t border-slate-100 pt-3">
+          <div className="grid grid-cols-[1fr_280px] gap-4">
+            {/* Tree sample */}
+            <div className="space-y-0.5">
+              <div className="text-[0.62rem] text-slate-400 uppercase tracking-wider font-bold mb-2">Фрагмент: раздел 4</div>
+              {classifierSample.map(item => (
+                <div key={item.code} className="flex items-center gap-1.5 py-0.5" style={{ paddingLeft: `${item.level * 16}px` }}>
+                  <span className="text-[0.6rem] font-mono px-1 py-0.5 rounded" style={{ background: levelBg[item.level], color: item.level === 0 ? BRAND : undefined }}>{item.code}</span>
+                  <span className={`text-[0.68rem] ${levelColors[item.level]}`}>{item.name}</span>
+                </div>
+              ))}
+              <div className="text-[0.58rem] text-slate-300 pl-12 mt-1">…</div>
+            </div>
+            {/* All L1 sections */}
+            <div className="border-l border-slate-100 pl-4">
+              <div className="text-[0.62rem] text-slate-400 uppercase tracking-wider font-bold mb-2">Разделы L1</div>
+              <div className="space-y-0.5">
+                {classifierStats.map(s => (
+                  <div key={s.code} className="flex items-center gap-1.5">
+                    <span className="text-[0.6rem] font-mono font-bold w-5 text-right shrink-0" style={{ color: BRAND }}>{s.code}</span>
+                    <span className="text-[0.65rem] text-slate-600 truncate">{s.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 /* ===== AI CLASSIFICATION ===== */
 function PgAI() {
   const [model, setModel] = useState<'gemini' | 'ollama'>('gemini')
 
   const classifications = [
-    { input: 'Бетон В25 монолитных стен подземной части', l1: '4. Фундаменты и Конструкции подземной части', l2: '4.4 Монолитные ЖБК подземной части', l3: '4.4.1 Устр-во монолитных стен', l4: '4.4.1.1 Бетон B25, А500С, 80-110 кг/м³', confidence: 97 },
+    { input: 'Бетон В25 монолитных стен подземной части', l1: '4. Фундаменты и Конструкции подземной части', l2: '4.4 Монолитные ЖБК подземной части', l3: '4.4.1 Устройство монолитных стен подземной части', l4: '4.4.1.1 Бетон B25, A500C и A240, К_арм. 80-110 кг/м³', confidence: 97 },
     { input: 'Кладка стен из газобетонных блоков D500', l1: '6. Общестроительные работы (АР)', l2: '6.5 Внутренние стены и перегородки', l3: '6.5.2 Кладка перегородок из газобетонных блоков', l4: '—', confidence: 95 },
     { input: 'Устройство навесного вент. фасада из керамогранита', l1: '6. Общестроительные работы (АР)', l2: '6.1 Фасадные работы', l3: '6.1.1 Навесные вентилируемые фасадные системы (НВФ)', l4: '—', confidence: 93 },
-    { input: 'Прокладка кабеля ВВГнг-LS 3x2.5 в гофре', l1: '8. Внутренние инженерные системы (ВИС)', l2: '8.3 Системы электроснабжения (ЭОМ)', l3: '8.3.1 Силовое электрооборудование (ЭМ)', l4: '—', confidence: 91 },
-    { input: 'Монтаж приточно-вытяжной установки', l1: '8. Внутренние инженерные системы (ВИС)', l2: '8.2 Системы ОВиК', l3: '8.2.2 Вентиляция общеобменная (В)', l4: '—', confidence: 78 },
-    { input: 'Устройство бетонных полов с упрочнением MasterTop', l1: '7. Отделочные работы (АИ)', l2: '7.1 Отделка Паркинга', l3: '7.1.1 Устройство и отделка полов', l4: '7.1.1.3 Бетонные полы с упрочн. слоем', confidence: 94 },
-    { input: 'Разработка грунта экскаватором с погрузкой', l1: '3. Земляные работы и Огражд. котлована', l2: '3.2 Разработка котлована', l3: '—', l4: '—', confidence: 64 },
-    { input: 'Монтаж подвесного потолка Армстронг в офисах', l1: '7. Отделочные работы (АИ)', l2: '7.7 Отделка Коммерческих/Офисных помещ.', l3: '7.7.3 Устройство и отделка потолков', l4: '7.7.3.1 Подвесной потолок Армстронг', confidence: 96 },
+    { input: 'Прокладка кабеля ВВГнг-LS 3x2.5 в гофре', l1: '8. Внутренние инженерные системы (ВИС)', l2: '8.3 Электроснабжение и электроосвещение (ЭОМ)', l3: '8.3.1 Силовое электрооборудование (ЭМ)', l4: '—', confidence: 91 },
+    { input: 'Монтаж приточно-вытяжной установки', l1: '8. Внутренние инженерные системы (ВИС)', l2: '8.2 ОВиК, ИТП/ЦТП', l3: '8.2.2 Вентиляция общеобменная (В)', l4: '—', confidence: 78 },
+    { input: 'Устройство бетонных полов с упрочнением MasterTop', l1: '7. Отделочные работы (АИ)', l2: '7.1 Отделка Паркинга', l3: '7.1.1 Устройство и отделка полов', l4: '7.1.1.3 Бетонные полы с упрочн. верхним слоем (MasterTop)', confidence: 94 },
+    { input: 'Разработка грунта экскаватором с погрузкой', l1: '3. Земляные работы и Ограждение котлована', l2: '3.2 Разработка котлована', l3: '—', l4: '—', confidence: 64 },
+    { input: 'Монтаж подвесного потолка Армстронг в офисах', l1: '7. Отделочные работы (АИ)', l2: '7.7 Отделка Коммерч./Офисных помещений', l3: '7.7.3 Устройство и отделка потолков', l4: '7.7.3.1 Подвесной потолок «Армстронг»', confidence: 96 },
   ]
 
   const confColor = (c: number) => {
@@ -850,6 +932,9 @@ function PgAI() {
           ))}
         </div>
       </div>
+
+      {/* Classifier tree sample */}
+      <ClassifierTree />
 
       {/* Classification results table */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">

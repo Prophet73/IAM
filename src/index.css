@@ -26,6 +26,7 @@
 
   --font-sans: 'Inter', -apple-system, sans-serif;
   --font-display: 'Montserrat', 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
 }
 
 html.light {
@@ -224,8 +225,9 @@ body.demo-modal-open {
 
 /* ── Hero orb drift ── */
 @keyframes heroOrb {
-  0%, 100% { transform: translate(-50%, 0) scale(1); }
-  50% { transform: translate(-45%, -8%) scale(1.05); }
+  0%, 100% { transform: translate(-50%, 0) scale(1); filter: hue-rotate(0deg); }
+  33% { transform: translate(-45%, -8%) scale(1.06); filter: hue-rotate(15deg); }
+  66% { transform: translate(-55%, 4%) scale(0.97); filter: hue-rotate(-10deg); }
 }
 
 /* ── Timeline pulse glow ── */
@@ -275,6 +277,11 @@ body.demo-modal-open {
   animation: detailCardIn 0.22s ease-out both;
 }
 
+/* ── Spring card transition (Apple spring) ── */
+.spring-card {
+  transition: all 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 /* ── Ecosystem animated beams ── */
 @keyframes beamFlow {
   to { stroke-dashoffset: -40; }
@@ -301,8 +308,12 @@ body.demo-modal-open {
   stroke-width: 2;
   stroke-dasharray: 12 8;
   opacity: 1;
-  animation: beamFlowFast 1s linear infinite;
-  filter: drop-shadow(0 0 4px var(--color-accent-soft));
+  animation: beamFlowFast 1s linear infinite, beamPulse 2s ease-in-out infinite;
+}
+
+@keyframes beamPulse {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--color-accent-soft)); }
+  50% { filter: drop-shadow(0 0 12px var(--color-accent)); }
 }
 
 /* ── Context aura ── */
@@ -471,4 +482,35 @@ html.light .context-aura {
 .animate-marquee {
   animation: marquee 35s linear infinite;
   width: max-content;
+}
+
+/* ── Scrollbar hidden (iOS-like swipe) ── */
+.scrollbar-hidden {
+  scrollbar-width: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Progress bar grow animation ── */
+@keyframes growBar {
+  from { width: 0; }
+}
+.bar-grow {
+  animation: growBar 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Terminal / console glow ── */
+.terminal-glow {
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.3), 0 0 2px rgba(16, 185, 129, 0.15);
+}
+
+/* ── Blinking cursor ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
 }

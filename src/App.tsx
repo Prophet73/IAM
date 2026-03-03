@@ -1,13 +1,14 @@
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, Suspense } from 'react'
 import { flushSync } from 'react-dom'
 import { products } from './data/products'
 import { ProductsEcosystem } from './components/ProductsEcosystem'
 import { Reveal } from './components/Reveal'
-import { DataBookDemo } from './components/DataBookDemo'
-import { DemoAIHub } from './components/DemoAIHub'
-import { DemoAutoprotocol } from './components/DemoAutoprotocol'
-import { DemoCostManager } from './components/DemoCostManager'
-import { DemoPuls } from './components/DemoPuls'
+
+const DataBookDemo = React.lazy(() => import('./components/DataBookDemo').then(m => ({ default: m.DataBookDemo })))
+const DemoAIHub = React.lazy(() => import('./components/DemoAIHub').then(m => ({ default: m.DemoAIHub })))
+const DemoAutoprotocol = React.lazy(() => import('./components/DemoAutoprotocol').then(m => ({ default: m.DemoAutoprotocol })))
+const DemoCostManager = React.lazy(() => import('./components/DemoCostManager').then(m => ({ default: m.DemoCostManager })))
+const DemoPuls = React.lazy(() => import('./components/DemoPuls').then(m => ({ default: m.DemoPuls })))
 
 function App() {
   return (
@@ -40,6 +41,61 @@ function ScrollProgress() {
   return <div className="scroll-progress" style={{ width: `${progress * 100}%` }} />
 }
 
+/* ── Terminal Easter Egg ── */
+function TerminalModal({ onClose }: { onClose: () => void }) {
+  const lines = [
+    '> Establishing secure connection...',
+    '> User detected: Tech Lead / CTO',
+    '> Loading stack info...',
+    '> Frontend: React 19 + TypeScript + Tailwind v4',
+    '> Method: Agentic Workflow',
+    '> Manual lines of code: 0',
+    '> Built via: Claude Code Orchestration',
+    '> Status: Ready for production',
+  ]
+
+  const fullText = lines.join('\n')
+  const [visibleLen, setVisibleLen] = useState(0)
+
+  useEffect(() => {
+    if (visibleLen >= fullText.length) return
+    const char = fullText[visibleLen]
+    const delay = char === '\n' ? 300 : 20 + Math.random() * 15
+    const timer = setTimeout(() => setVisibleLen(v => v + 1), delay)
+    return () => clearTimeout(timer)
+  }, [visibleLen, fullText])
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div
+        className="relative w-full max-w-xl mx-4 rounded-xl overflow-hidden shadow-2xl demo-modal-enter"
+        style={{ background: '#1e1e1e' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* macOS title bar */}
+        <div className="flex items-center gap-2 px-4 py-3" style={{ background: '#2a2a2a' }}>
+          <div className="w-3 h-3 rounded-full bg-[#ff5f57] cursor-pointer" onClick={onClose} />
+          <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+          <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+          <span className="ml-2 text-xs font-mono" style={{ color: '#888' }}>terminal</span>
+        </div>
+        {/* Terminal content */}
+        <div className="p-5 min-h-[240px] font-mono text-sm text-emerald-400 terminal-glow leading-relaxed whitespace-pre-wrap">
+          {fullText.slice(0, visibleLen)}
+          <span className={`inline-block w-[8px] h-[1.1em] ml-0.5 align-middle bg-emerald-400 ${visibleLen >= fullText.length ? 'animate-blink' : ''}`} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ── Navigation ── */
 function Nav() {
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -63,19 +119,24 @@ function Nav() {
   }, [])
 
   useEffect(() => {
-    const sections = document.querySelectorAll('section[id]')
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id)
-          }
-        })
-      },
-      { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' },
-    )
-    sections.forEach((s) => observer.observe(s))
-    return () => observer.disconnect()
+    const sectionIds = ['hero', 'products', 'approach', 'research', 'career']
+    const update = () => {
+      if (window.scrollY < 100) {
+        setActiveSection('hero')
+        return
+      }
+      let current = 'hero'
+      for (const id of sectionIds) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= 100) {
+          current = id
+        }
+      }
+      setActiveSection(current)
+    }
+    window.addEventListener('scroll', update, { passive: true })
+    update()
+    return () => window.removeEventListener('scroll', update)
   }, [])
 
   const toggleTheme = useCallback((e: React.MouseEvent) => {
@@ -107,6 +168,7 @@ function Nav() {
   }, [theme])
 
   const navLinks = [
+    ['#hero', 'hero', 'Главная'],
     ['#products', 'products', 'Продукты'],
     ['#approach', 'approach', 'Подход'],
     ['#research', 'research', 'R&D'],
@@ -158,6 +220,8 @@ function Nav() {
 
 /* ── Hero ── */
 function Hero() {
+  const forCompany = new URLSearchParams(window.location.search).get('for')
+
   const stats = [
     { num: '4', label: 'продукта в production' },
     { num: '12+', label: 'прототипов за 1.5 года' },
@@ -165,8 +229,11 @@ function Hero() {
   ]
 
   return (
-    <section className="min-h-screen relative overflow-hidden flex items-center">
-      <div className="absolute -top-[100px] right-[-200px] w-[700px] h-[700px] bg-[radial-gradient(circle,var(--color-accent-soft)_0%,transparent_60%)] pointer-events-none animate-[heroOrb_8s_ease-in-out_infinite]" />
+    <section id="hero" className="min-h-screen relative overflow-hidden flex items-center">
+      <div
+        className="absolute -top-[100px] right-[-200px] w-[700px] h-[700px] pointer-events-none animate-[heroOrb_8s_ease-in-out_infinite] blur-[80px] opacity-70"
+        style={{ background: 'radial-gradient(circle at 40% 40%, rgba(196,167,125,0.4), transparent 50%), radial-gradient(circle at 65% 55%, rgba(92,158,120,0.2), transparent 45%), radial-gradient(circle at 35% 65%, rgba(139,123,176,0.18), transparent 50%)' }}
+      />
 
       <div className="w-full pt-14">
         <div className="max-w-[1080px] mx-auto px-8 py-10">
@@ -183,9 +250,19 @@ function Hero() {
                 <span className="uppercase tracking-widest text-[10px] text-accent font-bold">PropTech R&D & Product Lead</span>
               </div>
               <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
-                <span className="text-text-primary">Продуктовая разработка и </span>
-                <br/>
-                <span className="text-accent italic font-serif">цифровизация строительства</span>
+                {forCompany ? (
+                  <>
+                    <span className="text-text-primary">Продуктовая разработка и цифровизация</span>
+                    <br/>
+                    <span className="text-accent italic font-serif">специально для {forCompany}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-text-primary">Продуктовая разработка и </span>
+                    <br/>
+                    <span className="text-accent italic font-serif">цифровизация строительства</span>
+                  </>
+                )}
               </h1>
               <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[500px]">
                 10 лет на стройплощадке (в т.ч. 3 года на ЖК FORIVER) + full-stack разработка. Создаю IT-продукты без эффекта «испорченного телефона» между бизнесом и IT.
@@ -271,16 +348,18 @@ function Products() {
           </div>
         </Reveal>
         <Reveal>
-          <ProductsEcosystem
-            products={products}
-            demos={{
-              aihub:        <DemoAIHub />,
-              databook:     <DataBookDemo />,
-              autoprotocol: <DemoAutoprotocol />,
-              costmanager:  <DemoCostManager />,
-              puls:         <DemoPuls />,
-            }}
-          />
+          <Suspense fallback={<div className="animate-pulse w-full h-32 bg-surface-2/50 border border-border rounded-xl" />}>
+            <ProductsEcosystem
+              products={products}
+              demos={{
+                aihub:        <DemoAIHub />,
+                databook:     <DataBookDemo />,
+                autoprotocol: <DemoAutoprotocol />,
+                costmanager:  <DemoCostManager />,
+                puls:         <DemoPuls />,
+              }}
+            />
+          </Suspense>
         </Reveal>
       </div>
     </section>
@@ -554,12 +633,17 @@ function Career() {
 
 /* ── Contact / Footer ── */
 function Contact() {
+  const forCompany = new URLSearchParams(window.location.search).get('for')
+  const [terminalOpen, setTerminalOpen] = useState(false)
+
   return (
     <section className="py-20 pb-10">
       <div className="max-w-3xl mx-auto px-8 text-center">
         <Reveal>
           {/* Heading */}
-          <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-5">Обсудить цифровизацию Sminex</h2>
+          <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-5">
+            {forCompany ? `Обсудить цифровизацию ${forCompany}` : 'Обсудить сотрудничество'}
+          </h2>
 
           {/* Subtitle */}
           <p className="text-muted text-lg leading-relaxed max-w-2xl mx-auto">
@@ -609,9 +693,15 @@ function Contact() {
       <div className="max-w-[1080px] mx-auto px-8 mt-20 pt-6 border-t border-white/10 pb-10">
         <div className="flex justify-between items-center text-xs text-muted">
           <span>Москва, 2026</span>
-          <span>Built with AI (Claude Code & React)</span>
+          <span
+            onClick={() => setTerminalOpen(true)}
+            className="cursor-pointer hover:text-emerald-400 transition-colors duration-300 select-none"
+          >
+            Built with AI (Claude Code & React)
+          </span>
         </div>
       </div>
+      {terminalOpen && <TerminalModal onClose={() => setTerminalOpen(false)} />}
     </section>
   )
 }

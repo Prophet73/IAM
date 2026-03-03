@@ -77,7 +77,7 @@ export function ProductsEcosystem({
           }
         }
 
-        if (bestId && bestRatio > 0) {
+        if (bestId && bestRatio > 0.25) {
           setSelectedId(bestId)
         }
       },
@@ -103,8 +103,8 @@ export function ProductsEcosystem({
     isScrollingTo.current = true
     el.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
-    // Re-enable observer after scroll finishes
-    const timer = setTimeout(() => { isScrollingTo.current = false }, 800)
+    // Re-enable observer after scroll fully settles
+    const timer = setTimeout(() => { isScrollingTo.current = false }, 1200)
     return () => clearTimeout(timer)
   }, [])
 
@@ -170,7 +170,7 @@ export function ProductsEcosystem({
                 className={`absolute z-10 w-[178px] bg-surface rounded-xl p-3 text-center transition-all duration-500 cursor-pointer border ${posClass[pos]} ${
                   selectedId === p.id
                     ? 'border-accent shadow-[0_0_32px_var(--color-accent-soft)] scale-110 opacity-100'
-                    : 'border-border hover:border-accent/40 hover:scale-105 hover:shadow-lg opacity-50'
+                    : 'border-border opacity-50 grayscale hover:border-accent/40 hover:scale-105 hover:shadow-lg hover:opacity-90 hover:grayscale-0'
                 }`}
               >
                 <div className="flex items-center justify-center gap-1.5 mb-1">
@@ -257,7 +257,7 @@ function DetailCard({
   const status = statusConfig[product.status]
   return (
     <div
-      className={`flex flex-col border border-border/60 border-t-white/[0.06] rounded-2xl bg-surface/60 backdrop-blur-xl relative transition-all duration-500 ${
+      className={`flex flex-col border border-border/60 border-t-white/[0.06] rounded-2xl bg-surface/60 backdrop-blur-xl relative spring-card ${
         isActive
           ? 'opacity-100 scale-100 grayscale-0 shadow-2xl'
           : 'opacity-30 scale-95 grayscale-[50%]'

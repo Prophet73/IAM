@@ -44,7 +44,7 @@ export function DemoCostManager() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-bold">Запустить демо</div>
-            <div className="text-xs text-muted mt-0.5">Полнофункциональный прототип с моковыми данными</div>
+            <div className="text-xs text-muted mt-0.5">Интерактивный концепт (live-демо)</div>
           </div>
           <svg className="btn-premium-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -171,7 +171,7 @@ function PgDashboard() {
                   <span className="text-[0.72rem] font-bold text-slate-700">{bar.value} млрд</span>
                 </div>
                 <div className="h-5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(bar.value / maxBar) * 100}%`, background: bar.color }} />
+                  <div className="h-full rounded-full transition-all duration-500 bar-grow" style={{ width: `${(bar.value / maxBar) * 100}%`, background: bar.color }} />
                 </div>
               </div>
             ))}

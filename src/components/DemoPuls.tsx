@@ -152,7 +152,7 @@ export function DemoPuls() {
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-bold">Запустить демо</div>
-          <div className="text-xs text-muted mt-0.5">Полнофункциональный прототип с моковыми данными</div>
+          <div className="text-xs text-muted mt-0.5">Интерактивный концепт (live-демо)</div>
         </div>
         <svg className="btn-premium-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
@@ -202,10 +202,10 @@ export function DemoPuls() {
         </header>
 
         {/* ── ProjectHeader tabs (h-12) ── */}
-        <div className="bg-white border-b shrink-0 flex items-center gap-1 px-4 h-12 overflow-x-auto">
+        <div className="bg-white border-b shrink-0 flex items-center gap-1 px-4 h-12 overflow-x-auto snap-x snap-mandatory scrollbar-hidden">
           {PM_TABS.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
-              className={`px-4 flex items-center h-full border-b-2 text-sm whitespace-nowrap transition-colors ${tab === t.key ? 'border-blue-500 text-blue-600 font-medium' : 'border-transparent text-gray-600 hover:text-gray-800'}`}>
+              className={`snap-start px-4 flex items-center h-full border-b-2 text-sm whitespace-nowrap transition-colors ${tab === t.key ? 'border-blue-500 text-blue-600 font-medium' : 'border-transparent text-gray-600 hover:text-gray-800'}`}>
               {t.label}
             </button>
           ))}
@@ -245,7 +245,7 @@ function DashboardScreen() {
           </div>
           <div className="mb-4">
             <div className="flex justify-between text-sm mb-1"><span className="text-gray-600">Готовность</span><span className="font-medium">{PROJECT.completion}%</span></div>
-            <div className="w-full bg-gray-200 rounded-full h-3"><div className="bg-blue-600 h-3 rounded-full" style={{ width: `${PROJECT.completion}%` }} /></div>
+            <div className="w-full bg-gray-200 rounded-full h-3"><div className="bg-blue-600 h-3 rounded-full bar-grow" style={{ width: `${PROJECT.completion}%` }} /></div>
           </div>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between"><span className="text-gray-600">Начало:</span><span className="font-medium">{PROJECT.startDate}</span></div>
@@ -328,7 +328,7 @@ function ProgressScreen() {
               <td className="px-4 py-3 text-sm font-medium text-gray-900">{s.name}</td>
               <td className="px-4 py-3">
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-gray-200 rounded-full h-2"><div className={`h-2 rounded-full ${s.progress === 100 ? 'bg-green-500' : s.progress > 0 ? 'bg-blue-500' : 'bg-gray-300'}`} style={{ width: `${s.progress}%` }} /></div>
+                  <div className="flex-1 bg-gray-200 rounded-full h-2"><div className={`h-2 rounded-full bar-grow ${s.progress === 100 ? 'bg-green-500' : s.progress > 0 ? 'bg-blue-500' : 'bg-gray-300'}`} style={{ width: `${s.progress}%` }} /></div>
                   <span className="text-xs text-gray-600 w-8">{s.progress}%</span>
                 </div>
               </td>

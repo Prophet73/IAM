@@ -35,7 +35,7 @@ export function DemoAutoprotocol() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-bold">Запустить демо</div>
-            <div className="text-xs text-muted mt-0.5">Полнофункциональный прототип с моковыми данными</div>
+            <div className="text-xs text-muted mt-0.5">Интерактивный концепт (live-демо)</div>
           </div>
           <svg className="btn-premium-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -356,19 +356,19 @@ function PgProcessing() {
           </div>
           {!done && <div className="text-[0.65rem] text-slate-400 mt-1">{pipelineStages[stageIdx].desc}</div>}
         </div>
-        <div className="space-y-1">
+        <div className="space-y-1 font-mono">
           {pipelineStages.map((s, i) => {
             const completed = progress >= pipelineStages.slice(0, i + 1).reduce((a, b) => a + b.weight, 0)
             const active = stageIdx === i && !done
             return (
-              <div key={s.name} className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${active ? 'bg-[#E52713]/5 border border-[#E52713]/10' : 'border border-transparent'}`}>
+              <div key={s.name} className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${active ? 'bg-[#E52713]/5 border border-[#E52713]/10 terminal-glow' : 'border border-transparent'}`}>
                 <span className="text-[0.85rem] w-6 text-center">{completed || done ? '✅' : active ? s.emoji : '⬜'}</span>
                 <div className="flex-1 min-w-0">
-                  <span className={`text-[0.78rem] ${completed || done ? 'text-slate-400 line-through' : active ? 'text-slate-800 font-medium' : 'text-slate-400'}`}>{s.name}</span>
-                  <span className="text-[0.65rem] text-slate-400 ml-2">{s.desc}</span>
+                  <span className={`text-[0.72rem] ${completed || done ? 'text-slate-400 line-through' : active ? 'text-slate-800 font-medium' : 'text-slate-400'}`}>{s.name}</span>
+                  <span className="text-[0.6rem] text-slate-400 ml-2">{s.desc}</span>
                 </div>
-                {active && <span className="text-[0.6rem] text-[#E52713] font-medium animate-pulse">Выполняется...</span>}
-                <span className="text-[0.6rem] text-slate-300 w-8 text-right">{s.weight}%</span>
+                {active && <span className="text-[0.55rem] text-[#E52713] font-medium animate-pulse tracking-wider uppercase">Выполняется...</span>}
+                <span className="text-[0.55rem] text-slate-300 w-8 text-right">{s.weight}%</span>
               </div>
             )
           })}

@@ -23,6 +23,7 @@ import FloorPlanScreen from '../components/sminex/FloorPlanScreen'
 import BookingScreen from '../components/sminex/BookingScreen'
 import PackagesScreen from '../components/sminex/PackagesScreen'
 import PrivilegesScreen from '../components/sminex/PrivilegesScreen'
+import AiConcierge from '../components/sminex/AiConcierge'
 import Toast, { type ToastMessage } from '../components/sminex/Toast'
 import {
   initialRequests, initialNotifications, users,
@@ -47,6 +48,7 @@ export default function SminexDemo() {
   const [assignRequestId, setAssignRequestId] = useState<string | null>(null)
   const [showArchitecture, setShowArchitecture] = useState(false)
   const [showDiscovery, setShowDiscovery] = useState(false)
+  const [showAiConcierge, setShowAiConcierge] = useState(false)
 
   // Toasts
   const [toasts, setToasts] = useState<ToastMessage[]>([])
@@ -310,6 +312,7 @@ export default function SminexDemo() {
             requestsBadge={newRequestsCount}
             notifBadge={unreadNotifs}
             userRole={user.role}
+            onOpenAiConcierge={() => setShowAiConcierge(true)}
           />
         )}
 
@@ -327,6 +330,11 @@ export default function SminexDemo() {
             onClose={() => setAssignRequestId(null)}
             onAssign={handleAssign}
           />
+        )}
+
+        {/* AI Concierge */}
+        {showAiConcierge && (
+          <AiConcierge onClose={() => setShowAiConcierge(false)} />
         )}
       </PhoneFrame>
 

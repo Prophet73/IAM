@@ -414,26 +414,29 @@ export function CodeShowcase() {
         </div>
 
         {/* Code display */}
-        <div className="bg-surface border border-border rounded-2xl overflow-hidden">
-          {/* Header */}
-          <div className="px-5 py-3 border-b border-border flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-3">
-              <span className={`px-2 py-0.5 rounded text-[0.66rem] font-bold ${active.productColor}`}>
-                {active.product}
-              </span>
-              <span className="text-[0.8rem] font-semibold">{active.label}</span>
+        <div className="bg-[#1e1e1e] rounded-2xl overflow-hidden shadow-2xl border border-white/10 mt-6">
+          {/* Mac-like Header */}
+          <div className="px-4 py-3 bg-[#2d2d2d] flex items-center justify-between border-b border-white/5">
+            <div className="flex items-center gap-2 w-20">
+              <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+              <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+              <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
             </div>
-            <span className="text-[0.72rem] text-muted font-mono">{active.file}</span>
+            <span className="text-[0.72rem] text-white/50 font-mono text-center flex-1">{active.file}</span>
+            <div className="w-20" /> {/* Spacer */}
           </div>
 
-          {/* Description */}
-          <div className="px-5 py-2.5 border-b border-border bg-surface-2">
-            <p className="text-[0.78rem] text-muted">{active.description}</p>
+          {/* Description bar */}
+          <div className="px-5 py-2.5 bg-[#252525] border-b border-white/5 flex items-center gap-3">
+            <span className={`px-2 py-0.5 rounded text-[0.66rem] font-bold ${active.productColor.replace('bg-', 'bg-opacity-20 ')}`}>
+              {active.product}
+            </span>
+            <p className="text-[0.75rem] text-white/70">{active.description}</p>
           </div>
 
           {/* Code block */}
-          <div className="overflow-x-auto">
-            <pre className="p-5 text-[0.75rem] leading-relaxed font-mono text-text-primary/90">
+          <div className="overflow-x-auto p-5 custom-scrollbar">
+            <pre className="text-[0.8rem] leading-[1.6] font-mono text-[#d4d4d4]">
               <code>{active.code}</code>
             </pre>
           </div>

@@ -1,7 +1,7 @@
-import { Home, ListTodo, BarChart3, User, Bell } from 'lucide-react'
+import { Home, Sparkles, User, ListTodo, BarChart3, Bell } from 'lucide-react'
 import { type UserRole } from '../../data/sminex'
 
-export type Tab = 'dashboard' | 'requests' | 'analytics' | 'notifications' | 'profile'
+export type Tab = 'dashboard' | 'services' | 'requests' | 'analytics' | 'notifications' | 'profile'
 
 interface BottomNavProps {
   active: Tab
@@ -9,25 +9,40 @@ interface BottomNavProps {
   requestsBadge?: number
   notifBadge?: number
   userRole: UserRole
+  onOpenAiConcierge?: () => void
 }
 
-export default function BottomNav({ active, onNavigate, requestsBadge, notifBadge, userRole }: BottomNavProps) {
+export default function BottomNav({ active, onNavigate, requestsBadge, notifBadge, userRole, onOpenAiConcierge }: BottomNavProps) {
   const allTabs: { id: Tab; label: string; icon: typeof Home; roles: UserRole[] }[] = [
     { id: 'dashboard', label: 'Главная', icon: Home, roles: ['resident', 'manager', 'director'] },
-    { id: 'requests', label: userRole === 'resident' ? 'Заявки' : 'Заявки', icon: ListTodo, roles: ['resident', 'manager', 'director'] },
-    { id: 'notifications', label: 'Уведомления', icon: Bell, roles: ['resident'] },
+    { id: 'requests', label: 'Заявки', icon: ListTodo, roles: ['manager', 'director'] },
+    { id: 'notifications', label: 'Уведомления', icon: Bell, roles: ['manager', 'director'] },
     { id: 'analytics', label: 'Аналитика', icon: BarChart3, roles: ['manager', 'director'] },
     { id: 'profile', label: 'Профиль', icon: User, roles: ['resident', 'manager', 'director'] },
   ]
 
   const tabs = allTabs.filter(t => t.roles.includes(userRole))
+  const isResident = userRole === 'resident'
 
   return (
     <nav className="absolute bottom-4 left-4 right-4 z-30 flex items-center justify-around rounded-[1.75rem] bg-white/80 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/50 px-2 py-2">
+      {/* AI Concierge floating button — resident only */}
+      {isResident && (
+        <div className="absolute left-1/2 -top-6 -translate-x-1/2">
+          <button
+            onClick={onOpenAiConcierge}
+            className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#1D252D] to-[#8B7355] flex items-center justify-center text-white shadow-[0_8px_24px_rgba(139,115,85,0.4)] transition-transform hover:scale-105 active:scale-95 border-2 border-white/20"
+          >
+            <Sparkles className="w-6 h-6" />
+          </button>
+        </div>
+      )}
+
       {tabs.map(tab => {
         const isActive = active === tab.id
         const Icon = tab.icon
         const badge = tab.id === 'requests' ? requestsBadge : tab.id === 'notifications' ? notifBadge : undefined
+
         return (
           <button
             key={tab.id}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, TrendingUp, Lightbulb, DollarSign, ExternalLink } from 'lucide-react'
+import { X, TrendingUp, Lightbulb, Smartphone } from 'lucide-react'
 
 interface DiscoveryModalProps {
   onClose: () => void
@@ -8,9 +8,9 @@ interface DiscoveryModalProps {
 type Tab = 'market' | 'solutions' | 'monetization'
 
 const tabs: { id: Tab; label: string; icon: typeof TrendingUp }[] = [
-  { id: 'market', label: 'Рынок', icon: TrendingUp },
-  { id: 'solutions', label: 'Решения', icon: Lightbulb },
-  { id: 'monetization', label: 'Монетизация', icon: DollarSign },
+  { id: 'market', label: 'R&D Vision', icon: Lightbulb },
+  { id: 'solutions', label: 'UX & Фичи', icon: Smartphone },
+  { id: 'monetization', label: 'Бизнес-модель', icon: TrendingUp },
 ]
 
 export default function DiscoveryModal({ onClose }: DiscoveryModalProps) {
@@ -63,82 +63,33 @@ export default function DiscoveryModal({ onClose }: DiscoveryModalProps) {
 
 /* ── Market Tab ── */
 
-const players = [
-  { monogram: 'SM', name: 'Sminex', features: 'Премиум CRM, консьерж, умный дом Larnitech', metric: 'NPS 4.8', color: 'bg-[#1D252D]' },
-  { monogram: 'CG', name: 'Capital Group', features: 'Приложение Capital Life, сервисы и lifestyle', metric: '15K+ резидентов', color: 'bg-[#8B7355]' },
-  { monogram: 'ET', name: 'Etalon + МТС', features: 'Умный дом из коробки, MTS IoT-платформа', metric: '100% smart home', color: 'bg-[#4A5568]' },
-  { monogram: 'MR', name: 'MR Group', features: 'Приложение RESIDENTS, бронирование, оплата', metric: '1M+ м² в управлении', color: 'bg-[#A09484]' },
-  { monogram: 'SD', name: 'Самолёт + Domiland', features: 'Суперапп для жизни, маркетплейс услуг', metric: '1.4M пользователей', color: 'bg-[#2D3748]' },
-]
-
-const marketStats = [
-  { value: '100%', label: 'Smart home в новостройках к 2025' },
-  { value: '96%', label: 'Заявок через приложение (Сбер данные)' },
-  { value: '+100%', label: 'Рост платных заявок за год' },
-  { value: '1.4M', label: 'Пользователей суперапп Домиленд' },
-]
-
-const sources = [
-  { name: 'Habr — Умный дом Etalon + MTS', url: 'https://habr.com/ru/companies/mts/articles/' },
-  { name: 'RBC — Цифровизация девелоперов', url: 'https://www.rbc.ru/business/' },
-  { name: 'CNews — PropTech в России 2024', url: 'https://www.cnews.ru/reviews/' },
-  { name: 'Forbes — Самолёт и Домиленд', url: 'https://www.forbes.ru/tekhnologii/' },
-  { name: 'ComNews — Smart home рынок', url: 'https://www.comnews.ru/' },
-]
-
 function MarketTab() {
   return (
     <div className="space-y-6">
-      {/* Players */}
-      <div>
-        <h3 className="text-sm font-bold text-[#1D252D] mb-3">Ключевые игроки</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {players.map(p => (
-            <div key={p.name} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex gap-3">
-              <div className={`w-10 h-10 rounded-full ${p.color} flex items-center justify-center shrink-0`}>
-                <span className="text-[11px] font-bold text-white tracking-tight">{p.monogram}</span>
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <p className="text-sm font-bold text-[#1D252D]">{p.name}</p>
-                  <span className="text-[10px] bg-[#8B7355]/10 text-[#8B7355] px-1.5 py-0.5 rounded-full font-medium">{p.metric}</span>
-                </div>
-                <p className="text-xs text-[#1D252D]/60 leading-relaxed">{p.features}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="bg-gradient-to-br from-[#1D252D] to-[#2D3748] rounded-2xl p-6 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#8B7355]/20 rounded-full blur-3xl" />
+        <h3 className="text-lg font-bold mb-2 relative z-10">Смена парадигмы: От кнопок к Агентам</h3>
+        <p className="text-sm text-white/70 leading-relaxed relative z-10">
+          Текущие приложения УК — это просто цифровые формы заявок. Премиум-клиент не хочет искать нужную категорию в меню. Он хочет написать "Сделайте уборку завтра и забронируйте хаммам на вечер", а система должна сама раскидать это по базам и слотам.
+        </p>
       </div>
 
-      {/* Stats */}
-      <div>
-        <h3 className="text-sm font-bold text-[#1D252D] mb-3">Цифры рынка</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          {marketStats.map(s => (
-            <div key={s.value} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 text-center">
-              <p className="text-xl font-bold text-[#8B7355]">{s.value}</p>
-              <p className="text-[10px] text-[#1D252D]/50 mt-1 leading-tight">{s.label}</p>
-            </div>
-          ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-red-100">
+          <h4 className="text-sm font-bold text-[#1D252D] mb-2 flex items-center gap-2"><span className="text-red-500">Боль УК</span></h4>
+          <ul className="space-y-2 text-xs text-[#1D252D]/70">
+            <li>• 70% времени диспетчера уходит на рутинную маршрутизацию заявок.</li>
+            <li>• Низкая конверсия в платные доп. услуги (клининг, химчистка) из-за сложного UX.</li>
+            <li>• Нет предиктивной аналитики по поломкам инфраструктуры.</li>
+          </ul>
         </div>
-      </div>
-
-      {/* Sources */}
-      <div>
-        <h3 className="text-sm font-bold text-[#1D252D] mb-3">Источники</h3>
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 space-y-2">
-          {sources.map(s => (
-            <a
-              key={s.name}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-xs text-[#8B7355] hover:text-[#6B5A42] transition-colors"
-            >
-              <ExternalLink className="w-3 h-3 shrink-0" />
-              {s.name}
-            </a>
-          ))}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-green-100">
+          <h4 className="text-sm font-bold text-[#1D252D] mb-2 flex items-center gap-2"><span className="text-green-600">R&D Решение</span></h4>
+          <ul className="space-y-2 text-xs text-[#1D252D]/70">
+            <li>• Внедрение LLM-агента (Agentic Workflow) для парсинга намерений резидента.</li>
+            <li>• Бесшовная покупка услуг прямо в чате с ассистентом.</li>
+            <li>• Дашборды для директора с AI-анализом причин роста заявок.</li>
+          </ul>
         </div>
       </div>
     </div>

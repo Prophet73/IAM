@@ -1,4 +1,4 @@
-import { X, Smartphone, Globe, Shield, Layers, Database, Server, GitBranch, Zap } from 'lucide-react'
+import { X, Smartphone, Globe, Shield, Layers, Server, Zap, Sparkles } from 'lucide-react'
 
 interface ArchitectureModalProps {
   onClose: () => void
@@ -37,25 +37,41 @@ export default function ArchitectureModal({ onClose }: ArchitectureModalProps) {
           </div>
           <Arrow />
 
+          {/* AI Layer */}
+          <div className="flex justify-center mb-2">
+            <div className="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-xl px-8 py-3 flex items-center gap-3 shadow-lg border border-purple-500/30">
+              <Sparkles className="w-5 h-5 text-purple-300" />
+              <div className="text-center text-white">
+                <p className="text-sm font-bold">AI Agent Layer</p>
+                <p className="text-[10px] text-purple-200">LLM Routing (Gemini/Claude) + RAG</p>
+              </div>
+            </div>
+          </div>
+          <Arrow />
+
           {/* Microservices */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-2xl mx-auto">
             <DiagramBlock icon={Layers} label="Requests" sub="Service" color="bg-white text-[#1D252D]" small />
             <DiagramBlock icon={Shield} label="Users" sub="Service" color="bg-white text-[#1D252D]" small />
-            <DiagramBlock icon={Zap} label="Notif." sub="Service" color="bg-white text-[#1D252D]" small />
+            <DiagramBlock icon={Zap} label="IoT & Home" sub="Service" color="bg-white text-[#1D252D]" small />
             <DiagramBlock icon={Server} label="Analytics" sub="Service" color="bg-white text-[#1D252D]" small />
           </div>
           <Arrow />
 
-          {/* Message Queue */}
-          <div className="flex justify-center">
-            <DiagramBlock icon={GitBranch} label="Message Queue" sub="Apache Kafka" color="bg-[#A09484] text-white" />
-          </div>
-          <Arrow />
-
-          {/* Data layer */}
-          <div className="grid grid-cols-2 gap-2 max-w-md mx-auto">
-            <DiagramBlock icon={Database} label="PostgreSQL" sub="OLTP" color="bg-white text-[#1D252D]" small />
-            <DiagramBlock icon={Database} label="Redis" sub="Cache" color="bg-white text-[#1D252D]" small />
+          {/* Infrastructure & Integrations */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-3xl mx-auto mt-4">
+            <div className="bg-[#A09484]/10 rounded-xl p-4 border border-[#A09484]/30 text-center">
+              <p className="text-xs font-bold text-[#1D252D] mb-1">Message Broker</p>
+              <p className="text-[10px] text-[#1D252D]/60 font-mono bg-white rounded px-2 py-1 inline-block">Apache Kafka</p>
+            </div>
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-100 text-center">
+              <p className="text-xs font-bold text-[#1D252D] mb-1">Databases</p>
+              <p className="text-[10px] text-[#1D252D]/60 font-mono bg-white rounded px-2 py-1 inline-block">PostgreSQL + Redis</p>
+            </div>
+            <div className="bg-green-50 rounded-xl p-4 border border-green-100 text-center">
+              <p className="text-xs font-bold text-[#1D252D] mb-1">External Integrations</p>
+              <p className="text-[10px] text-[#1D252D]/60 font-mono bg-white rounded px-2 py-1 inline-block">1C:ERP / Larnitech / СКУД</p>
+            </div>
           </div>
         </div>
 

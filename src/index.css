@@ -282,6 +282,55 @@ html.light body::before {
   animation: detailCardIn 0.22s ease-out both;
 }
 
+/* ── Ecosystem animated beams ── */
+@keyframes beamFlow {
+  to { stroke-dashoffset: -40; }
+}
+
+@keyframes beamFlowFast {
+  to { stroke-dashoffset: -40; }
+}
+
+.beam-line {
+  transition: stroke 0.4s ease, stroke-width 0.4s ease, opacity 0.4s ease;
+}
+
+.beam-idle {
+  stroke: var(--color-border);
+  stroke-width: 1;
+  stroke-dasharray: 8 12;
+  opacity: 0.4;
+  animation: beamFlow 3s linear infinite;
+}
+
+.beam-active {
+  stroke: var(--color-accent);
+  stroke-width: 2;
+  stroke-dasharray: 12 8;
+  opacity: 1;
+  animation: beamFlowFast 1s linear infinite;
+  filter: drop-shadow(0 0 4px rgba(79, 124, 255, 0.5));
+}
+
+/* ── Context aura ── */
+.context-aura {
+  opacity: 0.20;
+}
+
+html.light .context-aura {
+  opacity: 0.30;
+}
+
+/* ── Ecosystem center node breathing ── */
+@keyframes hubBreathe {
+  0%, 100% { box-shadow: 0 0 20px rgba(79, 124, 255, 0.2), 0 0 40px rgba(79, 124, 255, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(79, 124, 255, 0.35), 0 0 60px rgba(79, 124, 255, 0.15); }
+}
+
+.hub-breathe {
+  animation: hubBreathe 3s ease-in-out infinite;
+}
+
 /* ── Scroll progress bar ── */
 .scroll-progress {
   position: fixed;

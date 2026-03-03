@@ -175,8 +175,12 @@ function Hero() {
 
             {/* Левая колонка */}
             <div className="animate-[fadeIn_0.8s_ease-out_both]">
-              <div className="inline-block px-3 py-1 bg-accent-soft text-accent rounded-full text-xs font-semibold tracking-widest uppercase mb-6">
-                От процесса к продукту
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-surface/50 backdrop-blur-md border border-border/60 rounded-full text-xs font-semibold tracking-wide mb-6">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green" />
+                </span>
+                <span className="text-text-primary">Доступен для предложений</span>
               </div>
               <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5">
                 <span className="bg-gradient-to-br from-text-primary to-text-primary/80 bg-clip-text text-transparent">Продуктовая разработка и </span>
@@ -191,8 +195,9 @@ function Hero() {
               <div className="flex flex-wrap gap-3">
                 <a
                   href="#products"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 hover:shadow-lg hover:shadow-accent/20"
+                  className="relative inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 group"
                 >
+                  <span className="absolute inset-0 -z-10 bg-accent rounded-xl blur-xl opacity-50 transition-all duration-300 group-hover:blur-2xl group-hover:opacity-60" />
                   Экосистема продуктов
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
@@ -210,7 +215,7 @@ function Hero() {
             {/* Правая колонка — карточки */}
             <div className="flex flex-col gap-4 justify-center animate-[fadeIn_0.8s_ease-out_0.2s_both]">
               {/* Карточка 1: Знать изнутри */}
-              <div className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-5 flex gap-4">
+              <div className="bg-surface/50 backdrop-blur-xl border border-border/60 border-t-white/[0.06] rounded-2xl p-5 flex gap-4">
                 <div className="shrink-0 w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -226,7 +231,7 @@ function Hero() {
               </div>
 
               {/* Карточка 2: Hands-on */}
-              <div className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-5 flex gap-4">
+              <div className="bg-surface/50 backdrop-blur-xl border border-border/60 border-t-white/[0.06] rounded-2xl p-5 flex gap-4">
                 <div className="shrink-0 w-10 h-10 rounded-xl bg-green-soft flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green">
                     <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
@@ -247,8 +252,8 @@ function Hero() {
           {/* Нижняя строка: статистика */}
           <div className="grid grid-cols-3 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
             {stats.map((s) => (
-              <div key={s.label} className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-4 flex items-center gap-4">
-                <div className="text-2xl font-extrabold text-accent font-display leading-none shrink-0">{s.num}</div>
+              <div key={s.label} className="bg-surface/50 backdrop-blur-xl border border-border/60 border-t-white/[0.06] rounded-2xl p-4 flex items-center gap-4">
+                <div className="text-3xl font-extrabold font-display leading-none shrink-0 bg-gradient-to-b from-text-primary to-muted bg-clip-text text-transparent">{s.num}</div>
                 <div className="text-xs text-muted leading-snug">{s.label}</div>
               </div>
             ))}

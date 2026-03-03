@@ -166,7 +166,7 @@ function Hero() {
 
   return (
     <section className="min-h-screen relative overflow-hidden flex items-center">
-      <div className="absolute -top-[100px] right-[-200px] w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(79,124,255,0.08)_0%,transparent_70%)] pointer-events-none animate-[heroOrb_8s_ease-in-out_infinite]" />
+      <div className="absolute -top-[100px] right-[-200px] w-[700px] h-[700px] bg-[radial-gradient(circle,var(--color-accent-soft)_0%,transparent_60%)] pointer-events-none animate-[heroOrb_8s_ease-in-out_infinite]" />
 
       <div className="w-full pt-14">
         <div className="max-w-[1080px] mx-auto px-8 py-10">
@@ -174,28 +174,28 @@ function Hero() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
 
             {/* Левая колонка */}
-            <div className="animate-[fadeIn_0.8s_ease-out_both]">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 glass-panel rounded-full text-xs font-semibold tracking-wide mb-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 glass-panel rounded-full mb-6 animate-blur-fade">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
                 </span>
-                <span className="text-text-primary">Доступен для предложений</span>
+                <span className="uppercase tracking-widest text-[10px] text-muted">Открыт к предложениям: R&D / CPO</span>
               </div>
-              <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5">
-                <span className="bg-gradient-to-br from-text-primary to-text-primary/80 bg-clip-text text-transparent">Продуктовая разработка и </span>
-                <span className="bg-gradient-to-r from-accent to-purple bg-clip-text text-transparent">цифровизация строительства</span>
+              <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
+                <span className="text-text-primary">Продуктовая разработка и </span>
+                <br/>
+                <span className="text-accent italic font-serif">цифровизация строительства</span>
               </h1>
-              <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-6">
+              <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-6 animate-blur-fade delay-200">
                 Совмещаю инженерный опыт в строительстве с full-stack разработкой.
                 Создаю инструменты, которые закрывают боли отрасли — от выдачи замечаний
                 до анализа смет и стенограмм совещаний.
               </p>
               {/* CTA кнопки */}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-3 animate-blur-fade delay-300">
                 <a
                   href="#products"
-                  className="relative inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 group"
+                  className="relative inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-bg rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 group"
                 >
                   <span className="absolute inset-0 -z-10 bg-accent rounded-xl blur-xl opacity-50 transition-all duration-300 group-hover:blur-2xl group-hover:opacity-60" />
                   Экосистема продуктов
@@ -263,7 +263,6 @@ function Hero() {
     </section>
   )
 }
-
 
 /* ── Products ── */
 function Products() {
@@ -451,20 +450,27 @@ function Research() {
           />
         </Reveal>
         <Reveal stagger>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
-            {items.map((item) => (
-              <div key={item.title} className="glass-panel rounded-xl p-5 transition-colors hover:border-accent/20">
-                <h4 className="text-sm font-bold mb-1">{item.title}</h4>
-                <p className="text-sm text-muted leading-relaxed">{item.text}</p>
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {item.tags.map((t) => (
-                    <span key={t.label} className={`px-1.5 py-0.5 rounded text-xs font-semibold ${t.color}`}>
-                      {t.label}
-                    </span>
-                  ))}
+          <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[minmax(180px,auto)] gap-3 mt-6">
+            {items.map((item, i) => {
+              const spanClass = i === 0
+                ? 'md:col-span-2 md:row-span-2'
+                : i === 1
+                  ? 'md:col-span-2 md:row-span-1'
+                  : 'md:col-span-1 md:row-span-1'
+              return (
+                <div key={item.title} className={`glass-panel rounded-xl p-5 flex flex-col transition-colors hover:border-accent/20 ${spanClass}`}>
+                  <h4 className={`${i === 0 ? 'text-lg' : 'text-sm'} font-bold mb-1`}>{item.title}</h4>
+                  <p className="text-sm text-muted leading-relaxed">{item.text}</p>
+                  <div className="flex flex-wrap gap-1.5 mt-auto pt-2">
+                    {item.tags.map((t) => (
+                      <span key={t.label} className={`px-1.5 py-0.5 rounded text-xs font-semibold ${t.color}`}>
+                        {t.label}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </Reveal>
 

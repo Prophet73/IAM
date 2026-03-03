@@ -147,10 +147,10 @@ export function ProductsEcosystem({
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
             <button
               onClick={() => scrollToCard('aihub')}
-              className={`hub-breathe w-[172px] h-[172px] rounded-full flex flex-col items-center justify-center text-center p-4 transition-all duration-300 cursor-pointer bg-surface border-2 ${
+              className={`w-[172px] h-[172px] rounded-full flex flex-col items-center justify-center text-center p-4 transition-all duration-300 cursor-pointer bg-surface border-2 ${
                 selectedId === 'aihub'
-                  ? 'border-accent shadow-[0_0_60px_rgba(59,130,246,0.4),0_0_120px_rgba(59,130,246,0.15)] scale-110'
-                  : 'border-accent/30 shadow-[0_0_30px_rgba(59,130,246,0.15)] hover:border-accent/60 hover:scale-105'
+                  ? 'border-accent shadow-[0_0_40px_var(--color-accent-soft)] scale-110'
+                  : 'border-accent/30 shadow-[0_0_20px_var(--color-accent-soft)] hover:border-accent/60 hover:scale-105'
               }`}
             >
               <span className="text-[9px] font-bold uppercase tracking-widest text-accent mb-1">Ядро</span>
@@ -169,7 +169,7 @@ export function ProductsEcosystem({
                 onClick={() => scrollToCard(p.id)}
                 className={`absolute z-10 w-[178px] bg-surface rounded-xl p-3 text-center transition-all duration-500 cursor-pointer border ${posClass[pos]} ${
                   selectedId === p.id
-                    ? 'border-accent shadow-[0_0_32px_rgba(79,124,255,0.35)] scale-110 opacity-100'
+                    ? 'border-accent shadow-[0_0_32px_var(--color-accent-soft)] scale-110 opacity-100'
                     : 'border-border hover:border-accent/40 hover:scale-105 hover:shadow-lg opacity-50'
                 }`}
               >

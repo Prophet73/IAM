@@ -21,7 +21,7 @@ export default function ParkingScreen({ onBack, onToast }: ParkingScreenProps) {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
+    <div className="flex-1 overflow-y-auto slide-in-right bg-[#F9F9F8]">
       <SubScreenHeader title="Парковка" onBack={onBack} />
 
       <div className="px-5 pb-6 space-y-4">

@@ -175,7 +175,7 @@ function Hero() {
 
             {/* Левая колонка */}
             <div className="animate-[fadeIn_0.8s_ease-out_both]">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-surface/50 backdrop-blur-md border border-border/60 rounded-full text-xs font-semibold tracking-wide mb-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 glass-panel rounded-full text-xs font-semibold tracking-wide mb-6">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green" />
@@ -215,7 +215,7 @@ function Hero() {
             {/* Правая колонка — карточки */}
             <div className="flex flex-col gap-4 justify-center animate-[fadeIn_0.8s_ease-out_0.2s_both]">
               {/* Карточка 1: Знать изнутри */}
-              <div className="bg-surface/50 backdrop-blur-xl border border-border/60 border-t-white/[0.06] rounded-2xl p-5 flex gap-4">
+              <div className="glass-panel rounded-2xl p-5 flex gap-4">
                 <div className="shrink-0 w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -231,7 +231,7 @@ function Hero() {
               </div>
 
               {/* Карточка 2: Hands-on */}
-              <div className="bg-surface/50 backdrop-blur-xl border border-border/60 border-t-white/[0.06] rounded-2xl p-5 flex gap-4">
+              <div className="glass-panel rounded-2xl p-5 flex gap-4">
                 <div className="shrink-0 w-10 h-10 rounded-xl bg-green-soft flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green">
                     <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
@@ -252,7 +252,7 @@ function Hero() {
           {/* Нижняя строка: статистика */}
           <div className="grid grid-cols-3 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
             {stats.map((s) => (
-              <div key={s.label} className="bg-surface/50 backdrop-blur-xl border border-border/60 border-t-white/[0.06] rounded-2xl p-4 flex items-center gap-4">
+              <div key={s.label} className="glass-panel rounded-2xl p-4 flex items-center gap-4">
                 <div className="text-3xl font-extrabold font-display leading-none shrink-0 bg-gradient-to-b from-text-primary to-muted bg-clip-text text-transparent">{s.num}</div>
                 <div className="text-xs text-muted leading-snug">{s.label}</div>
               </div>
@@ -268,7 +268,7 @@ function Hero() {
 /* ── Products ── */
 function Products() {
   return (
-    <section id="products" className="bg-surface py-14 border-t border-border/50">
+    <section id="products" className="bg-surface py-24 border-t border-border/50">
       <div className="max-w-[1280px] mx-auto px-8">
         <Reveal>
           <div className="mb-8">
@@ -345,7 +345,7 @@ function Approach() {
   ]
 
   return (
-    <section id="approach" className="py-16">
+    <section id="approach" className="py-24">
       <div className="max-w-[1080px] mx-auto px-8">
 
         {/* Methodology */}
@@ -360,7 +360,7 @@ function Approach() {
         <Reveal stagger>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
             {steps.map((s) => (
-              <div key={s.num} className="bg-surface-2/40 backdrop-blur-sm border border-border/60 rounded-xl p-5 relative overflow-hidden">
+              <div key={s.num} className="glass-panel rounded-xl p-5 relative overflow-hidden">
                 <div className="absolute -bottom-2 -right-2 text-6xl font-extrabold font-display text-text-primary opacity-5 select-none">{s.num}</div>
                 <div className="relative z-10">
                   <h4 className="text-sm font-bold mb-1.5">{s.title}</h4>
@@ -382,12 +382,13 @@ function Approach() {
         <Reveal stagger>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {cards.map((c) => (
-              <div key={c.title} className="bg-surface-2/50 backdrop-blur-sm border border-border/60 rounded-xl p-6 relative overflow-hidden hover:border-green/40 hover:-translate-y-1 transition-all duration-300">
+              <div key={c.title} className="glass-panel rounded-xl p-6 relative overflow-hidden hover:border-green/40 hover:-translate-y-1 transition-all duration-300">
                 <div className="absolute -right-4 -bottom-6 text-[8rem] font-extrabold font-display text-text-primary/5 leading-none select-none z-0">{c.num}</div>
                 <div className="relative z-10">
                   <h3 className="text-[0.95rem] font-bold mb-1.5">{c.title}</h3>
                   <p className="text-sm text-muted leading-relaxed">{c.text}</p>
-                  <div className="mt-3 pt-3 border-t border-border text-sm text-green font-semibold">
+                  <div className="mt-auto pt-4 border-t border-white/5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-green">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green" />
                     {c.metric}
                   </div>
                 </div>
@@ -439,7 +440,7 @@ function Research() {
   ]
 
   return (
-    <section id="research" className="bg-surface py-16">
+    <section id="research" className="bg-surface py-24">
       <div className="max-w-[1080px] mx-auto px-8">
         <Reveal>
           <SectionHeader
@@ -452,7 +453,7 @@ function Research() {
         <Reveal stagger>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
             {items.map((item) => (
-              <div key={item.title} className="bg-bg border border-border rounded-xl p-5 transition-colors hover:border-accent/20">
+              <div key={item.title} className="glass-panel rounded-xl p-5 transition-colors hover:border-accent/20">
                 <h4 className="text-sm font-bold mb-1">{item.title}</h4>
                 <p className="text-sm text-muted leading-relaxed">{item.text}</p>
                 <div className="flex flex-wrap gap-1.5 mt-2">
@@ -515,7 +516,7 @@ function Career() {
   ]
 
   return (
-    <section id="career" className="py-16">
+    <section id="career" className="py-24">
       <div className="max-w-[1080px] mx-auto px-8">
         <Reveal>
           <SectionHeader
@@ -561,49 +562,80 @@ function Career() {
 /* ── Contact / Footer ── */
 function Contact() {
   return (
-    <footer className="border-t border-border py-12">
-      <div className="max-w-[1080px] mx-auto px-8">
+    <section className="py-20 pb-10">
+      <div className="max-w-3xl mx-auto px-8 text-center">
         <Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-start">
-            <div>
-              <h2 className="font-display text-xl md:text-2xl font-bold mb-2">Давайте поговорим</h2>
-              <p className="text-muted text-sm mb-5 max-w-[440px]">
-                Ищу позицию, где строительная экспертиза + full-stack = готовый продукт.
-                Продуктовая разработка или внутреннее R&D с реальными пользователями в строительстве.
-              </p>
-              <div className="flex flex-col gap-2.5">
-                <a
-                  href="tel:+79268973225"
-                  className="inline-flex items-center gap-3 text-sm text-muted hover:text-accent transition-colors no-underline group"
-                >
-                  <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-2 border border-border group-hover:border-accent/30 transition-colors">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                    </svg>
-                  </span>
-                  +7 (926) 897-32-25
-                </a>
-                <a
-                  href="mailto:KhromenokNV@mail.ru"
-                  className="inline-flex items-center gap-3 text-sm text-muted hover:text-accent transition-colors no-underline group"
-                >
-                  <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-2 border border-border group-hover:border-accent/30 transition-colors">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                  </span>
-                  KhromenokNV@mail.ru
-                </a>
-              </div>
-            </div>
-            <div className="text-sm text-muted md:text-right">
-              <div>Москва</div>
-              <div className="mt-1">&copy; 2026</div>
-            </div>
+          {/* Badge */}
+          <div className="inline-flex items-center px-4 py-1.5 bg-accent/10 border border-accent/20 rounded-full text-sm font-semibold text-accent mb-6">
+            R&D / Product Owner
+          </div>
+
+          {/* Heading */}
+          <h2 className="font-display text-4xl font-extrabold mb-5">Готов усилить вашу команду</h2>
+
+          {/* Subtitle */}
+          <p className="text-muted text-lg leading-relaxed max-w-2xl mx-auto">
+            Вы видели проекты выше. Они созданы одним человеком с применением AI-агентов.
+            Я ищу позицию, где моя строительная экспертиза и этот подход к разработке
+            принесут реальную пользу бизнесу.
+          </p>
+
+          {/* Action grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-10 max-w-lg mx-auto">
+            <a
+              href="#"
+              className="inline-flex items-center justify-center gap-2.5 bg-accent text-white py-4 rounded-xl text-sm font-semibold no-underline transition-all hover:opacity-90 active:scale-[0.98]"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Скачать резюме
+            </a>
+            <a
+              href="https://t.me/nickkhromenok"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2.5 bg-surface border border-border py-4 rounded-xl text-sm font-semibold no-underline transition-all hover:border-accent/50 active:scale-[0.98]"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              Написать в Telegram
+            </a>
+          </div>
+
+          {/* Email & Phone links */}
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-6">
+            <a
+              href="mailto:KhromenokNV@mail.ru"
+              className="inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+              </svg>
+              KhromenokNV@mail.ru
+            </a>
+            <a
+              href="tel:+79268973225"
+              className="inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              +7 926 897-32-25
+            </a>
           </div>
         </Reveal>
       </div>
-    </footer>
+
+      {/* Footer */}
+      <div className="max-w-[1080px] mx-auto px-8 mt-20 pt-6 border-t border-white/10 pb-10">
+        <div className="flex justify-between items-center text-xs text-muted">
+          <span>Москва, 2026</span>
+          <span>Built with AI (Claude Code & React)</span>
+        </div>
+      </div>
+    </section>
   )
 }
 

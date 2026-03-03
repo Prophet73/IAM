@@ -109,7 +109,7 @@ export function ProductsEcosystem({
   }, [])
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[45%_55%] gap-8 lg:gap-10 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-[42%_1fr] gap-8 lg:gap-12 items-start">
 
       {/* ── Mobile: tab pills ── */}
       <div className="flex lg:hidden flex-wrap gap-2 justify-center">
@@ -130,7 +130,7 @@ export function ProductsEcosystem({
 
       {/* ── Ecosystem graph (desktop — sticky) ── */}
       <div className="hidden lg:flex items-center justify-center sticky top-24 h-[calc(100vh-8rem)]">
-        <div className="aspect-square w-full max-w-[600px] mx-auto relative overflow-visible">
+        <div className="aspect-square w-full max-w-[520px] mx-auto relative overflow-visible">
 
           {/* Context aura */}
           <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[120px] pointer-events-none z-0 transition-colors duration-1000 ease-in-out context-aura ${auraColor[selectedId] ?? 'bg-accent'}`} />
@@ -149,8 +149,8 @@ export function ProductsEcosystem({
               onClick={() => scrollToCard('aihub')}
               className={`hub-breathe w-[172px] h-[172px] rounded-full flex flex-col items-center justify-center text-center p-4 transition-all duration-300 cursor-pointer bg-surface border-2 ${
                 selectedId === 'aihub'
-                  ? 'border-accent shadow-[0_0_48px_rgba(79,124,255,0.28)] scale-110'
-                  : 'border-border hover:border-accent/40 hover:scale-105'
+                  ? 'border-accent shadow-[0_0_60px_rgba(59,130,246,0.4),0_0_120px_rgba(59,130,246,0.15)] scale-110'
+                  : 'border-accent/30 shadow-[0_0_30px_rgba(59,130,246,0.15)] hover:border-accent/60 hover:scale-105'
               }`}
             >
               <span className="text-[9px] font-bold uppercase tracking-widest text-accent mb-1">Ядро</span>
@@ -186,7 +186,7 @@ export function ProductsEcosystem({
       </div>
 
       {/* ── Detail cards: mobile shows only selected, desktop shows all ── */}
-      <div className="flex flex-col gap-32 lg:pb-[50vh]">
+      <div className="flex flex-col gap-6 lg:gap-[40vh] lg:pt-[30vh] lg:pb-[50vh] relative z-10">
         {/* Mobile: single card */}
         <div className="lg:hidden">
           <DetailCard
@@ -335,10 +335,10 @@ function TimelineBlock({ label, color, text }: { label: string; color: string; t
   const c = timelineColors[color] ?? timelineColors.accent
   return (
     <div>
-      <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider mb-1 ${c.badge}`}>
+      <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-widest mb-1 ${c.badge}`}>
         {label}
       </span>
-      <p className="text-xs text-muted leading-relaxed">{text}</p>
+      <p className="text-xs text-text-primary/70 leading-relaxed">{text}</p>
     </div>
   )
 }

@@ -14,7 +14,7 @@ export default function CamerasScreen({ onBack }: CamerasScreenProps) {
 
   if (fullscreenCam && selectedCamera) {
     return (
-      <div className="flex-1 flex flex-col animate-[fadeIn_0.2s_ease-out]">
+      <div className="flex-1 flex flex-col slide-in-right bg-[#F9F9F8]">
         {/* Fullscreen camera view */}
         <div
           className="flex-1 bg-gradient-to-br from-[#1D252D] to-[#2a3a4a] relative flex items-center justify-center cursor-pointer"
@@ -57,7 +57,7 @@ export default function CamerasScreen({ onBack }: CamerasScreenProps) {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
+    <div className="flex-1 overflow-y-auto slide-in-right bg-[#F9F9F8]">
       <SubScreenHeader title="Камеры" onBack={onBack} />
 
       <div className="px-5 pb-6">

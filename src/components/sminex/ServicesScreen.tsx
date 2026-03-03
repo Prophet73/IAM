@@ -12,6 +12,16 @@ const serviceIcons: Record<string, ReactNode> = {
   'wrench': <Wrench className="w-5 h-5" />,
 }
 
+/* Large watermark icons for card background */
+const serviceWatermarkIcons: Record<string, ReactNode> = {
+  'shirt': <Shirt className="w-16 h-16" />,
+  'sparkles': <Sparkles className="w-16 h-16" />,
+  'car': <Car className="w-16 h-16" />,
+  'droplets': <Droplets className="w-16 h-16" />,
+  'baby': <Baby className="w-16 h-16" />,
+  'wrench': <Wrench className="w-16 h-16" />,
+}
+
 interface ServicesScreenProps {
   onBack: () => void
   onToast: (msg: string) => void
@@ -48,7 +58,7 @@ export default function ServicesScreen({ onBack, onToast }: ServicesScreenProps)
   }
 
   return (
-    <div className="flex-1 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
+    <div className="flex-1 overflow-y-auto slide-in-right bg-[#F9F9F8]">
       <SubScreenHeader title="Услуги" onBack={onBack} />
 
       <div className="px-5 pb-6 space-y-4">
@@ -59,7 +69,7 @@ export default function ServicesScreen({ onBack, onToast }: ServicesScreenProps)
             <div className="space-y-2">
               {activeOrders.map(order => (
                 <div key={order.id} className="bg-white rounded-2xl p-3.5 shadow-sm border border-gray-50 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#F5F1EC] flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-[#F9F9F8] flex items-center justify-center">
                     {order.status === 'done'
                       ? <CheckCircle2 className="w-4 h-4 text-green-600" />
                       : <Clock className="w-4 h-4 text-[#8B7355]" />
@@ -83,20 +93,27 @@ export default function ServicesScreen({ onBack, onToast }: ServicesScreenProps)
           <h2 className="text-xs font-bold text-[#1D252D] mb-2">Консьерж-сервис</h2>
           <div className="grid grid-cols-2 gap-2.5">
             {conciergeServices.map(service => (
-              <div key={service.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex flex-col">
-                <div className="w-10 h-10 rounded-xl bg-[#F5F1EC] flex items-center justify-center text-[#8B7355] mb-2">
-                  {serviceIcons[service.icon]}
+              <div key={service.id} className="relative bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex flex-col overflow-hidden">
+                {/* Watermark icon */}
+                <div className="absolute -top-2 -right-2 text-[#1D252D]/[0.04] pointer-events-none rotate-12">
+                  {serviceWatermarkIcons[service.icon]}
                 </div>
-                <p className="text-xs font-bold text-[#1D252D] mb-0.5">{service.name}</p>
-                <p className="text-[10px] text-[#1D252D]/40 mb-2 flex-1">{service.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-[#8B7355]">{service.price}</span>
-                  <button
-                    onClick={() => handleOrder(service.id, service.name)}
-                    className="text-[10px] font-semibold text-white bg-[#1D252D] px-3 py-1 rounded-full hover:opacity-90 transition-opacity active:scale-[0.95]"
-                  >
-                    Заказать
-                  </button>
+
+                <div className="relative z-10">
+                  <div className="w-10 h-10 rounded-xl bg-[#F9F9F8] flex items-center justify-center text-[#8B7355] mb-2">
+                    {serviceIcons[service.icon]}
+                  </div>
+                  <p className="text-xs font-bold text-[#1D252D] mb-0.5">{service.name}</p>
+                  <p className="text-[10px] text-[#1D252D]/40 mb-2 flex-1">{service.description}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#8B7355]">{service.price}</span>
+                    <button
+                      onClick={() => handleOrder(service.id, service.name)}
+                      className="text-[10px] font-semibold text-white bg-[#1D252D] px-3 py-1 rounded-full hover:opacity-90 transition-opacity active:scale-[0.95]"
+                    >
+                      Заказать
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

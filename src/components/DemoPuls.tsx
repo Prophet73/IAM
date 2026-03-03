@@ -69,6 +69,7 @@ const LETTERS = [
   { id: 5, number: 'ИСХ-2026/039', date: '18.02.2026', type: 'OUTGOING', category: 'Информационное', title: 'Отчет о ходе работ за январь 2026', recipient: 'Заказчик', status: 'Отправлено', sc: 'bg-blue-100 text-blue-700', deadline: null, files: 4, issues: 0 },
 ]
 
+// @ts-expect-error reserved for future use
 const ATTENDANCE = [
   { name: 'Иванов И.И.', role: 'Ведущий инженер', days: [1,1,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0] },
   { name: 'Петров П.С.', role: 'Инженер СКС', days: [1,1,1,1,1,0,0,1,1,0,1,1,0,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0] },
@@ -100,6 +101,7 @@ const PAY_STATUS: Record<string, { label: string; c: string }> = {
   PLANNED: { label: 'План', c: 'bg-gray-100 text-gray-500' },
 }
 
+// @ts-expect-error reserved for future use
 const TEAM_MEMBERS = [
   { name: 'Иванов Иван Иванович', position: 'Ведущий инженер', fte: 1.0, status: 'active' },
   { name: 'Петров Петр Сергеевич', position: 'Инженер СКС', fte: 1.0, status: 'active' },
@@ -143,9 +145,18 @@ export function DemoPuls() {
   }, [open, onEsc])
 
   if (!open) return (
-    <button onClick={() => setOpen(true)} className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all bg-blue-600 hover:bg-blue-700 text-white">
-      Открыть демо Puls
-    </button>
+    <div className="btn-premium-wrap" onClick={() => setOpen(true)}>
+      <button className="btn-premium">
+        <div className="btn-premium-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-bold">Запустить демо</div>
+          <div className="text-xs text-muted mt-0.5">Полнофункциональный прототип с моковыми данными</div>
+        </div>
+        <svg className="btn-premium-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
   )
 
   return createPortal(

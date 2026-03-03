@@ -43,7 +43,7 @@ export default function PhoneFrame({ children, onBack, onOpenArchitecture, onOpe
           <div className="w-28 h-6 bg-black rounded-full" />
         </div>
         {/* Screen */}
-        <div className="flex-1 bg-[#F5F1EC] rounded-[2.2rem] overflow-hidden flex flex-col relative">
+        <div className="flex-1 bg-[#F9F9F8] rounded-[2.2rem] overflow-hidden flex flex-col relative">
           {/* Status bar */}
           <div className="flex items-center justify-between px-8 py-2 text-[#1D252D] text-xs font-semibold">
             <span>9:41</span>
@@ -52,15 +52,15 @@ export default function PhoneFrame({ children, onBack, onOpenArchitecture, onOpe
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
             </div>
           </div>
-          {/* Content */}
-          <div className="flex-1 overflow-hidden flex flex-col">
+          {/* Content — padded at bottom for floating dock */}
+          <div className="flex-1 overflow-hidden flex flex-col pb-20">
             {children}
           </div>
         </div>
       </div>
 
       {/* Mobile — full screen */}
-      <div className="md:hidden fixed inset-0 bg-[#F5F1EC] flex flex-col overflow-hidden relative">
+      <div className="md:hidden fixed inset-0 bg-[#F9F9F8] flex flex-col overflow-hidden relative pb-20">
         {children}
       </div>
     </div>

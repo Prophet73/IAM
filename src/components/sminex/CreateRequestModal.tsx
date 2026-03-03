@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, Camera } from 'lucide-react'
+import { Camera } from 'lucide-react'
 import { requestTypes, requestTypeIcons, type Priority } from '../../data/sminex'
 
 interface CreateRequestModalProps {
@@ -20,13 +20,12 @@ export default function CreateRequestModal({ onClose, onSubmit }: CreateRequestM
   return (
     <div className="absolute inset-0 z-40 flex items-end">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full bg-white rounded-t-3xl p-5 space-y-4 animate-[slideUp_0.3s_ease-out] max-h-[85%] overflow-y-auto">
+      <div className="relative w-full bg-white/85 backdrop-blur-3xl border border-white/40 shadow-[0_-10px_40px_rgba(0,0,0,0.08)] rounded-t-3xl p-5 space-y-4 animate-[slideUp_0.3s_ease-out] max-h-[85%] overflow-y-auto">
+        {/* Drag handle */}
+        <div className="w-10 h-1.5 bg-[#1D252D]/15 rounded-full mx-auto mb-4" />
         {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-[#1D252D]">Новая заявка</h2>
-          <button onClick={onClose} className="text-[#1D252D]/40 hover:text-[#1D252D] transition-colors">
-            <X className="w-5 h-5" />
-          </button>
         </div>
 
         {/* Type selector */}
@@ -95,7 +94,7 @@ export default function CreateRequestModal({ onClose, onSubmit }: CreateRequestM
         <button
           onClick={handleSubmit}
           disabled={!description.trim()}
-          className="w-full bg-[#1D252D] text-white rounded-full py-3.5 text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100"
+          className="w-full bg-[#1D252D] text-white rounded-full py-3.5 text-sm font-semibold transition-all hover:opacity-90 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100 shadow-[0_8px_20px_rgba(29,37,45,0.25)]"
         >
           Отправить
         </button>

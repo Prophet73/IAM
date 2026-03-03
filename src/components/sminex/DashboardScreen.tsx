@@ -52,6 +52,16 @@ export default function DashboardScreen({
   )
 }
 
+/* ── iOS-style service tile gradients ── */
+const tileStyles: Record<string, { bg: string; iconColor: string }> = {
+  intercom:    { bg: 'bg-gradient-to-br from-blue-500 to-blue-600',    iconColor: 'text-white' },
+  cameras:     { bg: 'bg-gradient-to-br from-slate-500 to-slate-700',  iconColor: 'text-white' },
+  'smart-home': { bg: 'bg-gradient-to-br from-amber-400 to-orange-500', iconColor: 'text-white' },
+  services:    { bg: 'bg-gradient-to-br from-violet-500 to-purple-600', iconColor: 'text-white' },
+  bills:       { bg: 'bg-gradient-to-br from-emerald-400 to-green-600', iconColor: 'text-white' },
+  parking:     { bg: 'bg-gradient-to-br from-orange-400 to-red-500',    iconColor: 'text-white' },
+}
+
 function ResidentDashboard({ requests, user, onOpenRequest, onCreateRequest, onOpenSubScreen, activePropertyId, onSelectProperty }: {
   requests: ServiceRequest[]
   user: UserProfile
@@ -69,13 +79,13 @@ function ResidentDashboard({ requests, user, onOpenRequest, onCreateRequest, onO
   const properties = user.properties ?? []
   const activeProperty: OwnedProperty | undefined = properties.find(p => p.id === activePropertyId) ?? properties[0]
 
-  const mainTiles: { icon: React.ReactNode; label: string; screen: SubScreen; iconBg: string; iconColor: string }[] = [
-    { icon: <Video className="w-5 h-5" />, label: 'Домофон', screen: 'intercom', iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
-    { icon: <Camera className="w-5 h-5" />, label: 'Камеры', screen: 'cameras', iconBg: 'bg-slate-100', iconColor: 'text-slate-600' },
-    { icon: <Home className="w-5 h-5" />, label: 'Умный дом', screen: 'smart-home', iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
-    { icon: <Sparkles className="w-5 h-5" />, label: 'Услуги', screen: 'services', iconBg: 'bg-violet-50', iconColor: 'text-violet-600' },
-    { icon: <Receipt className="w-5 h-5" />, label: 'Счета', screen: 'bills', iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-    { icon: <Car className="w-5 h-5" />, label: 'Парковка', screen: 'parking', iconBg: 'bg-orange-50', iconColor: 'text-orange-600' },
+  const mainTiles: { icon: React.ReactNode; label: string; screen: NonNullable<SubScreen> }[] = [
+    { icon: <Video className="w-6 h-6" />, label: 'Домофон', screen: 'intercom' },
+    { icon: <Camera className="w-6 h-6" />, label: 'Камеры', screen: 'cameras' },
+    { icon: <Home className="w-6 h-6" />, label: 'Умный дом', screen: 'smart-home' },
+    { icon: <Sparkles className="w-6 h-6" />, label: 'Услуги', screen: 'services' },
+    { icon: <Receipt className="w-6 h-6" />, label: 'Счета', screen: 'bills' },
+    { icon: <Car className="w-6 h-6" />, label: 'Парковка', screen: 'parking' },
   ]
 
   const extraTiles: { icon: React.ReactNode; label: string; screen: SubScreen; accent?: boolean }[] = [
@@ -88,21 +98,41 @@ function ResidentDashboard({ requests, user, onOpenRequest, onCreateRequest, onO
   return (
     <div className="flex-1 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
       <div className="px-5 pt-4 pb-6 space-y-4">
-        {/* Header: greeting + weather + avatar */}
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-0.5">
-              <p className="text-[#1D252D]/50 text-xs font-medium">26 февраля</p>
-              <span className="text-[#1D252D]/30 text-xs">·</span>
-              <div className="flex items-center gap-1">
-                <CloudSun className="w-3.5 h-3.5 text-amber-500" />
-                <span className="text-xs font-medium text-[#1D252D]/50">−3°C</span>
+
+        {/* ── VIP Card ── */}
+        <div className="relative overflow-hidden rounded-[1.25rem] bg-gradient-to-br from-[#1D252D] via-[#1D252D] to-black border border-[#8B7355]/30 p-5 shadow-xl"
+          style={{ aspectRatio: '1.586' }}
+        >
+          {/* Subtle shimmer overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-transparent pointer-events-none" />
+          {/* Walking shimmer glare */}
+          <div className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer pointer-events-none" />
+          {/* Gold corner accent */}
+          <div className="absolute -top-16 -right-16 w-40 h-40 rounded-full bg-[#8B7355]/10 blur-3xl" />
+
+          <div className="relative z-10 flex flex-col justify-between h-full">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-white/40 text-[10px] font-medium tracking-wider uppercase mb-1">Резидент</p>
+                <h1 className="text-lg font-bold text-white">{user.name}</h1>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CloudSun className="w-4 h-4 text-amber-400" />
+                <span className="text-sm font-medium text-white/70">−3°C</span>
               </div>
             </div>
-            <h1 className="text-xl font-bold text-[#1D252D]">Здравствуйте, {user.name.split(' ')[0]}</h1>
-          </div>
-          <div className="w-10 h-10 rounded-full bg-[#1D252D] flex items-center justify-center text-white font-bold text-sm">
-            {user.initials}
+
+            <div className="flex items-end justify-between">
+              {activeProperty && (
+                <div className="bg-white/10 backdrop-blur-md rounded-xl px-3 py-2 border border-white/10">
+                  <p className="text-white/40 text-[9px] font-medium tracking-wide uppercase">Квартира</p>
+                  <p className="text-white font-bold text-sm">{activeProperty.apartment}</p>
+                </div>
+              )}
+              <div className="w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center text-white/80 font-bold text-xs border border-white/10">
+                {user.initials}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -113,7 +143,7 @@ function ResidentDashboard({ requests, user, onOpenRequest, onCreateRequest, onO
               onClick={() => setShowPropertyPicker(!showPropertyPicker)}
               className="w-full bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex items-center gap-3 transition-all hover:shadow-md active:scale-[0.99]"
             >
-              <div className="w-9 h-9 rounded-xl bg-[#F5F1EC] flex items-center justify-center text-[#8B7355] text-xs font-bold shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-[#F9F9F8] flex items-center justify-center text-[#8B7355] text-xs font-bold shrink-0">
                 {activeProperty.apartment}
               </div>
               <div className="flex-1 text-left min-w-0">
@@ -130,11 +160,11 @@ function ResidentDashboard({ requests, user, onOpenRequest, onCreateRequest, onO
                     key={prop.id}
                     onClick={() => { onSelectProperty?.(prop.id); setShowPropertyPicker(false) }}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors ${
-                      prop.id === activeProperty.id ? 'bg-[#F5F1EC]' : 'hover:bg-gray-50'
+                      prop.id === activeProperty.id ? 'bg-[#F9F9F8]' : 'hover:bg-gray-50'
                     }`}
                   >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                      prop.id === activeProperty.id ? 'bg-[#1D252D] text-white' : 'bg-[#F5F1EC] text-[#8B7355]'
+                      prop.id === activeProperty.id ? 'bg-[#1D252D] text-white' : 'bg-[#F9F9F8] text-[#8B7355]'
                     }`}>
                       {prop.apartment.slice(0, 3)}
                     </div>
@@ -149,21 +179,26 @@ function ResidentDashboard({ requests, user, onOpenRequest, onCreateRequest, onO
           </div>
         )}
 
-        {/* Main service grid 2×3 */}
+        {/* ── Main service grid 2×3 — iOS style ── */}
         <div className="grid grid-cols-3 gap-2.5">
-          {mainTiles.map((tile, i) => (
-            <button
-              key={tile.label}
-              onClick={() => onOpenSubScreen?.(tile.screen)}
-              className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 flex flex-col items-center gap-2 transition-all hover:shadow-md active:scale-[0.95] animate-[fadeIn_0.3s_ease-out_both]"
-              style={{ animationDelay: `${i * 50}ms` }}
-            >
-              <div className={`w-10 h-10 rounded-xl ${tile.iconBg} flex items-center justify-center ${tile.iconColor} transition-transform duration-200`}>
-                {tile.icon}
-              </div>
-              <span className="text-[11px] font-semibold text-[#1D252D]">{tile.label}</span>
-            </button>
-          ))}
+          {mainTiles.map((tile, i) => {
+            const style = tileStyles[tile.screen] ?? { bg: 'bg-gradient-to-br from-gray-400 to-gray-600', iconColor: 'text-white' }
+            return (
+              <button
+                key={tile.label}
+                onClick={() => onOpenSubScreen?.(tile.screen)}
+                className="flex flex-col items-center gap-2 transition-all hover:scale-[1.03] active:scale-[0.95] animate-[fadeIn_0.3s_ease-out_both]"
+                style={{ animationDelay: `${i * 50}ms` }}
+              >
+                <div className={`w-[3.75rem] h-[3.75rem] rounded-[1.25rem] ${style.bg} flex items-center justify-center ${style.iconColor} shadow-lg shadow-black/10 relative overflow-hidden`}>
+                  {/* Glass inner border */}
+                  <div className="absolute inset-[1px] rounded-[1.15rem] border border-white/20 pointer-events-none" />
+                  {tile.icon}
+                </div>
+                <span className="text-[10px] font-semibold text-[#1D252D]">{tile.label}</span>
+              </button>
+            )
+          })}
         </div>
 
         {/* Extra services — horizontal scroll */}
@@ -187,7 +222,7 @@ function ResidentDashboard({ requests, user, onOpenRequest, onCreateRequest, onO
         {/* New request button */}
         <button
           onClick={onCreateRequest}
-          className="w-full bg-[#1D252D] text-white rounded-full py-3 text-sm font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 active:scale-[0.97]"
+          className="w-full bg-[#1D252D] text-white rounded-full py-3 text-sm font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 active:scale-[0.97] shadow-[0_8px_20px_rgba(29,37,45,0.25)]"
         >
           <Plus className="w-4 h-4" />
           Новая заявка
@@ -268,7 +303,7 @@ function ManagerDashboard({
         <div className="flex gap-3">
           <button
             onClick={onCreateRequest}
-            className="flex-1 bg-[#1D252D] text-white rounded-full py-3 text-sm font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 active:scale-[0.97]"
+            className="flex-1 bg-[#1D252D] text-white rounded-full py-3 text-sm font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 active:scale-[0.97] shadow-[0_8px_20px_rgba(29,37,45,0.25)]"
           >
             <Plus className="w-4 h-4" />
             Создать заявку

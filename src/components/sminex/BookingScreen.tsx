@@ -43,7 +43,7 @@ export default function BookingScreen({ onBack, onToast }: BookingScreenProps) {
   // Detail view for a selected amenity
   if (selected) {
     return (
-      <div className="flex-1 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
+      <div className="flex-1 overflow-y-auto slide-in-right bg-[#F9F9F8]">
         <SubScreenHeader title={selected.name} onBack={() => setSelectedAmenity(null)} />
 
         <div className="px-5 pb-6 space-y-4">
@@ -103,7 +103,7 @@ export default function BookingScreen({ onBack, onToast }: BookingScreenProps) {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
+    <div className="flex-1 overflow-y-auto slide-in-right bg-[#F9F9F8]">
       <SubScreenHeader title="Бронирование" onBack={onBack} />
 
       <div className="px-5 pb-6 space-y-4">

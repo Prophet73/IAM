@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0a0b0f;
-  --color-surface: #12141c;
-  --color-surface-2: #1a1d28;
-  --color-surface-3: #232736;
-  --color-border: #2a2e3d;
+  --color-bg: #050505;
+  --color-surface: #0a0a0a;
+  --color-surface-2: #121212;
+  --color-surface-3: #1a1a1a;
+  --color-border: #1f1f1f;
   --color-text-primary: #e4e7f0;
   --color-muted: #7d8296;
-  --color-accent: #4f7cff;
+  --color-accent: #3b82f6;
   --color-accent-soft: rgba(79, 124, 255, 0.12);
   --color-green: #34d399;
   --color-green-soft: rgba(52, 211, 153, 0.12);
@@ -59,6 +59,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text-primary);
   line-height: 1.65;
+  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   margin: 0;
 }
@@ -221,8 +222,8 @@ body.demo-modal-open {
 
 /* ── Timeline pulse glow ── */
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 8px rgba(79, 124, 255, 0.4); }
-  50% { box-shadow: 0 0 16px rgba(79, 124, 255, 0.7); }
+  0%, 100% { box-shadow: 0 0 8px rgba(59, 130, 246, 0.4); }
+  50% { box-shadow: 0 0 16px rgba(59, 130, 246, 0.7); }
 }
 
 /* ── Noise overlay ── */
@@ -309,7 +310,7 @@ html.light body::before {
   stroke-dasharray: 12 8;
   opacity: 1;
   animation: beamFlowFast 1s linear infinite;
-  filter: drop-shadow(0 0 4px rgba(79, 124, 255, 0.5));
+  filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5));
 }
 
 /* ── Context aura ── */
@@ -323,12 +324,32 @@ html.light .context-aura {
 
 /* ── Ecosystem center node breathing ── */
 @keyframes hubBreathe {
-  0%, 100% { box-shadow: 0 0 20px rgba(79, 124, 255, 0.2), 0 0 40px rgba(79, 124, 255, 0.1); }
-  50% { box-shadow: 0 0 30px rgba(79, 124, 255, 0.35), 0 0 60px rgba(79, 124, 255, 0.15); }
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.25), 0 0 40px rgba(59, 130, 246, 0.1); }
+  50% { box-shadow: 0 0 35px rgba(59, 130, 246, 0.4), 0 0 70px rgba(59, 130, 246, 0.18); }
 }
 
 .hub-breathe {
   animation: hubBreathe 3s ease-in-out infinite;
+}
+
+/* ── Sminex VIP card shimmer ── */
+@keyframes shimmerWalk {
+  0% { transform: translateX(-150%) skewX(-15deg); }
+  100% { transform: translateX(150%) skewX(-15deg); }
+}
+
+.animate-shimmer {
+  animation: shimmerWalk 4s infinite ease-in-out;
+}
+
+/* ── iOS-like slide-in transition ── */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 /* ── Scroll progress bar ── */
@@ -341,4 +362,74 @@ html.light .context-aura {
   z-index: 60;
   transform-origin: left;
   transition: none;
+}
+
+/* ── Premium glassmorphism panel ── */
+.glass-panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 4px 24px -1px rgba(0,0,0,0.2), inset 0 1px 0 0 rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
+}
+
+/* ── Premium CTA: teaser card with glow border ── */
+.btn-premium-wrap {
+  position: relative;
+  border-radius: 16px;
+  padding: 1px;
+  background: rgba(59, 130, 246, 0.25);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-premium-wrap:hover {
+  background: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 24px rgba(59, 130, 246, 0.2);
+}
+
+.btn-premium {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 15px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-premium:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), transparent);
+}
+
+.btn-premium:active {
+  transform: scale(0.98);
+}
+
+.btn-premium-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-premium-arrow {
+  color: var(--color-muted);
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-premium-wrap:hover .btn-premium-arrow {
+  color: var(--color-accent);
+  transform: translateX(3px);
 }

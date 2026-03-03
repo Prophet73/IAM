@@ -65,8 +65,10 @@ export default function SmartHomeScreen({ onBack }: SmartHomeScreenProps) {
     setTimeout(() => setActivatingScenario(null), 1500)
   }
 
+  const tempPercent = ((temperature - 16) / (30 - 16)) * 100
+
   return (
-    <div className="flex-1 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
+    <div className="flex-1 overflow-y-auto slide-in-right bg-[#F9F9F8]">
       <SubScreenHeader title="Умный дом" onBack={onBack} />
 
       <div className="px-5 pb-6 space-y-4">
@@ -81,28 +83,36 @@ export default function SmartHomeScreen({ onBack }: SmartHomeScreenProps) {
               <button
                 key={scenario.id}
                 onClick={() => activateScenario(scenario.id)}
-                className={`rounded-2xl p-3 text-left transition-all active:scale-[0.97] ${
+                className={`rounded-2xl p-3 text-left transition-all duration-300 active:scale-[0.97] relative overflow-hidden ${
                   scenario.isActive
                     ? 'bg-[#1D252D] text-white shadow-lg'
                     : 'bg-white text-[#1D252D] border border-gray-100'
                 }`}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={scenario.isActive ? 'text-white' : 'text-[#8B7355]'}>{scenarioIcons[scenario.icon]}</span>
-                  <span className="text-xs font-bold">{scenario.name}</span>
-                </div>
-                <p className={`text-[9px] leading-tight ${scenario.isActive ? 'text-white/50' : 'text-[#1D252D]/40'}`}>
-                  {scenario.description}
-                </p>
-                {activatingScenario === scenario.id && (
-                  <div className="mt-1.5 flex items-center gap-1">
-                    <span className="w-3 h-3 border-2 border-white/50 border-t-white rounded-full animate-spin" />
-                    <span className="text-[9px] text-white/60">Применяю...</span>
+                {/* Active radial glow */}
+                {scenario.isActive && (
+                  <div className="absolute inset-0 pointer-events-none" style={{
+                    background: 'radial-gradient(circle at 30% 30%, rgba(139,115,85,0.25) 0%, transparent 60%)',
+                  }} />
+                )}
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={scenario.isActive ? 'text-amber-400' : 'text-[#8B7355]'}>{scenarioIcons[scenario.icon]}</span>
+                    <span className="text-xs font-bold">{scenario.name}</span>
                   </div>
-                )}
-                {scenario.isActive && activatingScenario !== scenario.id && (
-                  <p className="text-[9px] text-green-400 mt-1">Активен</p>
-                )}
+                  <p className={`text-[9px] leading-tight ${scenario.isActive ? 'text-white/50' : 'text-[#1D252D]/40'}`}>
+                    {scenario.description}
+                  </p>
+                  {activatingScenario === scenario.id && (
+                    <div className="mt-1.5 flex items-center gap-1">
+                      <span className="w-3 h-3 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+                      <span className="text-[9px] text-white/60">Применяю...</span>
+                    </div>
+                  )}
+                  {scenario.isActive && activatingScenario !== scenario.id && (
+                    <p className="text-[9px] text-green-400 mt-1">Активен</p>
+                  )}
+                </div>
               </button>
             ))}
           </div>
@@ -125,25 +135,36 @@ export default function SmartHomeScreen({ onBack }: SmartHomeScreenProps) {
           ))}
         </div>
 
-        {/* Climate */}
+        {/* ── Climate — Control Center style ── */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50">
           <div className="flex items-center gap-2 mb-3">
             <Thermometer className="w-4 h-4 text-[#8B7355]" />
             <h3 className="text-xs font-bold text-[#1D252D]">Климат</h3>
           </div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-2xl font-bold text-[#1D252D]">{temperature}°C</span>
-            <span className="text-[10px] text-[#1D252D]/40">Целевая температура</span>
+          <div className="flex items-center gap-4 mb-3">
+            <span className="text-4xl font-bold text-[#1D252D] tabular-nums leading-none">{temperature}°</span>
+            <span className="text-[10px] text-[#1D252D]/40">Целевая<br/>температура</span>
           </div>
-          <input
-            type="range"
-            min={16}
-            max={30}
-            value={temperature}
-            onChange={e => setTemperature(Number(e.target.value))}
-            className="w-full h-1.5 bg-[#F5F1EC] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#1D252D] [&::-webkit-slider-thumb]:shadow-md"
-          />
-          <div className="flex justify-between mt-1">
+          {/* Thick track slider */}
+          <div
+            className="relative h-12 rounded-2xl bg-gray-200 overflow-hidden cursor-pointer select-none"
+            onClick={e => {
+              const rect = e.currentTarget.getBoundingClientRect()
+              const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+              setTemperature(Math.round(16 + pct * 14))
+            }}
+          >
+            <div
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-150 rounded-2xl"
+              style={{ width: `${tempPercent}%` }}
+            />
+            {/* Thumb knob */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white shadow-lg border border-gray-200 transition-all duration-150"
+              style={{ left: `calc(${tempPercent}% - 16px)` }}
+            />
+          </div>
+          <div className="flex justify-between mt-1.5">
             <span className="text-[10px] text-[#1D252D]/30">16°C</span>
             <span className="text-[10px] text-[#1D252D]/30">30°C</span>
           </div>
@@ -170,7 +191,7 @@ export default function SmartHomeScreen({ onBack }: SmartHomeScreenProps) {
           </div>
         </div>
 
-        {/* Devices */}
+        {/* ── Devices — HomeKit style ── */}
         <div>
           <h3 className="text-xs font-bold text-[#1D252D] mb-2">Устройства</h3>
           <div className="grid grid-cols-2 gap-2">
@@ -180,27 +201,29 @@ export default function SmartHomeScreen({ onBack }: SmartHomeScreenProps) {
                 onClick={() => toggleDevice(device.id)}
                 className={`rounded-2xl p-3.5 text-left transition-all duration-300 active:scale-[0.97] ${
                   device.isOn
-                    ? 'bg-[#1D252D] text-white shadow-lg'
-                    : 'bg-white text-[#1D252D] border border-gray-100'
+                    ? 'bg-white text-[#1D252D] shadow-[0_4px_24px_rgba(139,115,85,0.18)] border border-[#8B7355]/10'
+                    : 'bg-white/60 text-[#1D252D]/60 border border-gray-100/60'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${
-                    device.isOn ? 'bg-white/20' : 'bg-[#F5F1EC]'
+                    device.isOn ? 'bg-amber-100' : 'bg-gray-100'
                   }`}>
-                    <span className={`transition-colors duration-300 ${device.isOn ? 'text-white' : 'text-[#8B7355]'}`}>
+                    <span className={`transition-colors duration-300 ${device.isOn ? 'text-amber-600' : 'text-gray-400'}`}>
                       {deviceIcon(device.type)}
                     </span>
                   </div>
-                  {/* Mini toggle */}
-                  <div className={`w-9 h-[22px] rounded-full relative transition-colors duration-300 ${device.isOn ? 'bg-white/25' : 'bg-gray-200'}`}>
-                    <div className={`absolute top-[3px] w-4 h-4 rounded-full shadow-sm transition-all duration-300 ${
-                      device.isOn ? 'left-[18px] bg-white' : 'left-[3px] bg-white'
+                  {/* iOS toggle */}
+                  <div className={`w-[42px] h-[26px] rounded-full relative transition-colors duration-300 shrink-0 ${
+                    device.isOn ? 'bg-green-500' : 'bg-gray-300'
+                  }`}>
+                    <div className={`absolute top-[3px] w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300 ${
+                      device.isOn ? 'left-[19px]' : 'left-[3px]'
                     }`} />
                   </div>
                 </div>
-                <p className="text-xs font-semibold">{device.name}</p>
-                <p className={`text-[10px] transition-colors duration-300 ${device.isOn ? 'text-white/50' : 'text-[#1D252D]/40'}`}>
+                <p className={`text-xs font-semibold ${device.isOn ? 'text-[#1D252D]' : 'text-[#1D252D]/50'}`}>{device.name}</p>
+                <p className={`text-[10px] transition-colors duration-300 ${device.isOn ? 'text-[#1D252D]/40' : 'text-[#1D252D]/25'}`}>
                   {device.room}
                 </p>
               </button>

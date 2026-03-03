@@ -18,7 +18,7 @@ export default function FloorPlanScreen({ onBack, property }: FloorPlanScreenPro
   }
 
   return (
-    <div className="flex-1 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
+    <div className="flex-1 overflow-y-auto slide-in-right bg-[#F9F9F8]">
       <SubScreenHeader title="Схема квартиры" onBack={onBack} />
 
       <div className="px-5 pb-6 space-y-4">

@@ -1,4 +1,3 @@
-import { useRef, useEffect, useState } from 'react'
 import { Home, ListTodo, BarChart3, User, Bell } from 'lucide-react'
 import { type UserRole } from '../../data/sminex'
 
@@ -15,41 +14,16 @@ interface BottomNavProps {
 export default function BottomNav({ active, onNavigate, requestsBadge, notifBadge, userRole }: BottomNavProps) {
   const allTabs: { id: Tab; label: string; icon: typeof Home; roles: UserRole[] }[] = [
     { id: 'dashboard', label: 'Главная', icon: Home, roles: ['resident', 'manager', 'director'] },
-    { id: 'requests', label: userRole === 'resident' ? 'Мои заявки' : 'Заявки', icon: ListTodo, roles: ['resident', 'manager', 'director'] },
+    { id: 'requests', label: userRole === 'resident' ? 'Заявки' : 'Заявки', icon: ListTodo, roles: ['resident', 'manager', 'director'] },
     { id: 'notifications', label: 'Уведомления', icon: Bell, roles: ['resident'] },
     { id: 'analytics', label: 'Аналитика', icon: BarChart3, roles: ['manager', 'director'] },
     { id: 'profile', label: 'Профиль', icon: User, roles: ['resident', 'manager', 'director'] },
   ]
 
   const tabs = allTabs.filter(t => t.roles.includes(userRole))
-  const activeIndex = tabs.findIndex(t => t.id === active)
-
-  const navRef = useRef<HTMLElement>(null)
-  const [indicator, setIndicator] = useState({ left: 0, width: 0 })
-
-  useEffect(() => {
-    if (!navRef.current || activeIndex < 0) return
-    const buttons = navRef.current.querySelectorAll<HTMLButtonElement>('[data-tab]')
-    const btn = buttons[activeIndex]
-    if (!btn) return
-    const navRect = navRef.current.getBoundingClientRect()
-    const btnRect = btn.getBoundingClientRect()
-    setIndicator({
-      left: btnRect.left - navRect.left,
-      width: btnRect.width,
-    })
-  }, [activeIndex, tabs.length])
 
   return (
-    <nav ref={navRef} className="flex items-center justify-around bg-white/95 backdrop-blur-sm border-t border-gray-100/80 px-2 py-2 shrink-0 relative">
-      {/* Sliding indicator */}
-      {indicator.width > 0 && (
-        <div
-          className="absolute top-1.5 h-[calc(100%-12px)] bg-[#F5F1EC] rounded-xl transition-all duration-300 ease-out"
-          style={{ left: indicator.left, width: indicator.width }}
-        />
-      )}
-
+    <nav className="absolute bottom-4 left-4 right-4 z-30 flex items-center justify-around rounded-[1.75rem] bg-white/80 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/50 px-2 py-2">
       {tabs.map(tab => {
         const isActive = active === tab.id
         const Icon = tab.icon
@@ -59,21 +33,27 @@ export default function BottomNav({ active, onNavigate, requestsBadge, notifBadg
             key={tab.id}
             data-tab={tab.id}
             onClick={() => onNavigate(tab.id)}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl transition-all duration-200 relative z-10 ${
-              isActive ? 'text-[#1D252D]' : 'text-gray-400'
-            }`}
+            className="flex flex-col items-center gap-0.5 relative transition-all duration-200"
           >
-            <Icon
-              className={`w-6 h-6 transition-transform duration-200 ${isActive ? 'scale-105' : 'scale-100'}`}
-              fill={isActive ? 'currentColor' : 'none'}
-              strokeWidth={1.5}
-            />
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+              isActive
+                ? 'bg-[#1D252D] text-white scale-110 shadow-lg shadow-[#1D252D]/25'
+                : 'text-gray-400 hover:text-gray-600'
+            }`}>
+              <Icon
+                className="w-[18px] h-[18px]"
+                fill={isActive ? 'currentColor' : 'none'}
+                strokeWidth={1.5}
+              />
+            </div>
             {badge !== undefined && badge > 0 && (
-              <span className="absolute -top-0.5 right-1 bg-red-500 text-white text-[10px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">
+              <span className="absolute -top-0.5 right-0 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center ring-2 ring-white/80">
                 {badge}
               </span>
             )}
-            <span className={`text-[10px] font-medium transition-all duration-200 ${isActive ? 'text-[#1D252D]' : ''}`}>{tab.label}</span>
+            {isActive && (
+              <span className="text-[9px] font-semibold text-[#1D252D] animate-[fadeIn_0.15s_ease-out]">{tab.label}</span>
+            )}
           </button>
         )
       })}

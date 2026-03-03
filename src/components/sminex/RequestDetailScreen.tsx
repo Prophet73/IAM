@@ -38,7 +38,7 @@ export default function RequestDetailScreen({
   const canRate = isResident && request.status === 'completed' && !request.rating
 
   return (
-    <div className="flex-1 overflow-y-auto animate-[fadeIn_0.2s_ease-out]">
+    <div className="flex-1 overflow-y-auto slide-in-right bg-[#F9F9F8]">
       <div className="px-5 pt-3 pb-6 space-y-4">
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -195,7 +195,7 @@ export default function RequestDetailScreen({
           {isManager && request.status === 'new' && (
             <button
               onClick={() => onTakeInWork(request.id)}
-              className="w-full bg-[#1D252D] text-white rounded-full py-3 text-sm font-semibold transition-opacity hover:opacity-90 active:scale-[0.97]"
+              className="w-full bg-[#1D252D] text-white rounded-full py-3 text-sm font-semibold transition-opacity hover:opacity-90 active:scale-[0.97] shadow-[0_8px_20px_rgba(29,37,45,0.25)]"
             >
               Взять в работу
             </button>

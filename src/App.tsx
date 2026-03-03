@@ -162,7 +162,6 @@ function Hero() {
     { num: '4', label: 'продукта в production' },
     { num: '12+', label: 'прототипов за 1.5 года' },
     { num: '10+', label: 'лет в строительстве' },
-    { num: 'МГСУ', label: 'Аспирантура' },
   ]
 
   return (
@@ -184,9 +183,9 @@ function Hero() {
                 <span className="bg-gradient-to-r from-accent to-purple bg-clip-text text-transparent">цифровизация строительства</span>
               </h1>
               <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-6">
-                Совмещаю 10-летний инженерный опыт в строительстве с full-stack разработкой.
-                Создаю и внедряю инструменты, которые автоматизируют процессы и сокращают
-                издержки, не плодя IT-зоопарк.
+                Совмещаю инженерный опыт в строительстве с full-stack разработкой.
+                Создаю инструменты, которые закрывают боли отрасли — от выдачи замечаний
+                до анализа смет и стенограмм совещаний.
               </p>
               {/* CTA кнопки */}
               <div className="flex flex-wrap gap-3">
@@ -220,8 +219,8 @@ function Hero() {
                 <div>
                   <div className="text-sm font-bold mb-1">Знать изнутри</div>
                   <p className="text-[0.85rem] text-muted leading-relaxed">
-                    Предвидеть узкие места задолго до дедлайна. Проектировать решения, которые
-                    с первого касания лечат реальную боль, а не проверяют гипотезы аналитиков.
+                    Предвидеть узкие места задолго до дедлайна. Проектировать то, что нужно
+                    на площадке, — а не то, что описал аналитик в брифе.
                   </p>
                 </div>
               </div>
@@ -246,7 +245,7 @@ function Hero() {
           </div>
 
           {/* Нижняя строка: статистика */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
+          <div className="grid grid-cols-3 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
             {stats.map((s) => (
               <div key={s.label} className="bg-surface/50 backdrop-blur-sm border border-border rounded-2xl p-4 flex items-center gap-4">
                 <div className="text-2xl font-extrabold text-accent font-display leading-none shrink-0">{s.num}</div>
@@ -292,10 +291,10 @@ function Products() {
 /* ── Approach (Methodology + BusinessValue) ── */
 function Approach() {
   const steps = [
-    { num: '01', title: 'Выявление узких мест', text: 'Изнутри процессов, без "исследований рынка".' },
-    { num: '02', title: 'Сборка MVP', text: 'Фокус на решении задачи, а не на перфекционизме кода.' },
-    { num: '03', title: 'Валидация', text: 'Пользователи голосуют использованием.' },
-    { num: '04', title: 'Масштабирование', text: 'Перевод успешных гипотез на единое ядро.' },
+    { num: '01', title: 'Выявление узких мест', text: 'Выхожу с ноутбуком на площадку. Бизнес-боль — из уст инженера СК, не из брифа.' },
+    { num: '02', title: 'Сборка MVP', text: 'За неделю — от мокапа до рабочего инструмента у пользователей.' },
+    { num: '03', title: 'Валидация', text: 'Инженеры начинают пользоваться каждый день — без давления руководства.' },
+    { num: '04', title: 'Масштабирование', text: 'Рабочая гипотеза переезжает на единое ядро AI-Hub с готовой авторизацией и RBAC.' },
   ]
 
   const cards = [
@@ -317,10 +316,10 @@ function Approach() {
       title: 'Прямой контакт с реальностью',
       text: (
         <>
-          Убираю эффект «испорченного телефона». Обычная цепочка передачи ТЗ от бизнеса к
-          разработчику теряет контекст. Совмещение 10-летнего опыта стройконтроля и написания
-          кода позволяет делать продукты, которые{' '}
-          <span className="text-text-primary font-semibold">с первого касания лечат реальную боль.</span>
+          Убираю эффект «испорченного телефона». Цепочка «бизнес → аналитик → разработчик»
+          теряет контекст и добавляет месяцы. Знаю стройку изнутри и пишу код — исключаю
+          промежуточное звено и делаю продукты,{' '}
+          <span className="text-text-primary font-semibold">которые работают с первого дня.</span>
         </>
       ),
       metric: 'Organic adoption без админ. ресурса',
@@ -402,48 +401,35 @@ function Research() {
   const experiments = [
     { desc: 'RAG-консультант по строительным нормам с гибридным поиском', tags: ['RAG', 'Gemini', 'Embeddings'] },
     { desc: 'Автоклассификация элементов BIM-моделей через LLM', tags: ['Ollama', 'IFC', 'ML'] },
-    { desc: 'AI-ассистент по документации бизнес-процессов', tags: ['RAG', 'BM25', 'ChromaDB'] },
-    { desc: 'Голосовой ассистент с распознаванием и синтезом речи', tags: ['STT', 'TTS', 'Gemini'] },
-    { desc: 'Real-time перевод аудио на совещаниях', tags: ['Whisper', 'WebSocket', 'Gemini'] },
-    { desc: 'Платформа конкурсов с голосованием и OAuth2', tags: ['FastAPI', 'React', 'OAuth2'] },
-    { desc: 'Канбан-система для AI-контента с автокатегоризацией', tags: ['Next.js', 'FastAPI', 'Gemini'] },
-    { desc: 'Telegram-бот для автоматического создания задач из ссылок', tags: ['aiogram', 'Gemini', 'API'] },
     { desc: 'AI-сравнение версий PDF-документации с визуализацией', tags: ['PyMuPDF', 'Gemini', 'PDF.js'] },
     { desc: 'Автоматический анализ стенограмм совещаний из СЭД', tags: ['Gemini', 'API', 'Pydantic'] },
+    { desc: 'Real-time перевод аудио на совещаниях', tags: ['Whisper', 'WebSocket', 'Gemini'] },
+    { desc: 'Голосовой ассистент с распознаванием и синтезом речи', tags: ['STT', 'TTS', 'Gemini'] },
     { desc: 'Парсинг и структурирование данных из реестров экспертизы', tags: ['Python', 'BeautifulSoup'] },
     { desc: 'Программная генерация документов по корпоративному брендбуку', tags: ['python-docx'] },
+    { desc: 'AI-ассистент по документации бизнес-процессов', tags: ['RAG', 'BM25', 'ChromaDB'] },
   ]
 
   const items = [
     {
-      title: 'AI-агенты и мультиагентные системы',
-      text: 'Архитектуры автономных агентов, context engineering, framework-ы для оркестрации. Применение в продуктах: Автопротокол, AI-Hub.',
-      tags: [{ label: 'LangChain', color: 'bg-purple-soft text-purple' }, { label: 'MCP Protocol', color: 'bg-purple-soft text-purple' }, { label: 'Claude Code', color: 'bg-purple-soft text-purple' }],
-    },
-    {
-      title: 'LLM: облачные и локальные модели',
-      text: 'Prompt engineering, structured output, RAG-системы. Практика с Gemini, Claude, GPT, Ollama (Llama, Mistral, Qwen).',
-      tags: [{ label: 'Gemini', color: 'bg-accent-soft text-accent' }, { label: 'Claude', color: 'bg-accent-soft text-accent' }, { label: 'Ollama', color: 'bg-accent-soft text-accent' }],
+      title: 'LLM и AI-агенты',
+      text: 'Архитектуры автономных агентов, RAG-системы, prompt engineering, structured output. Работа с Gemini, Claude, GPT, Ollama, локальным инференсом на GPU.',
+      tags: [{ label: 'LangChain', color: 'bg-purple-soft text-purple' }, { label: 'MCP Protocol', color: 'bg-purple-soft text-purple' }, { label: 'RAG', color: 'bg-purple-soft text-purple' }, { label: 'Ollama', color: 'bg-purple-soft text-purple' }],
     },
     {
       title: 'Speech & NLP',
-      text: 'Транскрипция, диаризация, анализ эмоций. Работа с WhisperX, pyannote, wav2vec2. Лемматизация русского языка.',
+      text: 'Транскрипция, диаризация, анализ эмоций. WhisperX, pyannote, wav2vec2. Real-time перевод совещаний и анализ стенограмм из СЭД.',
       tags: [{ label: 'WhisperX', color: 'bg-green-soft text-green' }, { label: 'pyannote', color: 'bg-green-soft text-green' }, { label: 'NLP', color: 'bg-green-soft text-green' }],
     },
     {
-      title: 'GPU и ML-инфраструктура',
-      text: 'Настройка GPU-серверов для инференса. CUDA-оптимизация. Деплой моделей в Docker. Мониторинг ресурсов.',
-      tags: [{ label: 'CUDA', color: 'bg-cyan-soft text-cyan' }, { label: 'PyTorch', color: 'bg-cyan-soft text-cyan' }, { label: 'Docker', color: 'bg-cyan-soft text-cyan' }],
-    },
-    {
-      title: 'Аспирантура и мат. аппарат',
-      text: 'Аспирантура МГСУ (ЭБСиГХ). Академический навык: структурировать сложную задачу, работать с данными и строить модели. Даёт системный подход к R&D — не только склеивать API, но и понимать что и зачем.',
+      title: 'Аспирантура и системный подход',
+      text: 'Аспирантура МГСУ (ЭБСиГХ). Академический навык структурировать сложную задачу, работать с данными и строить модели — фундамент для R&D в прикладных условиях.',
       tags: [{ label: 'МГСУ', color: 'bg-amber-soft text-amber' }, { label: 'Системотехника', color: 'bg-amber-soft text-amber' }, { label: 'Мат. моделирование', color: 'bg-amber-soft text-amber' }],
     },
     {
       title: 'AI-ассистированная разработка',
       text: 'Системная работа с Cursor и Claude Code. Архитектурное проектирование + AI-генерация. Многоагентные workflow для масштабных задач.',
-      tags: [{ label: 'Cursor', color: 'bg-red-soft text-red' }, { label: 'Claude Code', color: 'bg-red-soft text-red' }, { label: 'Vibe Coding', color: 'bg-red-soft text-red' }],
+      tags: [{ label: 'Cursor', color: 'bg-red-soft text-red' }, { label: 'Claude Code', color: 'bg-red-soft text-red' }, { label: 'Agentic dev', color: 'bg-red-soft text-red' }],
     },
   ]
 
@@ -459,7 +445,7 @@ function Research() {
           />
         </Reveal>
         <Reveal stagger>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
             {items.map((item) => (
               <div key={item.title} className="bg-bg border border-border rounded-xl p-5 transition-colors hover:border-accent/20">
                 <h4 className="text-sm font-bold mb-1">{item.title}</h4>
@@ -524,11 +510,16 @@ function Career() {
   ]
 
   return (
-    <section id="career" className="py-10">
+    <section id="career" className="py-16">
       <div className="max-w-[1080px] mx-auto px-8">
-        <div className="mb-5">
-          <h2 className="font-display text-base font-bold uppercase tracking-widest text-muted">Опыт</h2>
-        </div>
+        <Reveal>
+          <SectionHeader
+            tag="Опыт"
+            tagColor="bg-amber-soft text-amber"
+            title="Строительство и цифровизация"
+            subtitle="10 лет на объектах. Последние два — full-cycle разработка продуктов."
+          />
+        </Reveal>
         <div>
           {timeline.map((t, i) => (
             <div key={t.date} className="flex gap-4 items-stretch">
@@ -572,8 +563,8 @@ function Contact() {
             <div>
               <h2 className="font-display text-xl md:text-2xl font-bold mb-2">Давайте поговорим</h2>
               <p className="text-muted text-sm mb-5 max-w-[440px]">
-                Открыт к обсуждению форматов: R&D лаборатория, продуктовая разработка, автономный проект.
-                Ищу задачи, где нужно не раздавать поручения подрядчикам, а вести техническую реализацию руками и головой.
+                Ищу позицию, где строительная экспертиза + full-stack = готовый продукт.
+                Продуктовая разработка или внутреннее R&D с реальными пользователями в строительстве.
               </p>
               <div className="flex flex-col gap-2.5">
                 <a

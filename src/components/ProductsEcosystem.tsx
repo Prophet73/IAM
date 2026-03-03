@@ -118,7 +118,7 @@ export function ProductsEcosystem({
 function DetailCard({ product, demo }: { product: Product; demo?: React.ReactNode }) {
   const status = statusConfig[product.status]
   return (
-    <div className="flex flex-col px-5 py-4 border border-border rounded-2xl bg-surface relative overflow-y-auto max-h-[calc(100vh-10rem)] detail-card-in">
+    <div className="flex flex-col px-5 py-4 border border-border rounded-2xl bg-surface relative detail-card-in">
 
       {/* Header */}
       <div className="mb-3">

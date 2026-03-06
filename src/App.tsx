@@ -342,11 +342,11 @@ function Hero() {
           </div>
 
           {/* Нижняя строка: статистика */}
-          <div className="grid grid-cols-3 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
             {stats.map((s) => (
-              <div key={s.label} className="glass-panel rounded-2xl p-4 flex items-center gap-4">
-                <div className="text-3xl font-extrabold font-display leading-none shrink-0 bg-gradient-to-b from-text-primary to-muted bg-clip-text text-transparent">{s.num}</div>
-                <div className="text-xs text-muted leading-snug">{s.label}</div>
+              <div key={s.label} className="glass-panel rounded-2xl p-4 flex items-center gap-3">
+                <div className="text-2xl sm:text-3xl font-extrabold font-display leading-none shrink-0 bg-gradient-to-b from-text-primary to-muted bg-clip-text text-transparent">{s.num}</div>
+                <div className="text-xs text-muted leading-snug min-w-0">{s.label}</div>
               </div>
             ))}
           </div>
@@ -593,18 +593,18 @@ function Research() {
 /* ── Career ── */
 function Career() {
   const timeline = [
-    { date: '2016–2017', role: 'Инженер ПТО', place: 'МГСУ \u2022 Парк Зарядье', desc: 'Исполнительная документация, фасады и благоустройство' },
-    { date: '2018–2020', role: 'Строительно-технический эксперт', place: 'Судебная экспертиза', desc: 'Экспертиза и финансово-технический аудит. АО АККУЮ НУКЛЕАР, ВЦ «Павловопосадские платки»' },
-    { date: '2020–2021', role: 'Инженер СК', place: 'ТСК-ТИТУЛ', desc: 'Приёмка работ, проверка КС-2, накопительные. ЖК Discovery (MR Group), Савёловский-сити' },
-    { date: '2021–2024', role: 'Инженер → ведущий инженер СК', place: 'Severin Development', desc: 'ЖК FORIVER (InGrad/Sminex) — 11 корпусов, 3 года на объекте, получение ЗОС' },
-    { date: '2024', role: 'Руководитель группы СК / Департамент качества', place: 'Severin Development', desc: 'Координация 20+ инженеров. Регламенты, шаблоны для проектных команд' },
     { date: '2024–н.в.', role: 'Департамент цифровой трансформации', place: 'Severin Development', desc: '4 продукта в production, ~10 прототипов. Full-cycle R&D — от идеи до внедрения', active: true },
+    { date: '2024', role: 'Руководитель группы СК / Департамент качества', place: 'Severin Development', desc: 'Координация 20+ инженеров. Регламенты, шаблоны для проектных команд' },
+    { date: '2021–2024', role: 'Инженер → ведущий инженер СК', place: 'Severin Development', desc: 'ЖК FORIVER (InGrad/Sminex) — 11 корпусов, 3 года на объекте, получение ЗОС' },
+    { date: '2020–2021', role: 'Инженер СК', place: 'ТСК-ТИТУЛ', desc: 'Приёмка работ, проверка КС-2, накопительные. ЖК Discovery (MR Group), Савёловский-сити' },
+    { date: '2018–2020', role: 'Строительно-технический эксперт', place: 'Судебная экспертиза', desc: 'Экспертиза и финансово-технический аудит. АО АККУЮ НУКЛЕАР, ВЦ «Павловопосадские платки»' },
+    { date: '2016–2017', role: 'Инженер ПТО', place: 'МГСУ \u2022 Парк Зарядье', desc: 'Исполнительная документация, фасады и благоустройство' },
   ]
 
   const edu = [
-    { date: '2014–2018', text: 'Бакалавриат, ПГС' },
-    { date: '2018–2020', text: 'Магистратура, ПГС' },
     { date: '2021–2025', text: 'Аспирантура, ЭБСиГХ' },
+    { date: '2018–2020', text: 'Магистратура, ПГС' },
+    { date: '2014–2018', text: 'Бакалавриат, ПГС' },
   ]
 
   return (
@@ -620,7 +620,7 @@ function Career() {
         </Reveal>
         <div>
           {timeline.map((t, i) => (
-            <div key={t.date} className="flex gap-4 items-stretch">
+            <div key={t.date} className="group flex gap-4 items-stretch">
               <div className="w-[76px] shrink-0 text-right pt-0.5">
                 <div className="text-xs font-semibold text-accent leading-tight">{t.date}</div>
               </div>
@@ -628,10 +628,15 @@ function Career() {
                 <div className={`w-2 h-2 rounded-full border-2 border-accent mt-1 ${t.active ? 'bg-accent' : 'bg-bg'}`} />
                 {i < timeline.length - 1 && <div className="w-px flex-1 bg-border mt-1" />}
               </div>
-              <div className={`${i < timeline.length - 1 ? 'pb-3' : 'pb-0'}`}>
-                <div className="text-sm font-semibold leading-tight">{t.role}</div>
-                <div className="text-xs text-accent/60 font-medium">{t.place}</div>
-                <div className="text-xs text-muted leading-snug mt-0.5">{t.desc}</div>
+              <div className={`relative rounded-xl px-3 py-1.5 -ml-1 transition-colors duration-300 hover:bg-surface-2/50 ${i < timeline.length - 1 ? 'pb-3' : 'pb-0'}`}>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none overflow-hidden rounded-xl">
+                  <span className="absolute -right-2 top-1/2 -translate-y-1/2 text-[3.5rem] font-extrabold text-accent/[0.04] leading-none select-none whitespace-nowrap">{t.place.split(' ')[0]}</span>
+                </div>
+                <div className="relative z-10">
+                  <div className="text-sm font-semibold leading-tight">{t.role}</div>
+                  <div className="text-xs text-accent/60 font-medium">{t.place}</div>
+                  <div className="text-xs text-muted leading-snug mt-0.5">{t.desc}</div>
+                </div>
               </div>
             </div>
           ))}

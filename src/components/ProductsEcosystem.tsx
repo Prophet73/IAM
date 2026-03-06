@@ -111,21 +111,40 @@ export function ProductsEcosystem({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[42%_1fr] gap-8 lg:gap-12 items-start">
 
-      {/* ── Mobile: tab pills ── */}
-      <div className="flex lg:hidden flex-wrap gap-2 justify-center">
-        {products.map(p => (
-          <button
-            key={p.id}
-            onClick={() => setSelectedId(p.id)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all border ${
-              selectedId === p.id
-                ? 'bg-accent text-white border-accent'
-                : 'bg-surface border-border text-muted hover:text-text-primary hover:border-accent/40'
-            }`}
-          >
-            {p.name}
-          </button>
-        ))}
+      {/* ── Mobile: product grid ── */}
+      <div className="lg:hidden">
+        <div className="grid grid-cols-3 gap-2 mb-2">
+          {products.slice(0, 3).map(p => {
+            const st = statusConfig[p.status]
+            const active = selectedId === p.id
+            return (
+              <button key={p.id} onClick={() => setSelectedId(p.id)}
+                className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-[12px] font-semibold transition-all border ${
+                  active ? 'bg-accent text-white border-accent shadow-lg shadow-accent/20' : 'bg-surface border-border text-muted'
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : st.dotColor}`} />
+                {p.name}
+              </button>
+            )
+          })}
+        </div>
+        <div className="grid grid-cols-2 gap-2 max-w-[67%] mx-auto">
+          {products.slice(3).map(p => {
+            const st = statusConfig[p.status]
+            const active = selectedId === p.id
+            return (
+              <button key={p.id} onClick={() => setSelectedId(p.id)}
+                className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-[12px] font-semibold transition-all border ${
+                  active ? 'bg-accent text-white border-accent shadow-lg shadow-accent/20' : 'bg-surface border-border text-muted'
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : st.dotColor}`} />
+                {p.name}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* ── Ecosystem graph (desktop — sticky) ── */}
@@ -187,12 +206,11 @@ export function ProductsEcosystem({
 
       {/* ── Detail cards: mobile shows only selected, desktop shows all ── */}
       <div className="flex flex-col gap-6 lg:gap-[40vh] lg:pt-[30vh] lg:pb-[50vh] relative z-10">
-        {/* Mobile: single card */}
+        {/* Mobile: compact card */}
         <div className="lg:hidden">
-          <DetailCard
+          <MobileCard
             product={products.find(p => p.id === selectedId)!}
             demo={demos[selectedId]}
-            isActive={true}
           />
         </div>
 
@@ -240,6 +258,49 @@ function Spotlight({ children, isActive }: { children: React.ReactNode; isActive
         }}
       />
       <div className="relative z-[2]">{children}</div>
+    </div>
+  )
+}
+
+/* ── Mobile compact card ── */
+function MobileCard({
+  product,
+  demo,
+}: {
+  product: Product
+  demo?: React.ReactNode
+}) {
+  const status = statusConfig[product.status]
+  return (
+    <div className="border border-border/60 border-t-white/[0.06] rounded-2xl bg-surface/60 backdrop-blur-xl spring-card opacity-100 scale-100 shadow-2xl">
+      <div className="px-5 py-4">
+        {/* Header */}
+        <div className="mb-3">
+          <div className="flex items-center gap-2 mb-1">
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dotColor}`} />
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${status.textColor}`}>{status.label}</span>
+          </div>
+          <h3 className="font-display text-xl font-bold text-text-primary">{product.name}</h3>
+          <p className="text-muted text-xs mt-0.5">{product.oneliner}</p>
+        </div>
+
+        {/* Metrics */}
+        <div className="grid grid-cols-3 gap-2">
+          {product.metrics.map((m, i) => (
+            <div key={i} className="bg-surface-2 rounded-lg px-2 py-2 text-center">
+              <div className="text-base font-extrabold text-green leading-tight">{m.value}</div>
+              <div className="text-[10px] text-muted mt-0.5 leading-tight">{m.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA demo block */}
+        {demo && (
+          <div className="mt-4 pt-3 border-t border-border">
+            {demo}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

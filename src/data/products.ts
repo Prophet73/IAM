@@ -32,7 +32,7 @@ export const products: Product[] = [
   },
   {
     id: 'autoprotocol',
-    name: 'Автопротокол v2',
+    name: 'Автопротокол',
     oneliner: 'ML-система автоматического протоколирования совещаний',
     status: 'production',
     metrics: [

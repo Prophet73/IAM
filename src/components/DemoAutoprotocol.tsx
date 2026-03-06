@@ -38,14 +38,366 @@ export function DemoAutoprotocol() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-bold">Запустить демо</div>
-            <div className="text-xs text-muted mt-0.5">Интерактивный концепт (live-демо)</div>
+            <div className="text-sm font-bold"><span className="hidden md:inline">Запустить демо</span><span className="md:hidden">Обзор продукта</span></div>
+            <div className="text-xs text-muted mt-0.5"><span className="hidden md:inline">Интерактивный концепт (live-демо)</span><span className="md:hidden">6 слайдов о возможностях</span></div>
           </div>
           <svg className="btn-premium-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
       {open && <Modal onClose={handleClose} />}
     </>
+  )
+}
+
+/* ===== MOBILE TEASER (Stories format) ===== */
+function MobileTeaser({ onClose }: { onClose: () => void }) {
+  const TOTAL = 6
+  const DURATION = 5000
+  const TICK = 50
+  const ACCENT = '#8B5CF6'
+  const [activeSlide, setActiveSlide] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+
+  // Pipeline animation for slide 1
+  const [pipeProgress, setPipeProgress] = useState(0)
+  const [pipeStageIdx, setPipeStageIdx] = useState(0)
+  useEffect(() => {
+    if (activeSlide !== 1) { setPipeProgress(0); setPipeStageIdx(0); return }
+    if (pipeProgress >= 100) return
+    const id = setInterval(() => {
+      setPipeProgress(p => {
+        const next = Math.min(p + 0.8, 100)
+        setPipeStageIdx(Math.min(Math.floor(next / (100 / 7)), 6))
+        return next
+      })
+    }, 50)
+    return () => clearInterval(id)
+  }, [activeSlide, pipeProgress])
+
+  // Auto-advance (pause on slide 1 until pipeline finishes)
+  const pipelineBusy = activeSlide === 1 && pipeProgress < 100
+  useEffect(() => {
+    if (isPaused || pipelineBusy) return
+    const id = setInterval(() => {
+      setProgress(prev => {
+        const next = prev + (100 / (DURATION / TICK))
+        if (next >= 100) {
+          setActiveSlide(s => s < TOTAL - 1 ? s + 1 : s)
+          return 0
+        }
+        return next
+      })
+    }, TICK)
+    return () => clearInterval(id)
+  }, [isPaused, activeSlide, pipelineBusy])
+
+  useEffect(() => { setProgress(0) }, [activeSlide])
+
+  const goNext = () => { if (activeSlide < TOTAL - 1) setActiveSlide(s => s + 1) }
+  const goPrev = () => { if (activeSlide > 0) setActiveSlide(s => s - 1) }
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    if (x < rect.width / 3) goPrev(); else goNext()
+  }
+
+  const Slide = ({ title, children, caption }: { title: string; children: React.ReactNode; caption: string }) => (
+    <div className="flex flex-col items-center h-full px-6 pt-14 pb-6 text-center">
+      <h2 className="text-[22px] font-extrabold text-white mb-auto leading-tight">{title}</h2>
+      <div className="w-full flex-1 flex items-center justify-center py-4">{children}</div>
+      <p className="text-[14px] text-white/50 leading-relaxed max-w-[300px] mt-auto">{caption}</p>
+    </div>
+  )
+
+  const pipeStages = [
+    { name: 'Извлечение аудио', tech: 'FFmpeg' },
+    { name: 'Детекция речи', tech: 'Silero VAD' },
+    { name: 'Транскрипция', tech: 'WhisperX' },
+    { name: 'Диаризация', tech: 'pyannote 3.1' },
+    { name: 'Перевод', tech: 'LLM' },
+    { name: 'Анализ эмоций', tech: 'wav2vec2' },
+    { name: 'Генерация артефактов', tech: 'LLM' },
+  ]
+  const pipeDone = pipeProgress >= 100
+
+  const slides: React.ReactNode[] = [
+    /* 0 -- Проблема */
+    <Slide key={0} title="Ручное протоколирование?" caption="Администратор проекта расшифровывает записи вручную, структурирует повестку и распределяет поручения.">
+      <div className="w-full max-w-[300px] space-y-3">
+        <div className="bg-white/[0.07] border border-white/10 rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-11 h-11 rounded-xl bg-purple-500/20 flex items-center justify-center shrink-0">
+            <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          </div>
+          <div className="text-left flex-1 min-w-0">
+            <div className="text-[12px] font-semibold text-white truncate">production_meeting.mp4</div>
+            <div className="text-[10px] text-white/35">1:23:45 · 847 МБ</div>
+          </div>
+        </div>
+        {['Расшифровка — 3+ часа вручную', 'Идентификация спикеров — вручную', 'Поручения теряются в переписке'].map(t => (
+          <div key={t} className="flex items-center gap-3 rounded-xl px-4 py-2.5 bg-red-500/10 border border-red-500/10">
+            <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            <span className="text-[13px] text-white/70">{t}</span>
+          </div>
+        ))}
+      </div>
+    </Slide>,
+
+    /* 1 -- ML-пайплайн */
+    <Slide key={1} title="7 этапов обработки" caption="Celery + Redis + GPU. Час записи обрабатывается примерно за 5 минут.">
+      <div className="w-full max-w-[300px]">
+        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden mb-4">
+          <div className="h-full rounded-full transition-all duration-75" style={{ width: `${pipeProgress}%`, background: ACCENT }} />
+        </div>
+        <div className="space-y-1">
+          {pipeStages.map((s, i) => {
+            const completed = pipeDone || i < pipeStageIdx
+            const active = i === pipeStageIdx && !pipeDone
+            return (
+              <div key={s.name} className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-all ${active ? 'bg-white/10 border border-purple-500/20' : ''}`}>
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] shrink-0 ${completed ? 'bg-green-500/20 text-green-400' : active ? 'bg-purple-500/20 text-purple-400' : 'bg-white/5 text-white/20'}`}>
+                  {completed ? '✓' : <span className="text-[9px]">{i + 1}</span>}
+                </div>
+                <span className={`text-[12px] flex-1 text-left ${completed ? 'text-white/40 line-through' : active ? 'text-white font-medium' : 'text-white/30'}`}>{s.name}</span>
+                <span className={`text-[9px] font-mono ${active ? 'text-purple-400' : 'text-white/15'}`}>{s.tech}</span>
+                {active && <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: ACCENT }} />}
+              </div>
+            )
+          })}
+        </div>
+        {pipeDone && (
+          <div className="flex justify-center gap-4 mt-3 pt-3 border-t border-white/5">
+            {[{ v: '~5 мин', l: 'на час записи' }, { v: '5', l: 'спикеров' }, { v: '90+', l: 'языков' }].map(s => (
+              <div key={s.l} className="text-center">
+                <div className="text-[15px] font-extrabold text-white">{s.v}</div>
+                <div className="text-[9px] text-white/30">{s.l}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </Slide>,
+
+    /* 2 -- Артефакты */
+    <Slide key={2} title="5 документов на выходе" caption="Все артефакты формируются автоматически на основе structured output LLM.">
+      <div className="w-full max-w-[300px] space-y-2">
+        {[
+          { icon: '\uD83D\uDEE1\uFE0F', name: 'Risk Brief', ext: 'PDF', desc: 'Матрица рисков, root cause', color: '#EF4444' },
+          { icon: '\uD83D\uDCCA', name: 'Excel-отчёт', ext: 'XLSX', desc: 'Задачи, сроки, приоритеты', color: '#10B981' },
+          { icon: '\uD83D\uDCC4', name: 'Word-протокол', ext: 'DOCX', desc: 'Резюме, повестка, решения', color: '#3B82F6' },
+          { icon: '\uD83D\uDCD6', name: 'Конспект', ext: 'DOCX', desc: 'Краткий пересказ совещания', color: '#F59E0B' },
+          { icon: '\uD83D\uDCDD', name: 'Транскрипция', ext: 'TXT', desc: 'Полный текст с таймкодами', color: '#8B5CF6' },
+        ].map(d => (
+          <div key={d.name} className="flex items-center gap-3 rounded-xl px-4 py-3 bg-white/[0.07] border border-white/10">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0" style={{ background: `${d.color}20` }}>{d.icon}</div>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="text-[13px] font-semibold text-white">{d.name}</div>
+              <div className="text-[11px] text-white/35">{d.desc}</div>
+            </div>
+            <span className="text-[9px] font-bold px-2 py-0.5 rounded" style={{ background: `${d.color}20`, color: d.color }}>{d.ext}</span>
+          </div>
+        ))}
+      </div>
+    </Slide>,
+
+    /* 3 -- Бизнес-домены */
+    <Slide key={3} title="Домены и доступы" caption="Каждый домен — собственная структура отчётов, шаблоны артефактов и разграничение доступа.">
+      <div className="w-full max-w-[300px]">
+        {/* Domain cards */}
+        <div className="space-y-2 mb-4">
+          {[
+            { name: 'Строительство', icon: '🏗', users: 12, docs: 'Risk Brief, акты, НТД', active: true },
+            { name: 'HR', icon: '👥', users: 5, docs: 'Оценка кандидатов, резюме', active: false },
+            { name: 'IT', icon: '⟨/⟩', users: 8, docs: 'Техпротокол, задачи', active: false },
+          ].map(d => (
+            <div key={d.name} className={`flex items-center gap-3 rounded-xl px-4 py-2.5 border ${d.active ? 'bg-purple-500/15 border-purple-500/30' : 'bg-white/5 border-white/5 opacity-50'}`}>
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-base shrink-0 ${d.active ? 'bg-purple-500/20' : 'bg-white/5'}`}>{d.icon}</div>
+              <div className="text-left flex-1 min-w-0">
+                <div className={`text-[13px] font-semibold ${d.active ? 'text-white' : 'text-white/60'}`}>{d.name}</div>
+                <div className="text-[10px] text-white/30">{d.docs}</div>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <svg className="w-3.5 h-3.5 text-white/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span className="text-[10px] text-white/30">{d.users}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Hint */}
+        <div className="bg-white/[0.04] border border-white/5 rounded-xl px-4 py-2.5 text-[11px] text-white/30 text-left">
+          + ещё 2 домена · у каждого свой шаблон артефактов и отдельный личный кабинет
+        </div>
+      </div>
+    </Slide>,
+
+    /* 4 -- Кабинет руководителя */
+    <Slide key={4} title="Кабинет руководителя" caption="Все проекты, совещания и артефакты — в одном интерфейсе для каждого руководителя.">
+      <div className="w-full max-w-[320px]">
+        {/* Project pills */}
+        <div className="flex gap-1.5 mb-3 overflow-x-auto">
+          <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-purple-500/20 border border-purple-500/30 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+            <span className="text-[10px] font-semibold text-white">Все</span>
+          </div>
+          <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-white/5 border border-white/5 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+            <span className="text-[10px] text-white/50">Казань Озеро</span>
+          </div>
+          <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-white/5 border border-white/5 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            <span className="text-[10px] text-white/50">Сколково Парк</span>
+          </div>
+        </div>
+
+        {/* Weekly calendar with event bars */}
+        <div className="bg-white/[0.07] border border-white/10 rounded-xl p-3 mb-2.5">
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="text-[11px] font-semibold text-white">3 — 7 марта</span>
+            <span className="text-[8px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-medium">Неделя</span>
+          </div>
+          <div className="space-y-[3px]">
+            {[
+              { day: 'пн', d: 3, events: [{ name: 'Казань Озеро', code: '1041', color: '#EF4444' }, { name: 'Сколково Парк', code: '2073', color: '#F59E0B' }] },
+              { day: 'вт', d: 4, events: [] },
+              { day: 'ср', d: 5, events: [{ name: 'Казань Озеро', code: '1041', color: '#EF4444' }] },
+              { day: 'чт', d: 6, events: [{ name: 'Ростов Центр', code: '3012', color: '#3B82F6' }] },
+              { day: 'пт', d: 7, events: [{ name: 'Сколково Парк', code: '2073', color: '#F59E0B' }, { name: 'Казань Озеро', code: '1041', color: '#EF4444' }] },
+            ].map(row => (
+              <div key={row.d} className="flex items-center gap-2">
+                <div className="w-[28px] shrink-0 text-right">
+                  <span className="text-[8px] text-white/20 mr-1">{row.day}</span>
+                  <span className="text-[9px] text-white/40 font-medium">{row.d}</span>
+                </div>
+                <div className="flex-1 flex flex-col gap-[2px] min-h-[16px]">
+                  {row.events.map(ev => (
+                    <div key={ev.code + row.d} className="h-[14px] rounded-[3px] px-1.5 flex items-center truncate" style={{ background: ev.color }}>
+                      <span className="text-[7px] font-bold text-white truncate">[{ev.code}] {ev.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Требуют внимания */}
+        <div className="bg-white/[0.04] border border-white/5 rounded-xl p-2.5">
+          <div className="text-[9px] text-white/25 font-bold mb-1.5">Требуют внимания</div>
+          {[
+            { text: 'Не подтверждено выделение электромощности', proj: 'Казань Озеро' },
+            { text: 'Нет согласования расхода воды', proj: 'Сколково Парк' },
+          ].map(t => (
+            <div key={t.text} className="flex items-start gap-2 mb-1.5 last:mb-0">
+              <svg className="w-3 h-3 text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div className="text-left">
+                <div className="text-[9px] text-white/50 leading-snug">{t.text}</div>
+                <div className="text-[8px] text-white/20">{t.proj} · протокол 03.03</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Slide>,
+
+    /* 5 -- Уведомления и эскалация */
+    <div key={5} className="flex flex-col items-center h-full px-6 pt-14 pb-6">
+      <h2 className="text-[22px] font-extrabold text-white leading-tight text-center mb-5">Уведомления и эскалация</h2>
+
+      <div className="w-full max-w-[320px] mb-auto">
+        {/* Flow steps */}
+        <div className="relative pl-6 space-y-3 mb-4">
+          <div className="absolute left-[9px] top-2 bottom-2 w-px bg-gradient-to-b from-purple-500/40 via-blue-500/40 to-red-500/40" />
+
+          <div className="relative">
+            <div className="absolute left-[-18px] top-1 w-[13px] h-[13px] rounded-full bg-purple-500/30 border-2 border-purple-400 flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+            </div>
+            <div className="text-[13px] font-semibold text-white">Исполнитель загружает запись</div>
+            <div className="text-[11px] text-white/35">Валидация и запуск обработки</div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute left-[-18px] top-1 w-[13px] h-[13px] rounded-full bg-blue-500/30 border-2 border-blue-400 flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+            </div>
+            <div className="text-[13px] font-semibold text-white">Артефакты → руководителю проекта</div>
+            <div className="text-[11px] text-white/35">Закреплённый РП получает документы автоматически</div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute left-[-18px] top-1 w-[13px] h-[13px] rounded-full bg-red-500/30 border-2 border-red-400 flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
+            </div>
+            <div className="text-[13px] font-semibold text-red-400">Критический риск → эскалация</div>
+            <div className="text-[11px] text-white/35">AI-анализ выявил риск — уведомление уровнем выше</div>
+          </div>
+        </div>
+
+        {/* Email preview */}
+        <div className="bg-white/[0.06] border border-red-500/15 rounded-xl overflow-hidden">
+          <div className="bg-red-500/10 px-3.5 py-2 flex items-center gap-2">
+            <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4l-10 8L2 4"/></svg>
+            <span className="text-[11px] font-bold text-red-300">Обнаружены критические риски</span>
+          </div>
+          <div className="px-3.5 py-3 space-y-1.5">
+            <div className="flex justify-between text-[10px]">
+              <span className="text-white/30">Проект</span>
+              <span className="text-white/60 font-medium">ЖК Казань Озеро</span>
+            </div>
+            <div className="flex justify-between text-[10px]">
+              <span className="text-white/30">Статус</span>
+              <span className="text-red-400 font-bold">Критический</span>
+            </div>
+            <div className="flex justify-between text-[10px]">
+              <span className="text-white/30">Дата</span>
+              <span className="text-white/60">18.02.2026 07:20</span>
+            </div>
+            <div className="text-[10px] text-white/40 leading-snug pt-1 border-t border-white/5 mt-1">
+              По результатам анализа совещания выявлены риски, требующие вашего внимания.
+            </div>
+            <div className="text-[10px] text-purple-400 font-medium pt-0.5">Открыть дашборд →</div>
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={onClose}
+        className="px-8 py-3 rounded-2xl text-white text-[15px] font-bold border-none cursor-pointer shadow-lg active:scale-95 transition-transform mb-2 w-full max-w-[320px]"
+        style={{ background: ACCENT, boxShadow: '0 10px 25px rgba(139,92,246,0.3)' }}
+      >
+        Закрыть превью
+      </button>
+      <div className="flex items-center gap-1.5 text-[11px] text-white/30">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <span>Полноэкранное демо — на ПК</span>
+      </div>
+    </div>,
+  ]
+
+  return (
+    <div
+      className="flex md:hidden flex-col h-full bg-[#0a0a0f] relative select-none"
+      onClick={handleClick}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+    >
+      <div className="absolute top-0 left-0 right-0 z-30 flex gap-1 px-3 pt-3">
+        {Array.from({ length: TOTAL }).map((_, i) => (
+          <div key={i} className="flex-1 h-[3px] rounded-full bg-white/20 overflow-hidden">
+            <div
+              className="h-full bg-white rounded-full transition-none"
+              style={{ width: `${i < activeSlide ? 100 : i === activeSlide ? progress : 0}%` }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Close button is rendered by parent Modal */}
+
+      <div key={activeSlide} className="flex-1 min-h-0 animate-[fadeIn_0.35s_ease-out]">
+        {slides[activeSlide]}
+      </div>
+    </div>
   )
 }
 
@@ -65,7 +417,9 @@ function Modal({ onClose }: { onClose: () => void }) {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="demo-modal-enter relative w-full max-w-[1400px] rounded-2xl overflow-hidden shadow-2xl flex flex-col" style={{ height: '90vh', maxHeight: '920px' }} onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center cursor-pointer border-none transition-colors text-lg" aria-label="Close">&times;</button>
-        <div className="flex flex-1 min-h-0">
+        {/* Mobile teaser */}
+        <MobileTeaser onClose={onClose} />
+        <div className="hidden md:flex flex-1 min-h-0">
           {/* Sidebar — WHITE */}
           <div className="w-[240px] bg-white border-r border-slate-200 flex flex-col shrink-0">
             <div className="h-14 flex items-center px-4 border-b border-slate-200">
@@ -237,7 +591,7 @@ function PgUpload() {
             </div>
           </div>
         </div>
-        <button className="w-full py-3 bg-[#E52713] text-white rounded-xl text-[0.85rem] font-semibold border-none cursor-pointer hover:bg-[#E52713]/90 transition-colors flex items-center justify-center gap-2">
+        <button className="w-full py-3 bg-[#E52713] text-white rounded-xl text-[0.85rem] font-semibold border-none cursor-pointer hover:bg-[#E52713]/90 transition-colors flex items-center justify-center gap-2 animate-guide-pulse">
           <span>⚡</span> Обработать
         </button>
       </div>

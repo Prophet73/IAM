@@ -52,14 +52,302 @@ export function DemoAIHub() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-bold">Запустить демо</div>
-            <div className="text-xs text-muted mt-0.5">Интерактивный концепт (live-демо)</div>
+            <div className="text-sm font-bold"><span className="hidden md:inline">Запустить демо</span><span className="md:hidden">Обзор продукта</span></div>
+            <div className="text-xs text-muted mt-0.5"><span className="hidden md:inline">Интерактивный концепт (live-демо)</span><span className="md:hidden">6 слайдов о возможностях</span></div>
           </div>
           <svg className="btn-premium-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
       {open && <Modal onClose={handleClose} />}
     </>
+  )
+}
+
+/* ===== MOBILE TEASER (Stories format) ===== */
+function MobileTeaser({ onClose }: { onClose: () => void }) {
+  const TOTAL = 6
+  const DURATION = 5000 // ms per slide
+  const TICK = 50
+  const [activeSlide, setActiveSlide] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+
+  // Auto-advance timer
+  useEffect(() => {
+    if (isPaused) return
+    const id = setInterval(() => {
+      setProgress(prev => {
+        const next = prev + (100 / (DURATION / TICK))
+        if (next >= 100) {
+          setActiveSlide(s => {
+            if (s < TOTAL - 1) return s + 1
+            return s // stay on last
+          })
+          return 0
+        }
+        return next
+      })
+    }, TICK)
+    return () => clearInterval(id)
+  }, [isPaused, activeSlide])
+
+  // Reset progress on slide change
+  useEffect(() => { setProgress(0) }, [activeSlide])
+
+  const goNext = () => { if (activeSlide < TOTAL - 1) { setActiveSlide(s => s + 1) } }
+  const goPrev = () => { if (activeSlide > 0) { setActiveSlide(s => s - 1) } }
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    if (x < rect.width / 3) goPrev()
+    else goNext()
+  }
+
+  /* ── Slide icons (inline SVGs) ── */
+  const IcoServer = () => (
+    <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/>
+      <line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>
+      {/* "crash" X */}
+      <line x1="16" y1="4" x2="20" y2="8" className="text-red-400" stroke="currentColor"/><line x1="20" y1="4" x2="16" y2="8" className="text-red-400" stroke="currentColor"/>
+    </svg>
+  )
+  const IcoShield = () => (
+    <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4" strokeWidth="2"/>
+    </svg>
+  )
+  const IcoEye = () => (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+  )
+  const IcoEyeOff = () => (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+  )
+  const IcoBot = () => (
+    <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8.5" cy="16" r="1.5"/><circle cx="15.5" cy="16" r="1.5"/><path d="M12 2v5M8 8h8"/>
+    </svg>
+  )
+  const IcoMonitor = () => (
+    <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+    </svg>
+  )
+
+  /* ── Slide layout: title top → visual center → caption bottom ── */
+  const S = ({ title, children, caption }: { title: string; children: React.ReactNode; caption: string }) => (
+    <div className="flex flex-col items-center h-full px-6 pt-14 pb-6 text-center">
+      <h2 className="text-[22px] font-extrabold text-white mb-auto leading-tight">{title}</h2>
+      <div className="w-full flex-1 flex items-center justify-center py-4">{children}</div>
+      <p className="text-[14px] text-white/50 leading-relaxed max-w-[300px] mt-auto">{caption}</p>
+    </div>
+  )
+
+  /* ── Slides ── */
+  const slides: React.ReactNode[] = [
+    /* 0 — Проблема */
+    <S key={0} title="Зоопарк систем?" caption="Десятки паролей, нет контроля доступов и понимания — кто чем пользуется.">
+      <div className="grid grid-cols-3 gap-2.5 w-full max-w-[280px]">
+        {[
+          { name: 'Смета', color: '#10B981', pw: '••••••' },
+          { name: 'Почта', color: '#3B82F6', pw: '••••••••' },
+          { name: 'CRM', color: '#8B5CF6', pw: '•••••' },
+          { name: 'Склад', color: '#F59E0B', pw: '•••••••' },
+          { name: 'Кадры', color: '#EC4899', pw: '••••••' },
+          { name: '1С', color: '#6B7280', pw: '••••' },
+        ].map(a => (
+          <div key={a.name} className="bg-white/5 border border-white/10 rounded-xl p-2.5 flex flex-col items-center gap-1.5">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white" style={{ background: a.color }}>{a.name.slice(0,2)}</div>
+            <div className="text-[10px] text-white/50">{a.name}</div>
+            <div className="text-[9px] text-red-400/60 font-mono">{a.pw}</div>
+          </div>
+        ))}
+      </div>
+    </S>,
+
+    /* 1 — Решение (SSO) */
+    <S key={1} title="Единая точка входа" caption="Active Directory (ADFS) + OAuth2. Один аккаунт — доступ ко всей экосистеме.">
+      <div className="w-full max-w-[260px] bg-white/[0.07] border border-white/10 rounded-2xl p-5">
+        <div className="w-10 h-10 rounded-xl bg-[#E52713] flex items-center justify-center text-white text-[11px] font-bold mx-auto mb-3">AI</div>
+        <div className="text-[11px] text-white/40 mb-4">Корпоративная авторизация</div>
+        <div className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 mb-2 text-left">
+          <div className="text-[10px] text-white/30 mb-0.5">Логин</div>
+          <div className="text-[12px] text-white/70 font-mono">ivanov@company.ru</div>
+        </div>
+        <div className="bg-[#E52713] rounded-lg py-2.5 text-center text-[12px] text-white font-semibold mb-3">Войти через ADFS</div>
+        <div className="flex items-center justify-center gap-3">
+          {[
+            { n: 'DataBook', c: '#3B82F6' },
+            { n: 'CM', c: '#10B981' },
+            { n: 'АП', c: '#8B5CF6' },
+            { n: 'Puls', c: '#F59E0B' },
+          ].map(s => (
+            <div key={s.n} className="w-9 h-9 rounded-lg flex items-center justify-center text-[8px] text-white font-medium" style={{ background: `${s.c}30` }}>{s.n}</div>
+          ))}
+        </div>
+        <div className="text-[9px] text-white/25 mt-2">→ один вход — все сервисы</div>
+      </div>
+    </S>,
+
+    /* 2 — Разграничение доступов */
+    <S key={2} title="Изоляция доступов" caption="Каждый департамент видит только свои сервисы. Лишних данных — ноль.">
+      <div className="w-full max-w-[300px] space-y-3">
+        {[
+          { dept: 'Сметный отдел', app: 'CostManager', visible: true },
+          { dept: 'Стройка', app: 'Автопротокол', visible: true },
+          { dept: 'HR', app: 'Скрыто', visible: false },
+        ].map(r => (
+          <div key={r.dept} className={`flex items-center justify-between rounded-xl px-4 py-3 ${r.visible ? 'bg-white/10 border border-white/10' : 'bg-white/5 border border-white/5 opacity-50'}`}>
+            <div className="text-left">
+              <div className="text-[13px] font-semibold text-white">{r.dept}</div>
+              <div className="text-[11px] text-white/40">{r.app}</div>
+            </div>
+            <div className={r.visible ? 'text-green-400' : 'text-red-400'}>{r.visible ? <IcoEye /> : <IcoEyeOff />}</div>
+          </div>
+        ))}
+      </div>
+    </S>,
+
+    /* 3 — Мониторинг и аудит */
+    <S key={3} title="Контроль" caption="Статистика, история входов и аудит действий — в реальном времени.">
+      <div className="w-full max-w-[310px] bg-white/[0.05] border border-white/10 rounded-2xl p-4">
+        {/* KPI row */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {[
+            { v: '142', l: 'Сессии', c: 'text-white' },
+            { v: '47', l: 'Юзеры', c: 'text-green-400' },
+            { v: '1.2K', l: 'Запросы', c: 'text-[#E52713]' },
+          ].map(k => (
+            <div key={k.l} className="text-center">
+              <div className={`text-xl font-extrabold ${k.c}`}>{k.v}</div>
+              <div className="text-[9px] text-white/35 uppercase tracking-wider">{k.l}</div>
+            </div>
+          ))}
+        </div>
+        {/* Mini bar chart */}
+        <div className="flex items-end gap-1.5 h-[56px] px-1 mb-1.5">
+          {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 50].map((h, i) => (
+            <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, background: i === 9 ? '#E52713' : 'rgba(255,255,255,0.12)' }} />
+          ))}
+        </div>
+        <div className="flex justify-between text-[8px] text-white/20 px-1 mb-3">
+          <span>Янв</span><span>Фев</span><span>Мар</span>
+        </div>
+        {/* Activity log */}
+        <div className="pt-3 border-t border-white/5 space-y-1.5">
+          {[
+            { user: 'Петров П.', action: 'Вход в DataBook', time: '2 мин' },
+            { user: 'Иванова Е.', action: 'AI-чат · 3 запроса', time: '5 мин' },
+            { user: 'Козлов Д.', action: 'Экспорт отчёта', time: '12 мин' },
+          ].map((l, i) => (
+            <div key={i} className="flex items-center justify-between text-[10px]">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[7px] text-white/50 font-medium">{l.user.split(' ').map(w => w[0]).join('')}</div>
+                <div className="text-left">
+                  <div className="text-white/60">{l.user}</div>
+                  <div className="text-white/25">{l.action}</div>
+                </div>
+              </div>
+              <span className="text-white/20">{l.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </S>,
+
+    /* 4 — AI-Чат */
+    <S key={4} title="Корпоративный AI" caption="Безопасный AI-ассистент с промптами и контролем токенов по сотрудникам.">
+      <div className="w-full max-w-[300px] space-y-2.5">
+        {/* User bubble */}
+        <div className="flex justify-end">
+          <div className="bg-[#E52713] text-white rounded-2xl rounded-br-md px-3.5 py-2 text-[12px] leading-relaxed text-left max-w-[85%]">
+            Составь письмо подрядчику о задержке сроков
+          </div>
+        </div>
+        {/* AI bubble */}
+        <div className="flex items-start gap-2">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#E52713] to-[#C91F0F] flex items-center justify-center shrink-0">
+            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8.5" cy="16" r="1.5"/><circle cx="15.5" cy="16" r="1.5"/><path d="M12 2v5M8 8h8"/></svg>
+          </div>
+          <div className="bg-white/10 border border-white/10 rounded-2xl rounded-tl-md px-3.5 py-2 text-[12px] text-white/70 leading-relaxed text-left max-w-[82%] whitespace-pre-line">
+            {'Исх. №156/ДЦТ от 16.02.2026\n\nУважаемый Иван Иванович!\nВ связи с нарушением сроков по Корпусу 3...'}
+          </div>
+        </div>
+        {/* Token counter */}
+        <div className="flex justify-center">
+          <div className="bg-white/5 border border-white/10 rounded-full px-3 py-1 text-[10px] text-white/30">
+            43 из 50 сообщений · Gemini SSE
+          </div>
+        </div>
+      </div>
+    </S>,
+
+    /* 5 — Управление ролями */
+    <div key={5} className="flex flex-col items-center h-full px-6 pt-14 pb-6 text-center">
+      <h2 className="text-[22px] font-extrabold text-white mb-5 leading-tight">Управление ролями</h2>
+      <div className="w-full max-w-[300px] space-y-2 mb-auto">
+        {[
+          { role: 'Owner', desc: 'Суперадмин — раздаёт админки и доступы', color: '#F59E0B' },
+          { role: 'Admin', desc: 'Полный доступ, CRUD пользователей', color: '#E52713' },
+          { role: 'User', desc: 'Доступ к назначенным сервисам', color: '#3B82F6' },
+        ].map(r => (
+          <div key={r.role} className="flex items-center gap-3 rounded-xl px-4 py-3 bg-white/10 border border-white/10">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: r.color }}>{r.role[0]}</div>
+            <div className="text-left flex-1 min-w-0">
+              <div className="text-[13px] font-semibold text-white">{r.role}</div>
+              <div className="text-[11px] text-white/40 leading-tight">{r.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="text-[13px] text-white/40 leading-relaxed max-w-[280px] mb-5">
+        RBAC, группы, аудит-лог и лимиты AI — всё в админ-панели.
+      </p>
+      <button
+        onClick={onClose}
+        className="px-8 py-3.5 rounded-2xl bg-[#E52713] text-white text-[15px] font-bold border-none cursor-pointer shadow-lg shadow-red-500/30 active:scale-95 transition-transform mb-2"
+      >
+        Закрыть превью
+      </button>
+      <div className="flex items-center gap-1.5 text-[11px] text-white/30">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <span>Полноэкранное демо — на ПК</span>
+      </div>
+    </div>,
+  ]
+
+  return (
+    <div
+      className="flex md:hidden flex-col h-full bg-[#0a0a0f] relative select-none"
+      onClick={handleClick}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+    >
+      {/* Progress bars */}
+      <div className="absolute top-0 left-0 right-0 z-30 flex gap-1 px-3 pt-3">
+        {Array.from({ length: TOTAL }).map((_, i) => (
+          <div key={i} className="flex-1 h-[3px] rounded-full bg-white/20 overflow-hidden">
+            <div
+              className="h-full bg-white rounded-full transition-none"
+              style={{ width: `${i < activeSlide ? 100 : i === activeSlide ? progress : 0}%` }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Close button is rendered by parent Modal */}
+
+      {/* Slide content — key on activeSlide so fadeIn only fires on slide change */}
+      <div key={activeSlide} className="flex-1 min-h-0 animate-[fadeIn_0.35s_ease-out]">
+        {slides[activeSlide]}
+      </div>
+    </div>
   )
 }
 
@@ -78,7 +366,9 @@ function Modal({ onClose }: { onClose: () => void }) {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="demo-modal-enter relative w-full max-w-[1400px] rounded-2xl overflow-hidden shadow-2xl flex flex-col" style={{ height: '90vh', maxHeight: '920px' }} onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center cursor-pointer border-none transition-colors text-lg" aria-label="Close">&times;</button>
-        <div className="flex flex-1 min-h-0">
+        {/* Mobile teaser */}
+        <MobileTeaser onClose={onClose} />
+        <div className="hidden md:flex flex-1 min-h-0">
           {/* Sidebar */}
           <div className="w-[240px] bg-white border-r border-gray-200 flex flex-col shrink-0">
             <div className="h-14 flex items-center px-4 border-b border-gray-100">
@@ -89,7 +379,7 @@ function Modal({ onClose }: { onClose: () => void }) {
               {nav.map(item => (
                 <div key={item.key}>
                   {item.admin && <div className="pt-4 pb-2 px-2"><div className="text-[0.6rem] font-bold text-gray-400 uppercase tracking-wider">Администрирование</div></div>}
-                  <button onClick={() => setScreen(item.key)} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left cursor-pointer border-none transition-colors text-[0.8rem] ${screen === item.key ? 'bg-[#E52713]/8 text-[#E52713] font-semibold' : 'bg-transparent text-gray-600 hover:bg-gray-50'}`}>
+                  <button onClick={() => setScreen(item.key)} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left cursor-pointer border-none transition-colors text-[0.8rem] ${screen === item.key ? 'bg-[#E52713]/8 text-[#E52713] font-semibold' : 'bg-transparent text-gray-600 hover:bg-gray-50'} ${item.key === 'chat' && screen !== 'chat' ? 'animate-guide-pulse' : ''}`}>
                     <item.icon /><span>{item.label}</span>
                   </button>
                 </div>
@@ -274,7 +564,7 @@ function PgChat() {
             <div className="text-[0.82rem] text-gray-400 mb-6">Корпоративный AI-ассистент</div>
             <div className="grid grid-cols-2 gap-3 max-w-[480px] w-full">
               {(Object.keys(convData) as ConvKey[]).map(k => (
-                <button key={k} onClick={() => startConv(k)} className="bg-white border border-gray-200 rounded-xl p-3 text-left cursor-pointer hover:border-[#E52713]/30 hover:shadow-md transition-all">
+                <button key={k} onClick={() => startConv(k)} className={`bg-white border border-gray-200 rounded-xl p-3 text-left cursor-pointer hover:border-[#E52713]/30 hover:shadow-md transition-all ${k === 'letter' ? 'animate-guide-pulse' : ''}`}>
                   <span className="text-[0.78rem] text-gray-600">{convData[k].suggestion}</span>
                 </button>
               ))}

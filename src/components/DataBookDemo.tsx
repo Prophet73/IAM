@@ -118,6 +118,327 @@ export function DataBookDemo() {
   )
 }
 
+/* ===== MOBILE TEASER ===== */
+function MobileTeaser({ onClose }: { onClose: () => void }) {
+  const B = '#2563EB'
+  const screens = ['search', 'catalog', 'card', 'import', 'analytics'] as const
+  type Scr = typeof screens[number]
+  const [scr, setScr] = useState<Scr>('search')
+  const idx = screens.indexOf(scr)
+
+  // Swipe
+  const touchRef = useRef<{ x: number; y: number } | null>(null)
+  const handleTouchStart = (e: React.TouchEvent) => { touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY } }
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchRef.current) return
+    const dx = e.changedTouches[0].clientX - touchRef.current.x
+    const dy = e.changedTouches[0].clientY - touchRef.current.y
+    touchRef.current = null
+    if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx)) return
+    if (dx < 0 && idx < screens.length - 1) setScr(screens[idx + 1])
+    if (dx > 0 && idx > 0) setScr(screens[idx - 1])
+  }
+
+  // Search animation
+  const query = 'отклонение кладки'
+  const [charIdx, setCharIdx] = useState(0)
+  const [showResults, setShowResults] = useState(false)
+  useEffect(() => {
+    if (scr !== 'search') { setCharIdx(0); setShowResults(false); return }
+    if (charIdx < query.length) {
+      const t = setTimeout(() => setCharIdx(i => i + 1), 70)
+      return () => clearTimeout(t)
+    }
+    if (!showResults) { const t = setTimeout(() => setShowResults(true), 400); return () => clearTimeout(t) }
+  }, [scr, charIdx, showResults, query.length])
+
+  // Import pipeline animation
+  const pipelineStages = ['Нормализация', 'Лемматизация', 'Векторизация', 'Дедупликация', 'FTS-индексация']
+  const [pipeStage, setPipeStage] = useState(-1)
+  useEffect(() => {
+    if (scr !== 'import') { setPipeStage(-1); return }
+    const t = setTimeout(() => setPipeStage(0), 300)
+    return () => clearTimeout(t)
+  }, [scr])
+  useEffect(() => {
+    if (scr !== 'import' || pipeStage < 0 || pipeStage >= pipelineStages.length - 1) return
+    const t = setTimeout(() => setPipeStage(s => s + 1), 600)
+    return () => clearTimeout(t)
+  }, [scr, pipeStage, pipelineStages.length])
+
+  const labels: Record<Scr, string> = { search: 'Поиск', catalog: 'Каталог', card: 'Карточка', import: 'Импорт', analytics: 'Аналитика' }
+
+  const searchResults = [
+    { text: 'Отклонение кладки от вертикали 18мм при допустимом 10мм', ntd: 'СП 70.13330', clause: 'п.9.2.1', ok: true },
+    { text: 'Кладка перегородок из ПГП не закреплена к перекрытию', ntd: 'СП 70.13330', clause: 'п.9.3.2', ok: true },
+    { text: 'Отклонение кладки от горизонтали 15мм на 10м при допуске 7мм', ntd: 'СП 70.13330', clause: 'п.9.2.1', ok: true },
+  ]
+
+  const catGrid = [
+    { e: '🏗', n: 'Бетонные', c: 1240 }, { e: '🧱', n: 'Кладка', c: 890 }, { e: '🏠', n: 'Кровля', c: 670 },
+    { e: '🪟', n: 'Фасады', c: 520 }, { e: '🔌', n: 'Электро', c: 480 }, { e: '🚰', n: 'Сантехника', c: 440 },
+    { e: '🏗', n: 'Металл', c: 380 }, { e: '🪵', n: 'Отделка', c: 350 }, { e: '⛏', n: 'Земляные', c: 310 },
+    { e: '📐', n: 'Геодезия', c: 280 }, { e: '🛗', n: 'Лифты', c: 190 }, { e: '📋', n: 'Документы', c: 250 },
+  ]
+
+  return (
+    <div className="flex md:hidden flex-col h-full bg-[#F8FAFC]" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      {/* Header */}
+      <div className="bg-white px-4 pt-4 pb-2 shrink-0">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] text-white font-bold" style={{ background: B }}>DB</div>
+            <div><div className="text-sm font-bold text-slate-800">DataBook</div><div className="text-[9px] text-slate-400">Умный поиск предписаний</div></div>
+          </div>
+          <button onClick={onClose} className="w-7 h-7 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center border-none text-sm cursor-pointer">&times;</button>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex bg-white border-b border-slate-200/60 px-1 shrink-0 overflow-x-auto scrollbar-hidden">
+        {screens.map(s => (
+          <button key={s} onClick={() => setScr(s)}
+            className={`flex-1 px-2 py-2.5 text-[10px] font-semibold whitespace-nowrap transition-colors border-none cursor-pointer bg-transparent ${scr === s ? 'text-[#2563EB]' : 'text-slate-400'}`}
+            style={scr === s ? { borderBottom: `2px solid ${B}` } : { borderBottom: '2px solid transparent' }}
+          >{labels[s]}</button>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+        {/* ─── SEARCH ─── */}
+        {scr === 'search' && <>
+          {/* Category filter row */}
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hidden">
+            {['Все', 'Кладка', 'Бетон', 'Кровля', 'Фасады'].map((c, i) => (
+              <span key={c} className={`shrink-0 text-[9px] px-2.5 py-1 rounded-full font-medium ${i === 1 ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-white text-slate-500 border border-slate-200'}`}>{c}</span>
+            ))}
+          </div>
+          {/* Search input */}
+          <div className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex items-center gap-2 shadow-sm">
+            <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span className="text-xs text-slate-700">{query.slice(0, charIdx)}<span className="inline-block w-[2px] h-[1em] bg-[#2563EB] ml-px align-middle animate-blink" /></span>
+          </div>
+          {/* Results */}
+          {showResults && <>
+            <div className="text-[9px] text-slate-400 px-1">Найдено: <span className="font-semibold text-slate-600">47 предписаний</span> · FTS + GIN индекс</div>
+            <div className="space-y-2">
+              {searchResults.map((r, i) => (
+                <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm animate-[fadeIn_0.3s_ease-out_both]" style={{ animationDelay: `${i * 120}ms` }}
+                  onClick={() => setScr('card')}>
+                  <div className="text-[11px] text-slate-700 leading-relaxed mb-2">{r.text}</div>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${r.ok ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>{r.ntd}</span>
+                    <span className="text-[9px] text-slate-400">{r.clause}</span>
+                    <span className="text-[9px] text-slate-300 ml-auto">→</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>}
+        </>}
+
+        {/* ─── CATALOG ─── */}
+        {scr === 'catalog' && <>
+          <div className="text-[9px] text-slate-400 px-1 mb-1">12 категорий · <span className="font-semibold text-slate-600">6 000 предписаний</span></div>
+          <div className="grid grid-cols-3 gap-2">
+            {catGrid.map((c, i) => (
+              <div key={i} className="bg-white rounded-xl p-2.5 border border-slate-200 shadow-sm text-center cursor-pointer hover:border-[#2563EB]/30 transition-colors"
+                onClick={() => setScr('search')}>
+                <div className="text-lg mb-1">{c.e}</div>
+                <div className="text-[10px] font-semibold text-slate-700 leading-tight">{c.n}</div>
+                <div className="text-[9px] text-slate-400 mt-0.5">{c.c.toLocaleString()}</div>
+              </div>
+            ))}
+          </div>
+        </>}
+
+        {/* ─── CARD ─── */}
+        {scr === 'card' && <>
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            {/* Card header */}
+            <div className="px-3.5 py-3 border-b border-slate-100">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">СП 70.13330</span>
+                <span className="text-[9px] text-slate-400">п.9.2.1, табл.9.8</span>
+              </div>
+              <div className="text-[11px] font-semibold text-slate-800 leading-relaxed">Отклонение кладки от вертикали составляет 18мм на высоту этажа при допустимом 10мм</div>
+            </div>
+            {/* Details */}
+            <div className="px-3.5 py-2.5 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-slate-400">Категория</span>
+                <span className="text-[10px] font-medium text-slate-700">🧱 Каменная кладка</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-slate-400">Подтип</span>
+                <span className="text-[10px] font-medium text-slate-700">Кладочные работы</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-slate-400">РД</span>
+                <span className="text-[10px] font-medium text-slate-700">РД АР-1 лист 25</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-slate-400">НТД полное</span>
+                <span className="text-[10px] font-medium text-slate-700">Несущие и огражд. конструкции</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] text-slate-400">Дата</span>
+                <span className="text-[10px] font-medium text-slate-700">22.01.2026</span>
+              </div>
+            </div>
+            {/* NTD link */}
+            <div className="px-3.5 py-2.5 border-t border-slate-100">
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-blue-50/80">
+                <div className="w-5 h-5 rounded bg-[#2563EB]/10 flex items-center justify-center shrink-0">
+                  <svg className="w-3 h-3 text-[#2563EB]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                </div>
+                <div>
+                  <div className="text-[9px] font-semibold text-[#2563EB]">tehexpert.ru</div>
+                  <div className="text-[8px] text-slate-400">Открыть НТД на tehexpert</div>
+                </div>
+              </div>
+            </div>
+            {/* Actions */}
+            <div className="px-3.5 py-2.5 border-t border-slate-100 flex gap-2">
+              <button className="flex-1 py-2 rounded-lg bg-[#2563EB] text-white text-[10px] font-semibold border-none cursor-pointer flex items-center justify-center gap-1">
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                Копировать
+              </button>
+              <button className="flex-1 py-2 rounded-lg bg-slate-100 text-slate-600 text-[10px] font-semibold border-none cursor-pointer">Похожие</button>
+            </div>
+          </div>
+        </>}
+
+        {/* ─── IMPORT ─── */}
+        {scr === 'import' && <>
+          {/* Source file */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-sm">📄</div>
+              <div>
+                <div className="text-[11px] font-semibold text-slate-700">prescriptions_export.xlsx</div>
+                <div className="text-[9px] text-slate-400">1 247 строк · 2.3 MB</div>
+              </div>
+            </div>
+            <div className="flex gap-1.5">
+              <span className="text-[8px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Excel</span>
+              <span className="text-[8px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">UTF-8</span>
+              <span className="text-[8px] px-2 py-0.5 rounded-full bg-green-50 text-green-600 font-semibold">Загружен</span>
+            </div>
+          </div>
+
+          {/* NLP Pipeline */}
+          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1">NLP Pipeline</div>
+          <div className="space-y-1.5">
+            {pipelineStages.map((stage, i) => {
+              const done = i <= pipeStage
+              const active = i === pipeStage
+              const descriptions = ['Очистка текста, приведение к нижнему регистру', 'pymorphy2 — приведение к леммам', 'TF-IDF + sentence-transformers', 'Удаление дубликатов по cosine sim > 0.95', 'PostgreSQL GIN + pg_trgm + ts_vector']
+              return (
+                <div key={i} className={`bg-white rounded-lg p-2.5 border transition-all ${active ? 'border-[#2563EB]/40 shadow-sm' : done ? 'border-green-200' : 'border-slate-200 opacity-50'}`}>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 ${done ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'}`}>
+                      {done ? '✓' : i + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className={`text-[10px] font-semibold ${active ? 'text-[#2563EB]' : done ? 'text-slate-700' : 'text-slate-400'}`}>{stage}</div>
+                      <div className="text-[8px] text-slate-400 truncate">{descriptions[i]}</div>
+                    </div>
+                    {active && <div className="w-3 h-3 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin shrink-0" />}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Result */}
+          {pipeStage >= pipelineStages.length - 1 && (
+            <div className="bg-green-50 rounded-xl p-3 border border-green-200 animate-[fadeIn_0.3s_ease-out]">
+              <div className="text-[10px] font-semibold text-green-700 mb-1">Импорт завершён</div>
+              <div className="flex gap-3">
+                <div className="text-center"><div className="text-sm font-bold text-green-700">1 247</div><div className="text-[8px] text-green-600">загружено</div></div>
+                <div className="text-center"><div className="text-sm font-bold text-green-700">1 189</div><div className="text-[8px] text-green-600">уникальных</div></div>
+                <div className="text-center"><div className="text-sm font-bold text-green-700">58</div><div className="text-[8px] text-green-600">дубликатов</div></div>
+              </div>
+            </div>
+          )}
+        </>}
+
+        {/* ─── ANALYTICS ─── */}
+        {scr === 'analytics' && <>
+          {/* KPI row */}
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { label: 'Предписаний', val: '6 024', icon: '📋' },
+              { label: 'Поисков сегодня', val: '342', icon: '🔍' },
+              { label: 'Копирований', val: '1 847', icon: '📋' },
+              { label: 'Пользователей', val: '28', icon: '👥' },
+            ].map((k, i) => (
+              <div key={i} className="bg-white rounded-xl p-2.5 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="text-xs">{k.icon}</span>
+                  <span className="text-[9px] text-slate-400">{k.label}</span>
+                </div>
+                <div className="text-base font-bold text-slate-800">{k.val}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Popular queries */}
+          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1 mt-1">Популярные запросы</div>
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            {[
+              { q: 'отклонение кладки', n: 89 },
+              { q: 'защитный слой бетона', n: 74 },
+              { q: 'гидроизоляция кровли', n: 61 },
+              { q: 'сварные соединения', n: 53 },
+              { q: 'крепление перегородок', n: 47 },
+            ].map((item, i) => (
+              <div key={i} className={`flex items-center justify-between px-3 py-2 ${i > 0 ? 'border-t border-slate-100' : ''}`}>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] text-slate-300 w-3 text-right">{i + 1}</span>
+                  <span className="text-[10px] text-slate-700">{item.q}</span>
+                </div>
+                <span className="text-[9px] text-slate-400">{item.n}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Usage by category — mini bar chart */}
+          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1 mt-1">По категориям</div>
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 space-y-1.5">
+            {[
+              { cat: 'Бетонные', pct: 82 }, { cat: 'Кладка', pct: 64 }, { cat: 'Кровля', pct: 48 },
+              { cat: 'Фасады', pct: 35 }, { cat: 'Электро', pct: 28 },
+            ].map((b, i) => (
+              <div key={i}>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-[9px] text-slate-600">{b.cat}</span>
+                  <span className="text-[9px] text-slate-400">{b.pct}%</span>
+                </div>
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${b.pct}%`, background: B, opacity: 1 - i * 0.12 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>}
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 py-2.5 bg-white border-t border-slate-200/60 shrink-0">
+        <div className="flex justify-center gap-1.5 mb-1.5">
+          {screens.map((s, i) => (
+            <div key={s} className={`rounded-full transition-all ${i === idx ? 'w-4 h-1.5' : 'w-1.5 h-1.5 bg-slate-300'}`} style={i === idx ? { background: B } : undefined} />
+          ))}
+        </div>
+        <p className="text-[9px] text-slate-400 text-center">Полноэкранная версия с живым интерактивным демо доступна на ПК</p>
+      </div>
+    </div>
+  )
+}
+
 /* ===== MODAL ===== */
 function Modal({ onClose }: { onClose: () => void }) {
   const [screen, setScreen] = useState<Screen>('search')
@@ -133,7 +454,9 @@ function Modal({ onClose }: { onClose: () => void }) {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="demo-modal-enter relative w-full max-w-[1400px] rounded-2xl overflow-hidden shadow-2xl flex flex-col" style={{ height: '90vh', maxHeight: '920px' }} onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center cursor-pointer border-none transition-colors text-lg" aria-label="Close">&times;</button>
-        <div className="flex flex-1 min-h-0">
+        {/* Mobile teaser */}
+        <MobileTeaser onClose={onClose} />
+        <div className="hidden md:flex flex-1 min-h-0">
           {/* Sidebar — WHITE */}
           <div className="w-[240px] bg-white border-r border-slate-200 flex flex-col shrink-0">
             <div className="h-14 flex items-center px-4 border-b border-slate-200">

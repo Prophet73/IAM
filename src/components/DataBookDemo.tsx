@@ -1,5 +1,6 @@
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { tracker } from '../utils/tracker'
 
 type Screen = 'search' | 'catalog' | 'analytics' | 'import' | 'settings'
 
@@ -95,9 +96,12 @@ const BRAND = '#2563EB'
 /* ===== EXPORT ===== */
 export function DataBookDemo() {
   const [open, setOpen] = useState(false)
+  const openedAt = useRef(0)
+  const handleOpen = (e: React.MouseEvent) => { e.stopPropagation(); setOpen(true); openedAt.current = Date.now(); tracker.track('demo_open', { product: 'databook' }) }
+  const handleClose = () => { setOpen(false); tracker.track('demo_close', { product: 'databook', duration_s: Math.round((Date.now() - openedAt.current) / 1000) }) }
   return (
     <>
-      <div className="btn-premium-wrap" onClick={(e) => { e.stopPropagation(); setOpen(true) }}>
+      <div className="btn-premium-wrap" onClick={handleOpen}>
         <button className="btn-premium">
           <div className="btn-premium-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -109,7 +113,7 @@ export function DataBookDemo() {
           <svg className="btn-premium-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
-      {open && <Modal onClose={() => setOpen(false)} />}
+      {open && <Modal onClose={handleClose} />}
     </>
   )
 }

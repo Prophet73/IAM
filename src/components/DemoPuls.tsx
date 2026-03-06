@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { tracker } from '../utils/tracker'
 
 /* ═══════════════════════════════════════════════════════════
    TYPES
@@ -137,15 +138,19 @@ export function DemoPuls() {
   const [open, setOpen] = useState(false)
   const [tab, setTab] = useState<PMTab>('dashboard')
   const [showProfile, setShowProfile] = useState(false)
+  const openedAt = useRef(0)
 
-  const onEsc = useCallback((e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }, [])
+  const handleOpen = () => { setOpen(true); openedAt.current = Date.now(); tracker.track('demo_open', { product: 'puls' }) }
+  const handleClose = useCallback(() => { setOpen(false); tracker.track('demo_close', { product: 'puls', duration_s: Math.round((Date.now() - openedAt.current) / 1000) }) }, [])
+
+  const onEsc = useCallback((e: KeyboardEvent) => { if (e.key === 'Escape') handleClose() }, [handleClose])
   useEffect(() => {
     if (open) { document.addEventListener('keydown', onEsc); document.body.style.overflow = 'hidden' }
     return () => { document.removeEventListener('keydown', onEsc); document.body.style.overflow = '' }
   }, [open, onEsc])
 
   if (!open) return (
-    <div className="btn-premium-wrap" onClick={() => setOpen(true)}>
+    <div className="btn-premium-wrap" onClick={handleOpen}>
       <button className="btn-premium">
         <div className="btn-premium-icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -160,7 +165,7 @@ export function DemoPuls() {
   )
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={handleClose}>
       <div className="relative w-[96vw] h-[92vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col bg-gray-100" onClick={e => e.stopPropagation()}>
 
         {/* ── PMLayout header (h-12) ── */}
@@ -177,7 +182,7 @@ export function DemoPuls() {
               <button className="px-3 py-1 rounded text-xs bg-blue-100 text-blue-700 font-medium">Мои проекты</button>
             </div>
             <div className="relative flex items-center gap-3">
-              <button onClick={() => setOpen(false)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 text-base">×</button>
+              <button onClick={handleClose} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 text-base">×</button>
               <button onClick={() => setShowProfile(!showProfile)} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100">
                 <span className="text-xs text-gray-700">Хроменков Н.Д.</span>
                 <div className="h-7 w-7 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center text-[10px] font-medium shadow-sm">ХН</div>

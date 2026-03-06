@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom'
 import { products } from './data/products'
 import { ProductsEcosystem } from './components/ProductsEcosystem'
 import { Reveal } from './components/Reveal'
+import { tracker } from './utils/tracker'
 
 const DataBookDemo = React.lazy(() => import('./components/DataBookDemo').then(m => ({ default: m.DataBookDemo })))
 const DemoAIHub = React.lazy(() => import('./components/DemoAIHub').then(m => ({ default: m.DemoAIHub })))
@@ -11,6 +12,8 @@ const DemoCostManager = React.lazy(() => import('./components/DemoCostManager').
 const DemoPuls = React.lazy(() => import('./components/DemoPuls').then(m => ({ default: m.DemoPuls })))
 
 function App() {
+  useEffect(() => { tracker.init() }, [])
+
   return (
     <>
       <Nav />
@@ -52,21 +55,25 @@ function TerminalModal({ onClose }: { onClose: () => void }) {
     '> Manual lines of code: 0',
     '> Built via: Claude Code Orchestration',
     '> Status: Ready for production',
+    '',
+    '> Спасибо, что дочитали до конца.',
+    '> Буду рад пообщаться — на связи!',
   ]
 
   const fullText = lines.join('\n')
   const [visibleLen, setVisibleLen] = useState(0)
+  const done = visibleLen >= fullText.length
 
   useEffect(() => {
-    if (visibleLen >= fullText.length) return
+    if (done) return
     const char = fullText[visibleLen]
     const delay = char === '\n' ? 300 : 20 + Math.random() * 15
     const timer = setTimeout(() => setVisibleLen(v => v + 1), delay)
     return () => clearTimeout(timer)
-  }, [visibleLen, fullText])
+  }, [visibleLen, fullText, done])
 
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter') onClose() }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [onClose])
@@ -89,8 +96,19 @@ function TerminalModal({ onClose }: { onClose: () => void }) {
         {/* Terminal content */}
         <div className="p-5 min-h-[240px] font-mono text-sm text-emerald-400 terminal-glow leading-relaxed whitespace-pre-wrap">
           {fullText.slice(0, visibleLen)}
-          <span className={`inline-block w-[8px] h-[1.1em] ml-0.5 align-middle bg-emerald-400 ${visibleLen >= fullText.length ? 'animate-blink' : ''}`} />
+          <span className={`inline-block w-[8px] h-[1.1em] ml-0.5 align-middle bg-emerald-400 ${done ? 'animate-blink' : ''}`} />
         </div>
+        {/* Close button */}
+        {done && (
+          <div className="px-5 pb-5 animate-[fadeIn_0.5s_ease-out_both]">
+            <button
+              onClick={onClose}
+              className="w-full py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-mono hover:bg-emerald-500/20 transition-colors"
+            >
+              [Enter] Закрыть
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -141,6 +159,7 @@ function Nav() {
 
   const toggleTheme = useCallback((e: React.MouseEvent) => {
     const newTheme = theme === 'dark' ? 'light' : 'dark'
+    tracker.track('theme_toggle', { to: newTheme })
     const x = e.clientX
     const y = e.clientY
     const endRadius = Math.hypot(
@@ -187,6 +206,7 @@ function Nav() {
                 <a
                   key={href}
                   href={href}
+                  onClick={() => tracker.track('nav_click', { section: id })}
                   className={`text-sm font-medium transition-all duration-200 no-underline px-3 py-1.5 rounded-lg ${activeSection === id ? 'bg-surface text-accent shadow-sm' : 'text-muted hover:text-text-primary'}`}
                 >
                   {label}
@@ -656,6 +676,7 @@ function Contact() {
               href="https://t.me/nickkhromenok"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => tracker.track('contact_click', { channel: 'telegram' })}
               className="inline-flex items-center justify-center gap-2.5 bg-accent text-white px-8 py-4 rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent/20"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -669,6 +690,7 @@ function Contact() {
           <div className="flex flex-wrap items-center justify-center gap-6 mt-6">
             <a
               href="mailto:KhromenokNV@mail.ru"
+              onClick={() => tracker.track('contact_click', { channel: 'email' })}
               className="inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -678,6 +700,7 @@ function Contact() {
             </a>
             <a
               href="tel:+79268973225"
+              onClick={() => tracker.track('contact_click', { channel: 'phone' })}
               className="inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -694,7 +717,7 @@ function Contact() {
         <div className="flex justify-between items-center text-xs text-muted">
           <span>Москва, 2026</span>
           <span
-            onClick={() => setTerminalOpen(true)}
+            onClick={() => { setTerminalOpen(true); tracker.track('terminal_open') }}
             className="cursor-pointer hover:text-emerald-400 transition-colors duration-300 select-none"
           >
             Built with AI (Claude Code & React)

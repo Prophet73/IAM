@@ -267,14 +267,14 @@ function Hero() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
                 </span>
-                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">PropTech R&D & Product Lead</span>
+                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">PropTech R&D & Product AI-Engineer</span>
               </div>
               <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
                 {forCompany ? (
                   <>
                     <span className="text-text-primary">Продуктовая разработка и цифровизация</span>
                     <br/>
-                    <span className="text-accent italic font-serif">специально для {forCompany}</span>
+                    <span className="text-accent italic font-serif">для команды {forCompany}</span>
                   </>
                 ) : (
                   <>
@@ -284,8 +284,11 @@ function Hero() {
                   </>
                 )}
               </h1>
-              <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[500px]">
-                10 лет на стройплощадке (в т.ч. 3 года на ЖК FORIVER) + full-stack разработка. Создаю IT-продукты без эффекта «испорченного телефона» между бизнесом и IT.
+              <p className="hidden md:block text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[500px]">
+                Объединяю 7+ лет в строительной отрасли с продуктовым R&D. Без «испорченного телефона» между бизнесом и IT: от боли процесса до работающего решения.
+              </p>
+              <p className="block md:hidden text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[500px]">
+                7+ лет в строительстве + R&D. Нахожу боль процесса, проектирую и разрабатываю сам. От идеи до production — недели, не кварталы.
               </p>
               {/* CTA кнопки */}
               <div className="flex flex-col sm:flex-row gap-4 animate-blur-fade delay-300">
@@ -310,14 +313,13 @@ function Hero() {
               <div className="glass-panel rounded-2xl p-5 flex gap-4">
                 <div className="shrink-0 w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    <path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>
                   </svg>
                 </div>
                 <div>
-                  <div className="text-sm font-bold mb-1">Знать изнутри</div>
+                  <div className="text-sm font-bold mb-1">Domain Expertise</div>
                   <p className="text-[0.85rem] text-muted leading-relaxed">
-                    Предвидеть узкие места задолго до дедлайна. Проектировать то, что нужно
-                    на площадке, — а не то, что описал аналитик в брифе.
+                    Был по ту сторону процесса. Проектирую автоматизацию по опыту исполнения и организации процесса, а не отрабатываю таски из Jira.
                   </p>
                 </div>
               </div>
@@ -326,14 +328,13 @@ function Hero() {
               <div className="glass-panel rounded-2xl p-5 flex gap-4">
                 <div className="shrink-0 w-10 h-10 rounded-xl bg-green-soft flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green">
-                    <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                    <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="14" y1="4" x2="10" y2="20"/>
                   </svg>
                 </div>
                 <div>
                   <div className="text-sm font-bold mb-1">Hands-on</div>
                   <p className="text-[0.85rem] text-muted leading-relaxed">
-                    Быстро собрать работающий прототип и показать пользователям. Рабочий прототип
-                    становится живым ТЗ, устраняя потерю смысла при передаче от бизнеса к разработке.
+                    Прототип за недели, не за кварталы. Показал пользователю — собрал обратную связь — доработал. Рабочий код вместо презентаций о том, как это будет.
                   </p>
                 </div>
               </div>

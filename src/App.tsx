@@ -245,7 +245,7 @@ function Hero() {
   const stats = [
     { num: '4', label: 'продукта в production' },
     { num: '12+', label: 'прототипов за 1.5 года' },
-    { num: '10+', label: 'лет в строительстве' },
+    { num: '7+', label: 'лет в строительстве' },
   ]
 
   return (
@@ -368,7 +368,7 @@ function Products() {
             <p className="text-muted text-[0.95rem]">Четыре production-решения и R&D прототип на едином инфраструктурном ядре.</p>
           </div>
         </Reveal>
-        <Reveal>
+        <Reveal rootMargin="300px 0px">
           <Suspense fallback={<div className="animate-pulse w-full h-32 bg-surface-2/50 border border-border rounded-xl" />}>
             <ProductsEcosystem
               products={products}
@@ -390,51 +390,30 @@ function Products() {
 /* ── Approach (Methodology + BusinessValue) ── */
 function Approach() {
   const steps = [
-    { num: '01', title: 'Выявление узких мест', text: 'Выхожу с ноутбуком на площадку. Бизнес-боль — из уст инженера СК, не из брифа.' },
-    { num: '02', title: 'Сборка MVP', text: 'За неделю — от мокапа до рабочего инструмента у пользователей.' },
-    { num: '03', title: 'Валидация', text: 'Инженеры начинают пользоваться каждый день — без давления руководства.' },
-    { num: '04', title: 'Масштабирование', text: 'Рабочая гипотеза переезжает на единое ядро AI-Hub с готовой авторизацией и RBAC.' },
+    { num: '01', title: 'Выявление узких мест', text: 'Снимаю требования напрямую у участников процесса, минуя сломанный телефон классического бизнес-анализа.' },
+    { num: '02', title: 'Rapid Prototyping', text: 'За 1–2 недели — от архитектуры до работающего прототипа. Приоритет — скорость доставки до пользователя, а не идеальная кодовая база.' },
+    { num: '03', title: 'Валидация', text: 'Продукт приживается естественным путём. Если MVP не решает реальную задачу ежедневно — гипотеза убивается, не сжигая бюджеты.' },
+    { num: '04', title: 'Масштабирование', text: 'Успешный прототип переводится на единую инфраструктуру: SSO, ролевой доступ, переиспользуемые сервисы — без технического долга.' },
   ]
 
   const cards = [
     {
       num: '01',
-      title: 'Единая инфраструктура',
-      text: (
-        <>
-          Не пложу зоопарк систем. Все продукты заведены под{' '}
-          <span className="text-text-primary font-semibold">единую точку входа (AI-Hub)</span>{' '}
-          с корпоративной авторизацией (SSO/ADFS). Общие паттерны и единая база пользователей
-          позволяют не писать бэкенд с нуля для каждой новой идеи.
-        </>
-      ),
-      metric: 'Снижение Time-to-Market до недель',
+      title: 'Time-to-Market: недели, не кварталы',
+      text: 'Единая инфраструктура с SSO и переиспользуемыми сервисами — новый продукт стартует с готовой платформы, а не с нуля.',
+      metric: 'Единая платформа — масштабируемый фундамент',
     },
     {
       num: '02',
-      title: 'Прямой контакт с реальностью',
-      text: (
-        <>
-          Убираю эффект «испорченного телефона». Цепочка «бизнес → аналитик → разработчик»
-          теряет контекст и добавляет месяцы. Знаю стройку изнутри и пишу код — исключаю
-          промежуточное звено и делаю продукты,{' '}
-          <span className="text-text-primary font-semibold">которые работают с первого дня.</span>
-        </>
-      ),
-      metric: 'Organic adoption без админ. ресурса',
+      title: 'Domain Oracle: решения без посредников',
+      text: 'Архитектурные решения принимаются на стыке домена и кода — без промежуточных звеньев и потери контекста.',
+      metric: 'Минимум согласований — максимум итераций',
     },
     {
       num: '03',
-      title: 'Быстрый цикл проверки',
-      text: (
-        <>
-          От проблемы на площадке до рабочего MVP —{' '}
-          <span className="text-text-primary font-semibold">недели, а не кварталы.</span>{' '}
-          Выделяю суть бизнес-требования, быстро собираю работающий инструмент и сразу отдаю
-          в поля. Продукт выживает только если инженеры начинают им пользоваться каждый день.
-        </>
-      ),
-      metric: '4 продукта в production за 1.5 года',
+      title: 'Fail Fast: дешёвая проверка гипотез',
+      text: 'Нерабочая идея убивается за недели, а не после миллионных вложений. Масштабируется и переводится в production только то, что приносит измеримый результат.',
+      metric: 'Проверка гипотезы — недели, не месяцы',
     },
   ]
 
@@ -447,8 +426,8 @@ function Approach() {
           <SectionHeader
             tag="Как я делаю продукты"
             tagColor="bg-purple-soft text-purple"
-            title="От задачи на площадке до рабочего инструмента"
-            subtitle="Техническая реализация перестаёт быть ограничением. Ключевой дефицит — понимание предметной области."
+            title="От задачи до рабочего инструмента"
+            subtitle="Код перестаёт быть ограничением — им становится разрыв между бизнесом и реализацией. Знание домена позволяет проектировать архитектуру напрямую, без цепочки согласований."
           />
         </Reveal>
         <Reveal stagger>
@@ -513,22 +492,22 @@ function Research() {
   const items = [
     {
       title: 'LLM и AI-агенты',
-      text: 'Архитектуры автономных агентов, RAG-системы, prompt engineering, structured output. Работа с Gemini, Claude, GPT, Ollama, локальным инференсом на GPU.',
+      text: 'Agentic Workflows, RAG с гибридным поиском, Structured Output, prompt engineering. Работа с Gemini, Claude, GPT, локальный инференс (Ollama).',
       tags: [{ label: 'LangChain', color: 'bg-purple-soft text-purple' }, { label: 'MCP Protocol', color: 'bg-purple-soft text-purple' }, { label: 'RAG', color: 'bg-purple-soft text-purple' }, { label: 'Ollama', color: 'bg-purple-soft text-purple' }],
     },
     {
       title: 'Speech & NLP',
-      text: 'Транскрипция, диаризация, анализ эмоций. WhisperX, pyannote, wav2vec2. Real-time перевод совещаний и анализ стенограмм из СЭД.',
+      text: 'Транскрипция, диаризация, анализ эмоций (WhisperX, pyannote, wav2vec2). Обработка аудио совещаний и генерация структурированных отчётов и аналитики.',
       tags: [{ label: 'WhisperX', color: 'bg-green-soft text-green' }, { label: 'pyannote', color: 'bg-green-soft text-green' }, { label: 'NLP', color: 'bg-green-soft text-green' }],
     },
     {
       title: 'Аспирантура и системный подход',
-      text: 'Аспирантура МГСУ (ЭБСиГХ). Академический навык структурировать сложную задачу, работать с данными и строить модели — фундамент для R&D в прикладных условиях.',
+      text: '10 лет академического образования в МГСУ, что даёт навык структурировать сложную задачу, работать с данными и строить модели — фундамент для R&D в прикладных условиях.',
       tags: [{ label: 'МГСУ', color: 'bg-amber-soft text-amber' }, { label: 'Системотехника', color: 'bg-amber-soft text-amber' }, { label: 'Мат. моделирование', color: 'bg-amber-soft text-amber' }],
     },
     {
       title: 'AI-ассистированная разработка',
-      text: 'Системная работа с Cursor и Claude Code. Архитектурное проектирование + AI-генерация. Многоагентные workflow для масштабных задач.',
+      text: 'Глубокая интеграция LLM-агентов (Copilot, Claude Code) в процесс разработки. AI берёт на себя рутину, я фокусируюсь на архитектуре и бизнес-логике.',
       tags: [{ label: 'Cursor', color: 'bg-red-soft text-red' }, { label: 'Claude Code', color: 'bg-red-soft text-red' }, { label: 'Agentic dev', color: 'bg-red-soft text-red' }],
     },
   ]
@@ -616,7 +595,7 @@ function Career() {
             tag="Опыт"
             tagColor="bg-amber-soft text-amber"
             title="Строительство и цифровизация"
-            subtitle="10 лет на объектах. Последние два — full-cycle разработка продуктов."
+            subtitle="7+ лет в строительной отрасли. Последние 1.5 года — продуктовая разработка полного цикла."
           />
         </Reveal>
         <div>
@@ -673,7 +652,7 @@ function Contact() {
 
           {/* Subtitle */}
           <p className="text-muted text-lg leading-relaxed max-w-2xl mx-auto">
-            10 лет в строительстве + full-stack разработка (FastAPI, React, LLM). Один человек закрывает цепочку от бизнес-задачи до production — без потери контекста между отделами.
+            7+ лет в строительной отрасли + full-stack разработка (FastAPI, React, PostgreSQL). Замыкаю на себе цикл от бизнес-задачи до production-архитектуры — без потери контекста между отделами.
           </p>
 
           {/* Action */}

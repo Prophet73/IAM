@@ -285,10 +285,10 @@ function Hero() {
                 )}
               </h1>
               <p className="hidden md:block text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[500px]">
-                Объединяю 7+ лет в строительной отрасли с продуктовым R&D. Без «испорченного телефона» между бизнесом и IT: от боли процесса до работающего решения.
+                Домен и код в одной голове: 7+ лет в строительстве + продуктовый R&D. От боли процесса до production-решения — без «испорченного телефона» между бизнесом и IT.
               </p>
               <p className="block md:hidden text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[500px]">
-                7+ лет в строительстве + R&D. Нахожу боль процесса, проектирую и разрабатываю сам. От идеи до production — недели, не кварталы.
+                Домен и код в одной голове: 7+ лет в строительстве + продуктовый R&D. От боли процесса до production-решения — без «испорченного телефона» между бизнесом и IT.
               </p>
               {/* CTA кнопки */}
               <div className="flex flex-col sm:flex-row gap-4 animate-blur-fade delay-300">
@@ -334,7 +334,7 @@ function Hero() {
                 <div>
                   <div className="text-sm font-bold mb-1">Hands-on</div>
                   <p className="text-[0.85rem] text-muted leading-relaxed">
-                    Прототип за недели, не за кварталы. Показал пользователю — собрал обратную связь — доработал. Рабочий код вместо презентаций о том, как это будет.
+                    Показал пользователю — собрал обратную связь — доработал. Рабочий код вместо презентаций о том, как это будет.
                   </p>
                 </div>
               </div>
@@ -390,8 +390,8 @@ function Products() {
 /* ── Approach (Methodology + BusinessValue) ── */
 function Approach() {
   const steps = [
-    { num: '01', title: 'Выявление узких мест', text: 'Снимаю требования напрямую у участников процесса, минуя сломанный телефон классического бизнес-анализа.' },
-    { num: '02', title: 'Rapid Prototyping', text: 'За 1–2 недели — от архитектуры до работающего прототипа. Приоритет — скорость доставки до пользователя, а не идеальная кодовая база.' },
+    { num: '01', title: 'Выявление узких мест', text: 'Снимаю требования напрямую у участников процесса — без цепочки «аналитик → архитектор → разработчик».' },
+    { num: '02', title: 'Rapid Prototyping', text: 'За пару недель — месяц — от архитектуры до работающего прототипа. Приоритет — скорость доставки до пользователя, а не идеальная кодовая база.' },
     { num: '03', title: 'Валидация', text: 'Продукт приживается естественным путём. Если MVP не решает реальную задачу ежедневно — гипотеза убивается, не сжигая бюджеты.' },
     { num: '04', title: 'Масштабирование', text: 'Успешный прототип переводится на единую инфраструктуру: SSO, ролевой доступ, переиспользуемые сервисы — без технического долга.' },
   ]
@@ -413,7 +413,7 @@ function Approach() {
       num: '03',
       title: 'Fail Fast: дешёвая проверка гипотез',
       text: 'Нерабочая идея убивается за недели, а не после миллионных вложений. Масштабируется и переводится в production только то, что приносит измеримый результат.',
-      metric: 'Проверка гипотезы — недели, не месяцы',
+      metric: 'Без CAPEX и кварталов ожидания',
     },
   ]
 
@@ -493,7 +493,7 @@ function Research() {
     {
       title: 'LLM и AI-агенты',
       text: 'Agentic Workflows, RAG с гибридным поиском, Structured Output, prompt engineering. Работа с Gemini, Claude, GPT, локальный инференс (Ollama).',
-      tags: [{ label: 'LangChain', color: 'bg-purple-soft text-purple' }, { label: 'MCP Protocol', color: 'bg-purple-soft text-purple' }, { label: 'RAG', color: 'bg-purple-soft text-purple' }, { label: 'Ollama', color: 'bg-purple-soft text-purple' }],
+      tags: [{ label: 'MCP Protocol', color: 'bg-purple-soft text-purple' }, { label: 'RAG', color: 'bg-purple-soft text-purple' }, { label: 'Ollama', color: 'bg-purple-soft text-purple' }],
     },
     {
       title: 'Speech & NLP',
@@ -652,7 +652,7 @@ function Contact() {
 
           {/* Subtitle */}
           <p className="text-muted text-lg leading-relaxed max-w-2xl mx-auto">
-            7+ лет в строительной отрасли + full-stack разработка (FastAPI, React, PostgreSQL). Замыкаю на себе цикл от бизнес-задачи до production-архитектуры — без потери контекста между отделами.
+            Есть процесс, который давно просится автоматизироваться? Нужен R&D-партнёр с пониманием стройки изнутри? Или просто хочется обсудить цифровизацию в отрасли — пишите в Telegram.
           </p>
 
           {/* Action */}

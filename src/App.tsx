@@ -18,8 +18,8 @@ function App() {
     <>
       <Nav />
       <Hero />
-      <Products />
       <Approach />
+      <Products />
       <Research />
       <Career />
       <Contact />
@@ -137,7 +137,7 @@ function Nav() {
   }, [])
 
   useEffect(() => {
-    const sectionIds = ['hero', 'products', 'approach', 'research', 'career']
+    const sectionIds = ['hero', 'approach', 'products', 'research', 'career']
     const update = () => {
       if (window.scrollY < 100) {
         setActiveSection('hero')
@@ -188,8 +188,8 @@ function Nav() {
 
   const navLinks = [
     ['#hero', 'hero', 'Главная'],
-    ['#products', 'products', 'Продукты'],
     ['#approach', 'approach', 'Подход'],
+    ['#products', 'products', 'Продукты'],
     ['#research', 'research', 'R&D'],
     ['#career', 'career', 'Опыт'],
   ]
@@ -244,7 +244,7 @@ function Hero() {
 
   const stats = [
     { num: '4', label: 'продукта в production' },
-    { num: '12+', label: 'прототипов за 1.5 года' },
+    { num: '1', label: 'единая платформа (SSO, RBAC, аудит)' },
     { num: '7+', label: 'лет в строительстве' },
   ]
 
@@ -257,89 +257,48 @@ function Hero() {
 
       <div className="w-full pt-14">
         <div className="max-w-[1080px] mx-auto px-8 py-10">
-          {/* Верхняя строка: текст + философия */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-
-            {/* Левая колонка */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 glass-panel rounded-full mb-6 animate-blur-fade border-accent/30">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
-                </span>
-                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">PropTech R&D & Product AI-Engineer</span>
-              </div>
-              <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
-                {forCompany ? (
-                  <>
-                    <span className="text-text-primary">Продуктовая разработка и цифровизация</span>
-                    <br/>
-                    <span className="text-accent italic font-serif">для команды {forCompany}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-text-primary">Продуктовая разработка и </span>
-                    <br/>
-                    <span className="text-accent italic font-serif">цифровизация строительства</span>
-                  </>
-                )}
-              </h1>
-              <p className="hidden md:block text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[500px]">
-                Домен и код в одной голове: 7+ лет в строительстве + продуктовый R&D. От боли процесса до production-решения — без «испорченного телефона» между бизнесом и IT.
-              </p>
-              <p className="block md:hidden text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[500px]">
-                Домен и код в одной голове: 7+ лет в строительстве + продуктовый R&D. От боли процесса до production-решения — без «испорченного телефона» между бизнесом и IT.
-              </p>
-              {/* CTA кнопки */}
-              <div className="flex flex-col sm:flex-row gap-4 animate-blur-fade delay-300">
-                <a
-                  href="#products"
-                  className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent/20"
-                >
-                  Production экосистема
-                </a>
-                <a
-                  href="#research"
-                  className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
-                >
-                  R&D
-                </a>
-              </div>
+          {/* Текст + CTA */}
+          <div className="max-w-[720px]">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 glass-panel rounded-full mb-6 animate-blur-fade border-accent/30">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+              </span>
+              <span className="uppercase tracking-widest text-[10px] text-accent font-bold">PropTech R&D & Product AI-Engineer</span>
             </div>
-
-            {/* Правая колонка — карточки */}
-            <div className="flex flex-col gap-4 justify-center animate-[fadeIn_0.8s_ease-out_0.2s_both]">
-              {/* Карточка 1: Знать изнутри */}
-              <div className="glass-panel rounded-2xl p-5 flex gap-4">
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-accent-soft flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
-                    <path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-sm font-bold mb-1">Domain Expertise</div>
-                  <p className="text-[0.85rem] text-muted leading-relaxed">
-                    Был по ту сторону процесса. Проектирую автоматизацию по опыту исполнения и организации процесса, а не отрабатываю таски из Jira.
-                  </p>
-                </div>
-              </div>
-
-              {/* Карточка 2: Hands-on */}
-              <div className="glass-panel rounded-2xl p-5 flex gap-4">
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-green-soft flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green">
-                    <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="14" y1="4" x2="10" y2="20"/>
-                  </svg>
-                </div>
-                <div>
-                  <div className="text-sm font-bold mb-1">Hands-on</div>
-                  <p className="text-[0.85rem] text-muted leading-relaxed">
-                    Показал пользователю — собрал обратную связь — доработал. Рабочий код вместо презентаций о том, как это будет.
-                  </p>
-                </div>
-              </div>
+            <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
+              {forCompany ? (
+                <>
+                  <span className="text-text-primary">Продуктовая разработка и цифровизация</span>
+                  <br/>
+                  <span className="text-accent italic font-serif">для команды {forCompany}</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-text-primary">Продуктовая разработка и </span>
+                  <br/>
+                  <span className="text-accent italic font-serif">цифровизация строительства</span>
+                </>
+              )}
+            </h1>
+            <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[640px]">
+              Домен и код в одной голове: 7+ лет в строительстве + продуктовый R&D. Перевожу AI из стадии «демо» в работающий корпоративный актив — без потери контекста между бизнесом и IT.
+            </p>
+            {/* CTA кнопки */}
+            <div className="flex flex-col sm:flex-row gap-4 animate-blur-fade delay-300">
+              <a
+                href="#products"
+                className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent/20"
+              >
+                Production экосистема
+              </a>
+              <a
+                href="#research"
+                className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
+              >
+                R&D
+              </a>
             </div>
-
           </div>
 
           {/* Нижняя строка: статистика */}
@@ -360,7 +319,7 @@ function Hero() {
 /* ── Products ── */
 function Products() {
   return (
-    <section id="products" className="bg-surface py-24 border-t border-border/50">
+    <section id="products" className="py-24">
       <div className="max-w-[1280px] mx-auto px-8">
         <Reveal>
           <div className="mb-8">
@@ -390,8 +349,8 @@ function Products() {
 /* ── Approach (Methodology + BusinessValue) ── */
 function Approach() {
   const steps = [
-    { num: '01', title: 'Выявление узких мест', text: 'Снимаю требования напрямую у участников процесса — без цепочки «аналитик → архитектор → разработчик».' },
-    { num: '02', title: 'Rapid Prototyping', text: 'За пару недель — месяц — от архитектуры до работающего прототипа. Приоритет — скорость доставки до пользователя, а не идеальная кодовая база.' },
+    { num: '01', title: 'Выявление узких мест', text: 'Требования снимаю у тех, кто делает процесс руками — на площадке, в отделе, на объекте. Без воронки внутренних переводчиков.' },
+    { num: '02', title: 'Быстрое прототипирование', text: '2–4 недели от архитектуры до работающего прототипа. Приоритет — скорость доставки до пользователя, а не идеальная кодовая база.' },
     { num: '03', title: 'Валидация', text: 'Продукт приживается естественным путём. Если MVP не решает реальную задачу ежедневно — гипотеза убивается, не сжигая бюджеты.' },
     { num: '04', title: 'Масштабирование', text: 'Успешный прототип переводится на единую инфраструктуру: SSO, ролевой доступ, переиспользуемые сервисы — без технического долга.' },
   ]
@@ -399,35 +358,35 @@ function Approach() {
   const cards = [
     {
       num: '01',
-      title: 'Time-to-Market: недели, не кварталы',
-      text: 'Единая инфраструктура с SSO и переиспользуемыми сервисами — новый продукт стартует с готовой платформы, а не с нуля.',
-      metric: 'Единая платформа — масштабируемый фундамент',
+      title: 'Архитектура без переводчиков',
+      text: 'Базовая сущность модели отражает то, как процесс живёт, а не то, как его удобно описать. Ошибка на этом уровне исправляется переписыванием системы. Правильный выбор становится самым долгоживущим решением в архитектуре.',
+      metric: 'Фундамент, который не переписывается через год',
     },
     {
       num: '02',
-      title: 'Domain Oracle: решения без посредников',
-      text: 'Архитектурные решения принимаются на стыке домена и кода — без промежуточных звеньев и потери контекста.',
-      metric: 'Минимум согласований — максимум итераций',
+      title: 'Разбор задачи до болта',
+      text: 'Агентные системы проектируются как заводской конвейер: каждый шаг изолирован, варианты сравниваются по метрикам, финал валидируется на независимых данных. Гипотеза, не прошедшая оценку, убивается до вложений в масштабирование.',
+      metric: 'Измеримое качество вместо ощущений',
     },
     {
       num: '03',
-      title: 'Fail Fast: дешёвая проверка гипотез',
-      text: 'Нерабочая идея убивается за недели, а не после миллионных вложений. Масштабируется и переводится в production только то, что приносит измеримый результат.',
-      metric: 'Без CAPEX и кварталов ожидания',
+      title: 'Актив, а не демо-стенд',
+      text: 'Изолированный прототип — ещё не инструмент. Актив получается, когда он встроен в единый контур: с корпоративной авторизацией, ролевой моделью и прозрачным аудитом действий. Система обязана стабильно работать без своего создателя.',
+      metric: 'Система, отделимая от автора',
     },
   ]
 
   return (
-    <section id="approach" className="py-24">
+    <section id="approach" className="bg-surface py-24 border-t border-border/50">
       <div className="max-w-[1080px] mx-auto px-8">
 
         {/* Methodology */}
         <Reveal>
           <SectionHeader
-            tag="Как я делаю продукты"
+            tag="Как создаются продукты"
             tagColor="bg-purple-soft text-purple"
-            title="От задачи до рабочего инструмента"
-            subtitle="Код перестаёт быть ограничением — им становится разрыв между бизнесом и реализацией. Знание домена позволяет проектировать архитектуру напрямую, без цепочки согласований."
+            title="От прототипов к рабочим системам"
+            subtitle="Главный барьер цифровизации — не технологии и не бюджет, а разрыв в глубине понимания предметной области. Я проектирую архитектуру напрямую из домена, без эффекта «испорченного телефона» классической IT-модели."
           />
         </Reveal>
         <Reveal stagger>
@@ -449,7 +408,8 @@ function Approach() {
           <SectionHeader
             tag="Почему это работает"
             tagColor="bg-green-soft text-green"
-            title="Что даёт совмещение отрасли и разработки"
+            title="Продуктовая AI-инженерия"
+            subtitle="Большинство корпоративных AI-инициатив застревает на уровне демо. Три условия, которые превращают прототип в рабочий инструмент компании."
           />
         </Reveal>
         <Reveal stagger>

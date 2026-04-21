@@ -152,7 +152,7 @@ body.demo-modal-open {
   overflow: hidden;
 }
 
-/* Sminex CRM animations */
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
@@ -325,16 +325,6 @@ html.light .context-aura {
   opacity: 0.30;
 }
 
-
-/* ── Sminex VIP card shimmer ── */
-@keyframes shimmerWalk {
-  0% { transform: translateX(-150%) skewX(-15deg); }
-  100% { transform: translateX(150%) skewX(-15deg); }
-}
-
-.animate-shimmer {
-  animation: shimmerWalk 4s infinite ease-in-out;
-}
 
 /* ── iOS-like slide-in transition ── */
 @keyframes slideInRight {

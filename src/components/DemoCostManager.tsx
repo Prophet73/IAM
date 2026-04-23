@@ -134,10 +134,10 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
             {/* Project cards */}
             <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Проекты</div>
             {[
-              { name: 'ЖК «ARGO»', code: '1234', area: '45 200 м²', cost: '5.8 млрд ₽', status: 'В работе', sColor: B },
-              { name: 'ЖК «Сатурн»', code: '3045', area: '32 100 м²', cost: '3.2 млрд ₽', status: 'В работе', sColor: B },
-              { name: 'БЦ «Восток»', code: '2001', area: '18 700 м²', cost: '1.9 млрд ₽', status: 'Планируется', sColor: '#F59E0B' },
-              { name: 'Склад «Альфа»', code: '4102', area: '8 400 м²', cost: '420 млн ₽', status: 'Завершено', sColor: '#64748B' },
+              { name: 'ЖК «Объект-A»', code: '1234', area: '45 200 м²', cost: '5.8 млрд ₽', status: 'В работе', sColor: B },
+              { name: 'ЖК «Объект-C»', code: '3045', area: '32 100 м²', cost: '3.2 млрд ₽', status: 'В работе', sColor: B },
+              { name: 'БЦ «Объект-B»', code: '2001', area: '18 700 м²', cost: '1.9 млрд ₽', status: 'Планируется', sColor: '#F59E0B' },
+              { name: 'Склад «Объект-D»', code: '4102', area: '8 400 м²', cost: '420 млн ₽', status: 'Завершено', sColor: '#64748B' },
             ].map(p => (
               <div key={p.code} className="bg-white rounded-xl border border-gray-200 p-3">
                 <div className="flex items-center justify-between mb-1.5">
@@ -160,7 +160,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
             {/* File upload */}
             <div className="bg-gradient-to-br from-[#059669]/5 to-[#059669]/10 border border-[#059669]/15 rounded-xl p-3 text-center">
               <div className="text-lg mb-1">📎</div>
-              <div className="text-[11px] font-semibold text-gray-800">smeta_ARGO_2026.xlsx</div>
+              <div className="text-[11px] font-semibold text-gray-800">smeta_Объект-A_2026.xlsx</div>
               <div className="text-[9px] text-gray-400">Excel · 2 847 позиций · 14.2 МБ</div>
             </div>
 
@@ -225,7 +225,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
         {scr === 'analysis' && (
           <div className="animate-[fadeIn_0.2s_ease-out] space-y-2.5">
             <div className="flex items-center justify-between">
-              <div className="text-[12px] font-bold text-gray-800">ЖК «ARGO» — Затраты</div>
+              <div className="text-[12px] font-bold text-gray-800">ЖК «Объект-A» — Затраты</div>
               <span className="text-[9px] text-gray-400">128 500 ₽/м²</span>
             </div>
 
@@ -351,7 +351,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
             {/* KPI cards */}
             <div className="space-y-1.5">
               {[
-                { name: 'ЖК «ARGO»', cost: '128 500', ref: true, delta: null, color: '#E52713' },
+                { name: 'ЖК «Объект-A»', cost: '128 500', ref: true, delta: null, color: '#E52713' },
                 { name: 'ЖК «Level»', cost: '115 200', ref: false, delta: -10.4, color: '#3B82F6' },
                 { name: 'ЖК «Символ»', cost: '141 800', ref: false, delta: 10.3, color: '#F59E0B' },
               ].map(p => (
@@ -390,7 +390,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
                   <div className="space-y-0.5">
                     {c.vals.map((v, i) => {
                       const colors = ['#E52713', '#3B82F6', '#F59E0B']
-                      const names = ['ARGO', 'Level', 'Символ']
+                      const names = ['Объект-A', 'Аналог 1', 'Аналог 2']
                       const ref = c.vals[0]
                       const dev = i > 0 ? Math.round(((v / ref) - 1) * 100) : null
                       const devBad = dev !== null && Math.abs(dev) > 15
@@ -413,7 +413,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
                 </div>
               ))}
               <div className="flex gap-3 mt-2 pt-2 border-t border-gray-100 justify-center">
-                {[{ c: '#E52713', l: 'ARGO (эталон)' }, { c: '#3B82F6', l: 'Level' }, { c: '#F59E0B', l: 'Символ' }].map(lg => (
+                {[{ c: '#E52713', l: 'Объект-A (эталон)' }, { c: '#3B82F6', l: 'Аналог 1' }, { c: '#F59E0B', l: 'Аналог 2' }].map(lg => (
                   <div key={lg.l} className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm" style={{ background: lg.c }} /><span className="text-[7px] text-gray-400">{lg.l}</span></div>
                 ))}
               </div>
@@ -427,7 +427,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
               </div>
               <div className="grid grid-cols-4 text-[8px] font-bold text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
                 <div className="px-2 py-1.5">Параметр</div>
-                <div className="px-1.5 py-1.5 text-center" style={{ color: '#E52713' }}>ARGO</div>
+                <div className="px-1.5 py-1.5 text-center" style={{ color: '#E52713' }}>Объект-A</div>
                 <div className="px-1.5 py-1.5 text-center" style={{ color: '#3B82F6' }}>Level</div>
                 <div className="px-1.5 py-1.5 text-center" style={{ color: '#F59E0B' }}>Символ</div>
               </div>
@@ -492,7 +492,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
                 <div className="min-w-[500px]">
                   <div className="grid grid-cols-[120px_1fr_1fr_1fr_60px_60px] text-[6px] font-bold uppercase border-b border-gray-300 bg-[#DEEAF6]">
                     <div className="px-1.5 py-1 border-r border-gray-300">Категория</div>
-                    <div className="px-1 py-1 border-r border-gray-300 text-center" style={{ background: '#E2EFDA' }}>ARGO (эталон)</div>
+                    <div className="px-1 py-1 border-r border-gray-300 text-center" style={{ background: '#E2EFDA' }}>Объект-A (эталон)</div>
                     <div className="px-1 py-1 border-r border-gray-300 text-center" style={{ background: '#FDE9D9' }}>Level</div>
                     <div className="px-1 py-1 border-r border-gray-300 text-center" style={{ background: '#DEEAF6' }}>Символ</div>
                     <div className="px-1 py-1 border-r border-gray-300 text-center">Откл.%</div>

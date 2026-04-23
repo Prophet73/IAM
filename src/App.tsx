@@ -244,8 +244,9 @@ function Hero() {
 
   const stats = [
     { num: '4', label: 'продукта в production' },
-    { num: '1', label: 'единая платформа (SSO, RBAC, аудит)' },
-    { num: '7+', label: 'лет в строительстве' },
+    { num: '~10', label: 'R&D прототипов' },
+    { num: '1.5', label: 'года full-stack AI-разработки' },
+    { num: '7+', label: 'лет в отрасли' },
   ]
 
   return (
@@ -269,28 +270,34 @@ function Hero() {
             <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
               {forCompany ? (
                 <>
-                  <span className="text-text-primary">Продуктовая разработка и цифровизация</span>
+                  <span className="text-text-primary">AI-продукты и R&D для</span>
                   <br/>
-                  <span className="text-accent italic font-serif">для команды {forCompany}</span>
+                  <span className="text-accent italic font-serif">команды {forCompany}</span>
                 </>
               ) : (
                 <>
-                  <span className="text-text-primary">Продуктовая разработка и </span>
+                  <span className="text-text-primary">AI-продукты и R&D для строительства —</span>
                   <br/>
-                  <span className="text-accent italic font-serif">цифровизация строительства</span>
+                  <span className="text-accent italic font-serif">на стыке отраслевого опыта и системного мышления</span>
                 </>
               )}
             </h1>
             <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[640px]">
-              Домен и код в одной голове: 7+ лет в строительстве + продуктовый R&D. Перевожу AI из стадии «демо» в работающий корпоративный актив — без потери контекста между бизнесом и IT.
+              Полный цикл от снятия требований до деплоя: от исполнителя процесса → прототип за 2–4 недели → корпоративный контур с SSO, ролями и аудитом. Без испорченного телефона между бизнесом и IT.
             </p>
             {/* CTA кнопки */}
-            <div className="flex flex-col sm:flex-row gap-4 animate-blur-fade delay-300">
+            <div className="flex flex-col sm:flex-row gap-3 animate-blur-fade delay-300">
               <a
                 href="#products"
                 className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent/20"
               >
-                Production экосистема
+                Продукты
+              </a>
+              <a
+                href="#approach"
+                className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
+              >
+                Подход
               </a>
               <a
                 href="#research"
@@ -302,7 +309,7 @@ function Hero() {
           </div>
 
           {/* Нижняя строка: статистика */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
             {stats.map((s) => (
               <div key={s.label} className="glass-panel rounded-2xl p-4 flex items-center gap-3">
                 <div className="text-2xl sm:text-3xl font-extrabold font-display leading-none shrink-0 bg-gradient-to-b from-text-primary to-muted bg-clip-text text-transparent">{s.num}</div>
@@ -358,7 +365,7 @@ function Approach() {
   const cards = [
     {
       num: '01',
-      title: 'Архитектура без переводчиков',
+      title: 'От процесса к продукту',
       text: 'Базовая сущность модели отражает то, как процесс живёт, а не то, как его удобно описать. Ошибка на этом уровне исправляется переписыванием системы. Правильный выбор становится самым долгоживущим решением в архитектуре.',
       metric: 'Фундамент, который не переписывается через год',
     },
@@ -437,16 +444,13 @@ function Approach() {
 
 /* ── Research (R&D + Experiments) ── */
 function Research() {
-  const experiments = [
-    { desc: 'RAG-консультант по строительным нормам с гибридным поиском', tags: ['RAG', 'Gemini', 'Embeddings'] },
-    { desc: 'Автоклассификация элементов BIM-моделей через LLM', tags: ['Ollama', 'IFC', 'ML'] },
-    { desc: 'AI-сравнение версий PDF-документации с визуализацией', tags: ['PyMuPDF', 'Gemini', 'PDF.js'] },
-    { desc: 'Автоматический анализ стенограмм совещаний из СЭД', tags: ['Gemini', 'API', 'Pydantic'] },
-    { desc: 'Real-time перевод аудио на совещаниях', tags: ['Whisper', 'WebSocket', 'Gemini'] },
-    { desc: 'Голосовой ассистент с распознаванием и синтезом речи', tags: ['STT', 'TTS', 'Gemini'] },
-    { desc: 'Парсинг и структурирование данных из реестров экспертизы', tags: ['Python', 'BeautifulSoup'] },
-    { desc: 'Программная генерация документов по корпоративному брендбуку', tags: ['python-docx'] },
-    { desc: 'AI-ассистент по документации бизнес-процессов', tags: ['RAG', 'BM25', 'ChromaDB'] },
+  const experiments: { desc: string; result?: string; tags: string[] }[] = [
+    { desc: 'RAG-консультант по строительным нормам с гибридным поиском', result: '→ переосмыслен в Scanner', tags: ['RAG', 'Gemini', 'Embeddings'] },
+    { desc: 'Автоклассификация элементов BIM-моделей через LLM', result: '→ PoC, передан БИМ-отделу', tags: ['Ollama', 'IFC', 'ML'] },
+    { desc: 'AI-сравнение спецификаций в PDF-документации', result: '→ PoC, передан коллеге', tags: ['PyMuPDF', 'Gemini', 'PDF.js'] },
+    { desc: 'Real-time перевод аудио на совещаниях', result: '→ вырос в offline-пайплайн Автопротокола', tags: ['Whisper', 'WebSocket', 'Gemini'] },
+    { desc: 'Парсинг и структурирование данных для финансово-технического аудита', result: '→ PoC, тесты в ФТА', tags: ['Python', 'BeautifulSoup'] },
+    { desc: 'AI-ассистент по документации бизнес-процессов', result: '→ учебный RAG', tags: ['RAG', 'BM25', 'ChromaDB'] },
   ]
 
   const items = [
@@ -507,7 +511,7 @@ function Research() {
         <Reveal>
           <div className="mt-14 mb-6 pt-14 border-t border-border">
             <h3 className="font-display text-xl md:text-2xl font-bold mb-1">Прототипы и эксперименты</h3>
-            <p className="text-sm text-muted">Каждый production-продукт вырос из серии экспериментов. Ниже — задачи, которые решались на пути.</p>
+            <p className="text-sm text-muted">Каждый production-продукт вырос из серии экспериментов. Ниже — шесть наиболее показательных.</p>
           </div>
         </Reveal>
         <Reveal stagger>
@@ -515,6 +519,7 @@ function Research() {
             {experiments.map((e, i) => (
               <div key={i} className="bg-surface-2 border border-border rounded-lg px-4 py-3 flex flex-col gap-1.5 transition-colors hover:border-accent/20">
                 <div className="text-sm text-text-primary leading-snug">{e.desc}</div>
+                {e.result && <div className="text-xs text-accent/80 italic leading-snug">{e.result}</div>}
                 <div className="flex flex-wrap gap-1 mt-auto">
                   {e.tags.map((t) => (
                     <span key={t} className="px-1.5 py-0.5 rounded text-xs font-medium bg-surface-3 text-muted">{t}</span>
@@ -607,32 +612,16 @@ function Contact() {
         <Reveal>
           {/* Heading */}
           <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-5">
-            {forCompany ? `Обсудить цифровизацию ${forCompany}` : 'Обсудить сотрудничество'}
+            {forCompany ? `Обсудить AI-проекты команды ${forCompany}` : 'Обсудить сотрудничество'}
           </h2>
 
           {/* Subtitle */}
           <p className="text-muted text-lg leading-relaxed max-w-2xl mx-auto">
-            Есть процесс, который давно просится автоматизироваться? Нужен R&D-партнёр с пониманием стройки изнутри? Или просто хочется обсудить цифровизацию в отрасли — пишите в Telegram.
+            Работаю с компаниями, где цифровизация — инженерная задача с измеримым результатом, а не маркетинговый слайд. Формат работы — под конкретную задачу.
           </p>
 
-          {/* Action */}
-          <div className="flex justify-center mt-10">
-            <a
-              href="https://t.me/nickkhromenok"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => tracker.track('contact_click', { channel: 'telegram' })}
-              className="inline-flex items-center justify-center gap-2.5 bg-accent text-white px-8 py-4 rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent/20"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-              </svg>
-              Написать напрямую в Telegram
-            </a>
-          </div>
-
-          {/* Email & Phone links */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-6">
+          {/* Contacts row: email · phone (center) · telegram */}
+          <div className="flex flex-wrap items-center justify-center gap-8 mt-10">
             <a
               href="mailto:KhromenokNV@mail.ru"
               onClick={() => tracker.track('contact_click', { channel: 'email' })}
@@ -646,12 +635,24 @@ function Contact() {
             <a
               href="tel:+79268973225"
               onClick={() => tracker.track('contact_click', { channel: 'phone' })}
-              className="inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
+              className="inline-flex items-center gap-2 text-base font-semibold text-text-primary hover:text-accent transition-colors no-underline"
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
               </svg>
               +7 926 897-32-25
+            </a>
+            <a
+              href="https://t.me/nickkhromenok"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => tracker.track('contact_click', { channel: 'telegram' })}
+              className="inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              Telegram
             </a>
           </div>
         </Reveal>

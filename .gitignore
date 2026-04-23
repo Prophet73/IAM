@@ -30,3 +30,23 @@ dist-ssr
 /*.png
 /*.jpg
 /*.jpeg
+/*.html
+
+# Python cache (backend/, scripts/ используют Python утилиты)
+__pycache__/
+*.pyc
+
+# Локальные данные / артефакты исполнения
+/backend/*.db
+/uploads/
+/output/
+
+# Генерируемые бандлы скриптов
+/scripts/bundles/
+/scripts/*.png
+
+# Черновики и заметки вне git
+/backlog/
+/q.md
+/qa.md
+/NEXT.md

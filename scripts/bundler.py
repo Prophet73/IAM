@@ -15,37 +15,30 @@ PROJECT_ROOT = Path(__file__).parent.parent.absolute()
 OUTPUT_DIR = PROJECT_ROOT / "scripts" / "bundles"
 OUTPUT_FILENAME = f"iam_bundle_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
 
+# Только код продукта: backend (Python) + frontend (TS/TSX/CSS) + минимум setup-конфигов.
+# Никакой документации, narrative, scripts, .md, .env, бинарников.
+ALLOWED_DIRS = {
+    "backend",          # Python backend
+    "src",              # React frontend (ts/tsx/css)
+}
+
+# Корневые файлы, которые имеют смысл для понимания setup — НЕ документация
+ALLOWED_ROOT_FILES = {
+    "index.html",
+    "package.json",
+    "vite.config.ts",
+    "tsconfig.json",
+    "tsconfig.app.json",
+    "tsconfig.node.json",
+}
+
 ALLOWED_EXTENSIONS = {
-    ".ts", ".tsx",      # TypeScript / React
-    ".js", ".jsx",      # JavaScript
-    ".css", ".scss",    # Стили
-    ".html",            # HTML
-    ".json",            # package.json, tsconfig, etc.
-    ".md",              # Документация
-    ".yml", ".yaml",    # CI/CD конфиги
-    ".sh",              # Shell скрипты
-    ".py",              # Python скрипты (bundler сам себя)
-    ".gitignore",
-    ".editorconfig",
-}
-
-ALLOWED_FILENAMES = {
-    "CLAUDE.md",
-    ".env.example",
-    "Makefile",
-}
-
-IGNORED_DIR_NAMES = {
-    "node_modules",
-    "dist",
-    "build",
-    ".git",
-    ".vscode",
-    ".idea",
-    "__pycache__",
-    "bundles",          # Сам аутпут бандлера
-    "coverage",
-    ".playwright-mcp",
+    ".ts", ".tsx",
+    ".js", ".jsx",
+    ".css",
+    ".html",
+    ".json",
+    ".py",
 }
 
 IGNORED_FILENAMES = {
@@ -63,9 +56,9 @@ IGNORED_FILE_PATTERNS = {
     "Thumbs.db",
     ".min.js",
     ".min.css",
-    ".map",             # Source maps — мусор
+    ".map",
     ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico", ".webp",
-    ".svg",             # SVG можно включить если нужно, пока исключаем
+    ".svg",
     ".woff", ".woff2", ".ttf", ".eot",
     ".zip", ".tar", ".gz",
 }
@@ -136,17 +129,22 @@ def should_include(fp: Path) -> bool:
         if suffix_lower == pattern or name_lower.endswith(pattern):
             return False
 
-    for part in fp.parts:
-        if part in IGNORED_DIR_NAMES:
-            return False
+    if suffix_lower not in ALLOWED_EXTENSIONS:
+        return False
 
-    if fp.name in ALLOWED_FILENAMES:
-        return True
+    # Whitelist по локации: либо файл в одной из ALLOWED_DIRS, либо корневой setup-конфиг
+    try:
+        rel = fp.relative_to(PROJECT_ROOT)
+    except ValueError:
+        return False
 
-    if suffix_lower in ALLOWED_EXTENSIONS:
-        return True
+    parts = rel.parts
+    if len(parts) == 1:
+        # Корневой файл
+        return parts[0] in ALLOWED_ROOT_FILES
 
-    return False
+    # Поддиректория — проверяем что это одна из разрешённых
+    return parts[0] in ALLOWED_DIRS
 
 
 def create_bundle(include_untracked: bool = True, verbose: bool = False):

@@ -256,10 +256,8 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
                     { code: '7.4.1.2', name: '7.4.1.2 Устройство полусухой стяжки', val: 160, pct: 19, color: '#A7F3D0', children: false },
                   ],
                 }
-                const key = drillPath.join(' → ') || ''
                 const lastSegment = drillPath[drillPath.length - 1] || ''
                 const rows = levels[lastSegment] || levels['']
-                const maxVal = Math.max(...rows.map(r => r.val))
                 return (
                   <>
                     <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2">

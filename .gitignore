@@ -50,3 +50,6 @@ __pycache__/
 /q.md
 /qa.md
 /NEXT.md
+
+# Review screenshots (локальные снапшоты из dev-сессий)
+/.review/

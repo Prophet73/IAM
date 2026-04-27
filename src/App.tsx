@@ -3,6 +3,7 @@ import { flushSync } from 'react-dom'
 import { products } from './data/products'
 import { ProductsEcosystem } from './components/ProductsEcosystem'
 import { Reveal } from './components/Reveal'
+import { HeroDiagram } from './components/HeroDiagram'
 import { tracker } from './utils/tracker'
 
 const DataBookDemo = React.lazy(() => import('./components/DataBookDemo').then(m => ({ default: m.DataBookDemo })))
@@ -252,70 +253,83 @@ function Hero() {
   return (
     <section id="hero" className="min-h-screen relative overflow-hidden flex items-center">
       <div
-        className="absolute -top-[100px] right-[-200px] w-[700px] h-[700px] pointer-events-none animate-[heroOrb_8s_ease-in-out_infinite] blur-[80px] opacity-70"
-        style={{ background: 'radial-gradient(circle at 40% 40%, rgba(196,167,125,0.4), transparent 50%), radial-gradient(circle at 65% 55%, rgba(92,158,120,0.2), transparent 45%), radial-gradient(circle at 35% 65%, rgba(139,123,176,0.18), transparent 50%)' }}
+        className="absolute -top-[80px] right-[-180px] w-[640px] h-[640px] pointer-events-none animate-[heroOrb_10s_ease-in-out_infinite] blur-[100px] opacity-60"
+        style={{ background: 'radial-gradient(circle at 50% 50%, rgba(196,167,125,0.55), transparent 65%)' }}
       />
 
       <div className="w-full pt-14">
         <div className="max-w-[1080px] mx-auto px-8 py-10">
-          {/* Текст + CTA */}
-          <div className="max-w-[720px]">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 glass-panel rounded-full mb-6 animate-blur-fade border-accent/30">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
-              </span>
-              <span className="uppercase tracking-widest text-[10px] text-accent font-bold">PropTech R&D & Product AI-Engineer</span>
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-10 lg:gap-12 items-center">
+            {/* Текст + CTA */}
+            <div className="max-w-[640px]">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 glass-panel rounded-full mb-6 animate-blur-fade border-accent/30">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+                </span>
+                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">PropTech R&D & Product AI-Engineer</span>
+              </div>
+              <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
+                {forCompany ? (
+                  <>
+                    <span className="text-text-primary">AI-продукты и R&D для</span>
+                    <br/>
+                    <span className="text-accent italic font-serif">команды {forCompany}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-text-primary">AI-продукты и R&D для строительства —</span>
+                    <br/>
+                    <span className="text-accent italic font-serif">на стыке отраслевого опыта и системного мышления</span>
+                  </>
+                )}
+              </h1>
+              <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[640px]">
+                Полный цикл от снятия требований до деплоя: от исполнителя процесса → прототип за 2–4 недели → корпоративный контур с SSO, ролями и аудитом. Без испорченного телефона между бизнесом и IT.
+              </p>
+              {/* CTA кнопки */}
+              <div className="flex flex-col sm:flex-row gap-3 animate-blur-fade delay-300">
+                <a
+                  href="#products"
+                  className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent/20"
+                >
+                  Продукты
+                </a>
+                <a
+                  href="#approach"
+                  className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
+                >
+                  Подход
+                </a>
+                <a
+                  href="#research"
+                  className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
+                >
+                  R&D
+                </a>
+              </div>
             </div>
-            <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
-              {forCompany ? (
-                <>
-                  <span className="text-text-primary">AI-продукты и R&D для</span>
-                  <br/>
-                  <span className="text-accent italic font-serif">команды {forCompany}</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-text-primary">AI-продукты и R&D для строительства —</span>
-                  <br/>
-                  <span className="text-accent italic font-serif">на стыке отраслевого опыта и системного мышления</span>
-                </>
-              )}
-            </h1>
-            <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[640px]">
-              Полный цикл от снятия требований до деплоя: от исполнителя процесса → прототип за 2–4 недели → корпоративный контур с SSO, ролями и аудитом. Без испорченного телефона между бизнесом и IT.
-            </p>
-            {/* CTA кнопки */}
-            <div className="flex flex-col sm:flex-row gap-3 animate-blur-fade delay-300">
-              <a
-                href="#products"
-                className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent/20"
-              >
-                Продукты
-              </a>
-              <a
-                href="#approach"
-                className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
-              >
-                Подход
-              </a>
-              <a
-                href="#research"
-                className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
-              >
-                R&D
-              </a>
+
+            {/* Hero artifact: isometric stack */}
+            <div className="hidden lg:block animate-blur-fade delay-200">
+              <HeroDiagram />
             </div>
           </div>
 
           {/* Нижняя строка: статистика */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-10 animate-[fadeIn_0.8s_ease-out_0.4s_both]">
-            {stats.map((s) => (
-              <div key={s.label} className="glass-panel rounded-2xl p-4 flex items-center gap-3">
-                <div className="text-2xl sm:text-3xl font-extrabold font-display leading-none shrink-0 bg-gradient-to-b from-text-primary to-muted bg-clip-text text-transparent">{s.num}</div>
-                <div className="text-xs text-muted leading-snug min-w-0">{s.label}</div>
-              </div>
-            ))}
+            {stats.map((s, i) => {
+              const isPrimary = i === 0
+              return (
+                <div
+                  key={s.label}
+                  className={`glass-panel rounded-2xl p-4 flex items-center gap-3 ${isPrimary ? 'stat-primary' : ''}`}
+                >
+                  <div className={`font-extrabold font-display leading-none shrink-0 bg-clip-text text-transparent ${isPrimary ? 'text-3xl sm:text-4xl bg-gradient-to-b from-accent to-accent/60' : 'text-2xl sm:text-3xl bg-gradient-to-b from-text-primary to-muted'}`}>{s.num}</div>
+                  <div className={`text-xs leading-snug min-w-0 ${isPrimary ? 'text-text-primary/80 font-medium' : 'text-muted'}`}>{s.label}</div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -326,7 +340,7 @@ function Hero() {
 /* ── Products ── */
 function Products() {
   return (
-    <section id="products" className="py-24">
+    <section id="products" className="py-24 section-fade-top">
       <div className="max-w-[1280px] mx-auto px-8">
         <Reveal>
           <div className="mb-8">
@@ -384,7 +398,7 @@ function Approach() {
   ]
 
   return (
-    <section id="approach" className="bg-surface py-24 border-t border-border/50">
+    <section id="approach" className="bg-surface py-24 section-fade-top">
       <div className="max-w-[1080px] mx-auto px-8">
 
         {/* Methodology */}
@@ -477,7 +491,7 @@ function Research() {
   ]
 
   return (
-    <section id="research" className="bg-surface py-24">
+    <section id="research" className="bg-surface py-24 section-fade-top">
       <div className="max-w-[1080px] mx-auto px-8">
         <Reveal>
           <SectionHeader
@@ -553,7 +567,7 @@ function Career() {
   ]
 
   return (
-    <section id="career" className="py-24">
+    <section id="career" className="py-24 section-fade-top">
       <div className="max-w-[1080px] mx-auto px-8">
         <Reveal>
           <SectionHeader

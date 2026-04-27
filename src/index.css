@@ -65,7 +65,7 @@ body {
   font-family: var(--font-sans);
   background-color: var(--color-bg);
   background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-size: 28px 28px;
   color: var(--color-text-primary);
   line-height: 1.65;
   text-rendering: optimizeLegibility;
@@ -503,6 +503,88 @@ html.light .context-aura {
 
 .animate-blink {
   animation: blink 1s step-end infinite;
+}
+
+/* ── Hero stat primary card ── */
+.stat-primary {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent) !important;
+  background-color: color-mix(in srgb, var(--color-accent) 6%, var(--color-surface)) !important;
+  box-shadow:
+    0 4px 24px -8px color-mix(in srgb, var(--color-accent) 25%, transparent),
+    inset 0 1px 0 0 color-mix(in srgb, var(--color-accent) 12%, transparent) !important;
+}
+
+/* ── Hero diagram (isometric stack) ── */
+.hero-diagram {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero-diagram svg {
+  overflow: visible;
+}
+
+.diagram-layer {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: diagramLayerIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: center;
+}
+
+@keyframes diagramLayerIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes diagramPulse {
+  0%       { transform: translateY(0);                       opacity: 0; }
+  10%      { transform: translateY(0);                       opacity: 1; }
+  85%      { transform: translateY(var(--pulse-travel, -210px)); opacity: 1; }
+  100%     { transform: translateY(var(--pulse-travel, -210px)); opacity: 0; }
+}
+
+.diagram-pulse {
+  animation: diagramPulse 4.4s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  animation-delay: 1.4s;
+  transform-origin: center;
+}
+
+/* ── Section soft divider ── */
+.section-fade-top {
+  position: relative;
+}
+
+.section-fade-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-accent) 35%, transparent) 50%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.section-fade-top::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 80px;
+  background: radial-gradient(
+    ellipse at top,
+    color-mix(in srgb, var(--color-accent) 10%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
 }
 
 /* ── Guided Tour Pulse ── */

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { tracker } from '../utils/tracker'
 
-type Screen = 'dashboard' | 'project' | 'analogs' | 'report' | 'ai' | 'deflators'
+type Screen = 'dashboard' | 'project' | 'analogs' | 'report' | 'deflators'
 
 const BRAND = '#059669'
 
@@ -19,13 +19,12 @@ const nav: { key: Screen; emoji: string; label: string; section?: string }[] = [
   { key: 'project', emoji: '🏗', label: 'Проект' },
   { key: 'analogs', emoji: '🔍', label: 'Аналоги', section: 'АНАЛИЗ' },
   { key: 'report', emoji: '📄', label: 'Отчёт' },
-  { key: 'ai', emoji: '🤖', label: 'AI-классификация', section: 'ИНСТРУМЕНТЫ' },
-  { key: 'deflators', emoji: '📈', label: 'Дефляторы' },
+  { key: 'deflators', emoji: '📈', label: 'Индексы цен', section: 'ИНСТРУМЕНТЫ' },
 ]
 
 const titles: Record<Screen, string> = {
   dashboard: 'Дашборд', project: 'Анализ проекта', analogs: 'Поиск аналогов',
-  report: 'Сравнительный отчёт', ai: 'AI-классификация', deflators: 'Дефляторы',
+  report: 'Сравнительный отчёт', deflators: 'Индексы цен',
 }
 
 /* ── Number formatter ── */
@@ -177,39 +176,14 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
               </div>
             </div>
 
-            {/* AI Classification */}
-            <div className="bg-white rounded-xl border border-gray-200 p-2.5">
-              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2">AI-классификация</div>
-              <div className="space-y-1.5">
-                {[
-                  { pos: 'Бетон В25 F150 W8', cat: 'СМР → Бетонные работы', conf: '98%' },
-                  { pos: 'Арматура A500C ø16', cat: 'СМР → Армирование', conf: '96%' },
-                  { pos: 'Кладка из блоков', cat: 'СМР → Каменные работы', conf: '94%' },
-                  { pos: 'Утеплитель Rockwool', cat: 'Материалы → Утепление', conf: '91%' },
-                ].map((r, i) => (
-                  <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-lg px-2 py-1.5">
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[9px] text-gray-700 font-medium truncate">{r.pos}</div>
-                      <div className="text-[8px] text-gray-400">→ {r.cat}</div>
-                    </div>
-                    <span className="text-[8px] font-bold text-[#059669] shrink-0">{r.conf}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
-                <span className="text-[9px] text-gray-500">Классифицировано: <span className="font-bold text-gray-800">2 714 / 2 847</span></span>
-                <span className="text-[8px] font-bold text-[#059669]">95.3%</span>
-              </div>
-            </div>
-
             {/* Deflator */}
             <div className="bg-white rounded-xl border border-gray-200 p-2.5">
-              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Дефлятирование</div>
+              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Приведение цен к текущим</div>
               <div className="flex items-center justify-between">
-                <span className="text-[9px] text-gray-500">Коэффициент 2026</span>
+                <span className="text-[9px] text-gray-500">Индекс удорожания 2026</span>
                 <span className="text-[10px] font-bold text-gray-800">×1.047</span>
               </div>
-              <div className="text-[8px] text-gray-400 mt-1">Приведение к текущим ценам для корректного сравнения объектов разных лет</div>
+              <div className="text-[8px] text-gray-400 mt-1">Цены прошлых лет автоматически приводятся к текущим — чтобы корректно сравнивать проекты разных лет</div>
             </div>
 
             {/* Stack */}
@@ -318,10 +292,10 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
               <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Стоимость проекта</div>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { l: 'В базовых ценах', v: '5.81 млрд ₽' },
-                  { l: 'Дефлятировано', v: '6.08 млрд ₽' },
-                  { l: 'За м² (базовые)', v: '128 500 ₽' },
-                  { l: 'За м² (дефл.)', v: '134 500 ₽' },
+                  { l: 'В ценах сметы', v: '5.81 млрд ₽' },
+                  { l: 'В текущих ценах', v: '6.08 млрд ₽' },
+                  { l: 'За м² (по смете)', v: '128 500 ₽' },
+                  { l: 'За м² (текущие)', v: '134 500 ₽' },
                 ].map(s => (
                   <div key={s.l}>
                     <div className="text-[8px] text-gray-400">{s.l}</div>
@@ -361,7 +335,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
                       <span className="text-[10px] font-bold text-gray-800">{p.name}</span>
                       {p.ref && <span className="text-[7px] font-bold px-1 py-0.5 rounded bg-red-50 text-red-500">ЭТАЛОН</span>}
                     </div>
-                    <span className="text-[8px] text-gray-400">₽/м² · дефлятировано</span>
+                    <span className="text-[8px] text-gray-400">₽/м² · в текущих ценах</span>
                   </div>
                   <div className="text-right shrink-0">
                     <div className="text-[13px] font-extrabold text-gray-800">{p.cost}</div>
@@ -531,7 +505,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
 
             {/* Validation sheet preview */}
             <div className="bg-white rounded-xl border border-gray-200 p-2.5">
-              <div className="text-[9px] font-bold text-gray-700 mb-2">Валидация по рынку (эталон)</div>
+              <div className="text-[9px] font-bold text-gray-700 mb-2">Проверка по рынку (эталон)</div>
               <div className="space-y-1.5">
                 {[
                   { cat: '7. Отделочные', ref: 18400, p10: 14200, med: 17800, p90: 23100, pos: 'В рынке' },
@@ -610,7 +584,7 @@ function Modal({ onClose }: { onClose: () => void }) {
               {nav.map(item => (
                 <div key={item.key}>
                   {item.section && <div className="pt-4 pb-2 px-2"><div className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-wider">{item.section}</div></div>}
-                  <button onClick={() => setScreen(item.key)} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left cursor-pointer border-none transition-colors text-[0.8rem] ${screen === item.key ? 'bg-[#059669]/10 text-[#059669] font-semibold' : 'bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-800'} ${item.key === 'ai' && screen !== 'ai' ? 'animate-guide-pulse' : ''}`}>
+                  <button onClick={() => setScreen(item.key)} className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left cursor-pointer border-none transition-colors text-[0.8rem] ${screen === item.key ? 'bg-[#059669]/10 text-[#059669] font-semibold' : 'bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-800'} ${item.key === 'analogs' && screen !== 'analogs' ? 'animate-guide-pulse' : ''}`}>
                     <span className="text-[0.85rem]">{item.emoji}</span><span>{item.label}</span>
                   </button>
                 </div>
@@ -638,7 +612,6 @@ function Modal({ onClose }: { onClose: () => void }) {
               {screen === 'project' && <PgProject />}
               {screen === 'analogs' && <PgAnalogs />}
               {screen === 'report' && <PgReport />}
-              {screen === 'ai' && <PgAI />}
               {screen === 'deflators' && <PgDeflators />}
             </div>
           </div>
@@ -846,8 +819,8 @@ function PgProject() {
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden">
-            <button onClick={() => setDeflated(false)} className={`px-3 py-1.5 text-[0.72rem] font-medium border-none cursor-pointer transition-colors ${!deflated ? 'bg-[#059669]/10 text-[#059669]' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>Исходные цены</button>
-            <button onClick={() => setDeflated(true)} className={`px-3 py-1.5 text-[0.72rem] font-medium border-none cursor-pointer transition-colors ${deflated ? 'bg-[#059669]/10 text-[#059669]' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>Дефлятированные</button>
+            <button onClick={() => setDeflated(false)} className={`px-3 py-1.5 text-[0.72rem] font-medium border-none cursor-pointer transition-colors ${!deflated ? 'bg-[#059669]/10 text-[#059669]' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>В ценах сметы</button>
+            <button onClick={() => setDeflated(true)} className={`px-3 py-1.5 text-[0.72rem] font-medium border-none cursor-pointer transition-colors ${deflated ? 'bg-[#059669]/10 text-[#059669]' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>В текущих ценах</button>
           </div>
         </div>
       </div>
@@ -1117,7 +1090,7 @@ function PgReport() {
         <div className="flex items-center justify-between mb-3">
           <div>
             <div className="text-[0.95rem] font-bold text-slate-800">Сравнительный анализ стоимости строительства</div>
-            <div className="text-[0.72rem] text-slate-400 mt-0.5">ЖК «Северный» · PRJ-2024-015 · Данные дефлятированы к Q1 2024</div>
+            <div className="text-[0.72rem] text-slate-400 mt-0.5">ЖК «Северный» · PRJ-2024-015 · Цены приведены к Q1 2024</div>
           </div>
           <div className="flex items-center gap-2">
             <button className="flex items-center gap-1.5 px-3 py-1.5 text-white rounded-lg text-[0.72rem] font-medium cursor-pointer border-none hover:opacity-90 transition-opacity" style={{ background: BRAND }}><I.Download /> .xlsx</button>
@@ -1142,7 +1115,7 @@ function PgReport() {
       <div className="flex items-center gap-1 mb-4">
         {([
           { key: 'table' as const, label: '📊 Сравнительный анализ' },
-          { key: 'chart' as const, label: '📈 Разброс P10 – Медиана – P90' },
+          { key: 'chart' as const, label: '📈 Разброс цен по выборке' },
         ]).map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} className={`px-4 py-2 rounded-lg text-[0.75rem] font-medium border cursor-pointer transition-colors ${tab === t.key ? 'bg-[#059669]/10 text-[#059669] font-semibold border-[#059669]/20' : 'bg-white text-slate-500 hover:bg-slate-50 border-slate-200'}`}>{t.label}</button>
         ))}
@@ -1238,8 +1211,8 @@ function PgReport() {
 
       {tab === 'chart' && (
         <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="text-[0.85rem] font-bold text-slate-800 mb-1">Разброс и статистика (P10 – Медиана – P90)</div>
-          <div className="text-[0.68rem] text-slate-400 mb-4">Удельная стоимость по разделам, ₽/м² · ЖК «Северный» vs выборка 18 проектов</div>
+          <div className="text-[0.85rem] font-bold text-slate-800 mb-1">Разброс цен по выборке</div>
+          <div className="text-[0.68rem] text-slate-400 mb-4">Стоимость по разделам, ₽/м² · ЖК «Северный» на фоне 18 похожих проектов</div>
 
           {/* Legend */}
           <div className="flex items-center gap-5 mb-5 pb-3 border-b border-slate-100">
@@ -1315,202 +1288,6 @@ function PgReport() {
   )
 }
 
-/* ── Classifier tree ── */
-const classifierSample = [
-  { code: '4', name: 'Фундаменты и Конструкции подземной части', level: 0 },
-  { code: '4.1', name: 'Устройство свайных оснований', level: 1 },
-  { code: '4.3', name: 'Монолитные ростверки и фундаментные плиты', level: 1 },
-  { code: '4.3.1', name: 'Устройство монолитных ленточных фундаментов', level: 2 },
-  { code: '4.3.1.1', name: 'Бетон B25, арматура A500C и A240, К_арм. 60-80 кг/м³', level: 3 },
-  { code: '4.3.1.2', name: 'Бетон B30, арматура A500C и A240, К_арм. 80-100 кг/м³', level: 3 },
-  { code: '4.3.3', name: 'Устройство монолитных фундаментных плит', level: 2 },
-  { code: '4.3.3.1', name: 'Бетон B25, арматура A500C и A240, К_арм. 100-140 кг/м³', level: 3 },
-  { code: '4.4', name: 'Монолитные ЖБК подземной части', level: 1 },
-  { code: '4.4.1', name: 'Устройство монолитных стен подземной части', level: 2 },
-  { code: '4.4.1.1', name: 'Бетон B25, арматура A500C и A240, К_арм. 80-110 кг/м³', level: 3 },
-  { code: '4.5', name: 'Гидроизоляция конструкций подземной части', level: 1 },
-]
-
-const classifierStats = [
-  { code: '1', name: 'ПИР и Разрешительная документация' },
-  { code: '2', name: 'Подготовительные работы и Врем. сооружения' },
-  { code: '3', name: 'Земляные работы и Ограждение котлована' },
-  { code: '4', name: 'Фундаменты и Конструкции подземной части' },
-  { code: '5', name: 'Надземные несущие конструкции (КР)' },
-  { code: '6', name: 'Общестроительные работы (АР)' },
-  { code: '7', name: 'Отделочные работы (АИ)' },
-  { code: '8', name: 'Внутренние инженерные системы (ВИС)' },
-  { code: '9', name: 'Наружные инженерные сети (НС)' },
-  { code: '10', name: 'Благоустройство' },
-  { code: '11', name: 'Технологические решения и Спецоборуд.' },
-  { code: '12', name: 'Сопутствующие расходы' },
-  { code: '13', name: 'Непредвиденные расходы' },
-  { code: '14', name: 'Инфляция' },
-]
-
-function ClassifierTree() {
-  const [expanded, setExpanded] = useState(false)
-  const levelColors = ['text-slate-800 font-bold', 'text-slate-700 font-semibold', 'text-slate-600', 'text-slate-500 text-[0.65rem]']
-  const levelBg = [`${BRAND}15`, `${BRAND}08`, '#f1f5f9', '#f8fafc']
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 mb-5">
-      <button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between text-left cursor-pointer border-none bg-transparent">
-        <div>
-          <div className="text-[0.78rem] font-bold text-slate-800">Иерархия классификатора</div>
-          <div className="text-[0.65rem] text-slate-400">14 разделов · 4 уровня глубины · {'>'}600 позиций</div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="px-2 py-0.5 rounded text-[0.62rem] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">populate_categories.py</span>
-          {expanded ? <I.ChevronDown /> : <I.ChevronRight />}
-        </div>
-      </button>
-      {expanded && (
-        <div className="mt-3 border-t border-slate-100 pt-3">
-          <div className="grid grid-cols-[1fr_280px] gap-4">
-            {/* Tree sample */}
-            <div className="space-y-0.5">
-              <div className="text-[0.62rem] text-slate-400 uppercase tracking-wider font-bold mb-2">Фрагмент: раздел 4</div>
-              {classifierSample.map(item => (
-                <div key={item.code} className="flex items-center gap-1.5 py-0.5" style={{ paddingLeft: `${item.level * 16}px` }}>
-                  <span className="text-[0.6rem] font-mono px-1 py-0.5 rounded" style={{ background: levelBg[item.level], color: item.level === 0 ? BRAND : undefined }}>{item.code}</span>
-                  <span className={`text-[0.68rem] ${levelColors[item.level]}`}>{item.name}</span>
-                </div>
-              ))}
-              <div className="text-[0.58rem] text-slate-300 pl-12 mt-1">…</div>
-            </div>
-            {/* All L1 sections */}
-            <div className="border-l border-slate-100 pl-4">
-              <div className="text-[0.62rem] text-slate-400 uppercase tracking-wider font-bold mb-2">Разделы L1</div>
-              <div className="space-y-0.5">
-                {classifierStats.map(s => (
-                  <div key={s.code} className="flex items-center gap-1.5">
-                    <span className="text-[0.6rem] font-mono font-bold w-5 text-right shrink-0" style={{ color: BRAND }}>{s.code}</span>
-                    <span className="text-[0.65rem] text-slate-600 truncate">{s.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-/* ===== AI CLASSIFICATION ===== */
-function PgAI() {
-  const [model, setModel] = useState<'gemini' | 'ollama'>('gemini')
-
-  const classifications = [
-    { input: 'Бетон В25 монолитных стен подземной части', l1: '4. Фундаменты и Конструкции подземной части', l2: '4.4 Монолитные ЖБК подземной части', l3: '4.4.1 Устройство монолитных стен подземной части', l4: '4.4.1.1 Бетон B25, A500C и A240, К_арм. 80-110 кг/м³', confidence: 97 },
-    { input: 'Кладка стен из газобетонных блоков D500', l1: '6. Общестроительные работы (АР)', l2: '6.5 Внутренние стены и перегородки', l3: '6.5.2 Кладка перегородок из газобетонных блоков', l4: '—', confidence: 95 },
-    { input: 'Устройство навесного вент. фасада из керамогранита', l1: '6. Общестроительные работы (АР)', l2: '6.1 Фасадные работы', l3: '6.1.1 Навесные вентилируемые фасадные системы (НВФ)', l4: '—', confidence: 93 },
-    { input: 'Прокладка кабеля ВВГнг-LS 3x2.5 в гофре', l1: '8. Внутренние инженерные системы (ВИС)', l2: '8.3 Электроснабжение и электроосвещение (ЭОМ)', l3: '8.3.1 Силовое электрооборудование (ЭМ)', l4: '—', confidence: 91 },
-    { input: 'Монтаж приточно-вытяжной установки', l1: '8. Внутренние инженерные системы (ВИС)', l2: '8.2 ОВиК, ИТП/ЦТП', l3: '8.2.2 Вентиляция общеобменная (В)', l4: '—', confidence: 78 },
-    { input: 'Устройство бетонных полов с упрочнением MasterTop', l1: '7. Отделочные работы (АИ)', l2: '7.1 Отделка Паркинга', l3: '7.1.1 Устройство и отделка полов', l4: '7.1.1.3 Бетонные полы с упрочн. верхним слоем (MasterTop)', confidence: 94 },
-    { input: 'Разработка грунта экскаватором с погрузкой', l1: '3. Земляные работы и Ограждение котлована', l2: '3.2 Разработка котлована', l3: '—', l4: '—', confidence: 64 },
-    { input: 'Монтаж подвесного потолка Армстронг в офисах', l1: '7. Отделочные работы (АИ)', l2: '7.7 Отделка Коммерч./Офисных помещений', l3: '7.7.3 Устройство и отделка потолков', l4: '7.7.3.1 Подвесной потолок «Армстронг»', confidence: 96 },
-  ]
-
-  const confColor = (c: number) => {
-    if (c >= 90) return 'bg-green-50 text-green-700 border-green-200'
-    if (c >= 70) return 'bg-amber-50 text-amber-700 border-amber-200'
-    return 'bg-red-50 text-red-700 border-red-200'
-  }
-
-  const pipelineSteps = [
-    { label: 'Загрузка', emoji: '📥', done: true },
-    { label: 'Парсинг', emoji: '📋', done: true },
-    { label: 'AI-классификация', emoji: '🤖', done: true },
-    { label: 'Валидация', emoji: '✅', done: true },
-    { label: 'Экспорт', emoji: '📤', done: false },
-  ]
-
-  return (
-    <div className="p-6">
-      {/* Upload zone */}
-      <div className="border-2 border-dashed rounded-xl p-5 text-center mb-5 transition-colors" style={{ borderColor: `${BRAND}40`, background: `${BRAND}05` }}>
-        <div className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center" style={{ background: `${BRAND}15` }}>
-          <div style={{ color: BRAND }}><I.Upload /></div>
-        </div>
-        <div className="text-[0.82rem] font-medium text-slate-700 mb-1">Загрузите XLSX-файл сметы</div>
-        <div className="text-[0.7rem] text-slate-400">Перетащите файл или нажмите для выбора · .xlsx, .xls до 50 MB</div>
-      </div>
-
-      {/* Model selector + stats */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <div className="text-[0.72rem] text-slate-500 font-medium">Модель:</div>
-          <div className="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden">
-            <button onClick={() => setModel('gemini')} className={`px-3 py-1.5 text-[0.72rem] font-medium border-none cursor-pointer transition-colors ${model === 'gemini' ? 'bg-[#059669]/10 text-[#059669]' : 'bg-white text-slate-500 hover:bg-slate-50'} ${model !== 'gemini' ? 'animate-guide-pulse' : ''}`}>✨ Gemini Pro</button>
-            <button onClick={() => setModel('ollama')} className={`px-3 py-1.5 text-[0.72rem] font-medium border-none cursor-pointer transition-colors ${model === 'ollama' ? 'bg-[#059669]/10 text-[#059669]' : 'bg-white text-slate-500 hover:bg-slate-50'}`}>🦙 Ollama (local)</button>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="text-[0.72rem] text-slate-500"><span className="font-bold text-slate-800">847</span> позиций → <span className="font-bold text-green-600">812</span> классифицировано (95.9%)</div>
-          <div className="text-[0.72rem] text-amber-500 font-medium">35 требуют проверки</div>
-        </div>
-      </div>
-
-      {/* Pipeline */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 mb-5">
-        <div className="text-[0.72rem] font-semibold text-slate-700 mb-3">Конвейер обработки</div>
-        <div className="flex items-center gap-1">
-          {pipelineSteps.map((step, i) => (
-            <div key={step.label} className="flex items-center gap-1 flex-1">
-              <div className={`flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border ${step.done ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200'}`}>
-                <span className="text-[0.8rem]">{step.emoji}</span>
-                <span className={`text-[0.7rem] font-medium ${step.done ? 'text-green-700' : 'text-slate-400'}`}>{step.label}</span>
-                {step.done && <span className="text-green-500 text-[0.7rem] ml-auto">✓</span>}
-              </div>
-              {i < pipelineSteps.length - 1 && <span className="text-slate-300 text-[0.8rem] shrink-0">→</span>}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Classifier tree sample */}
-      <ClassifierTree />
-
-      {/* Classification results table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="text-[0.65rem] text-slate-400 uppercase tracking-wider bg-slate-50">
-              <th className="text-left px-4 py-2.5 font-semibold" style={{ width: '22%' }}>Исходная позиция</th>
-              <th className="text-left px-3 py-2.5 font-semibold">L1 · Раздел</th>
-              <th className="text-left px-3 py-2.5 font-semibold">L2 · Группа</th>
-              <th className="text-left px-3 py-2.5 font-semibold">L3 · Подгруппа</th>
-              <th className="text-left px-3 py-2.5 font-semibold">L4 · Позиция</th>
-              <th className="text-center px-3 py-2.5 font-semibold">Точность</th>
-            </tr>
-          </thead>
-          <tbody>
-            {classifications.map((c, i) => (
-              <tr key={i} className={`border-t border-slate-100 text-[0.73rem] hover:bg-slate-50/50 ${i % 2 ? 'bg-slate-50/30' : ''}`}>
-                <td className="px-4 py-2.5 text-slate-700 font-medium">{c.input}</td>
-                <td className="px-3 py-2.5"><span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[0.6rem] font-medium">{c.l1}</span></td>
-                <td className="px-3 py-2.5"><span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[0.6rem] font-medium">{c.l2}</span></td>
-                <td className="px-3 py-2.5"><span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[0.6rem] font-medium">{c.l3}</span></td>
-                <td className="px-3 py-2.5">{c.l4 !== '—' ? <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 text-[0.6rem] font-medium">{c.l4}</span> : <span className="text-[0.6rem] text-slate-300">—</span>}</td>
-                <td className="px-3 py-2.5 text-center">
-                  <span className={`inline-block px-2 py-0.5 rounded border text-[0.65rem] font-bold ${confColor(c.confidence)}`}>{c.confidence}%</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="flex items-center justify-between mt-3">
-        <span className="text-[0.72rem] text-slate-400">Показано 8 из 847 позиций · Классификатор: 14 разделов, 4 уровня</span>
-        <button className="flex items-center gap-1.5 px-4 py-2 text-white rounded-lg text-[0.75rem] font-medium cursor-pointer border-none hover:opacity-90 transition-opacity" style={{ background: BRAND }}>
-          <I.Download /> Экспорт результатов
-        </button>
-      </div>
-    </div>
-  )
-}
-
 /* ===== DEFLATORS ===== */
 function PgDeflators() {
   const deflators = [
@@ -1576,7 +1353,7 @@ function PgDeflators() {
 
         {/* Visual bar */}
         <div className="bg-white rounded-xl border border-slate-200 p-5 mb-5">
-          <div className="text-[0.82rem] font-bold text-slate-800 mb-4">Динамика кумулятивного индекса</div>
+          <div className="text-[0.82rem] font-bold text-slate-800 mb-4">Накопленное удорожание цен</div>
           <div className="space-y-2.5">
             {deflators.map(d => (
               <div key={d.year} className="flex items-center gap-3">

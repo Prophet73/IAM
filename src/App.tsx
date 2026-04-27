@@ -252,10 +252,7 @@ function Hero() {
 
   return (
     <section id="hero" className="min-h-screen relative overflow-hidden flex items-center">
-      <div
-        className="absolute -top-[80px] right-[-180px] w-[640px] h-[640px] pointer-events-none animate-[heroOrb_10s_ease-in-out_infinite] blur-[100px] opacity-60"
-        style={{ background: 'radial-gradient(circle at 50% 50%, rgba(196,167,125,0.55), transparent 65%)' }}
-      />
+      <div className="hero-orb absolute -top-[80px] right-[-180px] w-[640px] h-[640px] pointer-events-none animate-[heroOrb_10s_ease-in-out_infinite] blur-[100px]" />
 
       <div className="w-full pt-14">
         <div className="max-w-[1080px] mx-auto px-8 py-10">
@@ -561,7 +558,7 @@ function Career() {
   ]
 
   const edu = [
-    { date: '2021–2025', text: 'Аспирантура, ЭБСиГХ' },
+    { date: '2021–2025', text: 'Аспирантура, ЭБСиГХ (исследователь)' },
     { date: '2018–2020', text: 'Магистратура, ПГС' },
     { date: '2014–2018', text: 'Бакалавриат, ПГС' },
   ]
@@ -667,6 +664,21 @@ function Contact() {
                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
               Telegram
+            </a>
+          </div>
+
+          {/* CV download */}
+          <div className="mt-8 flex justify-center">
+            <a
+              href="/cv-khromenok.pdf"
+              download="Khromenok_NV_CV.pdf"
+              onClick={() => tracker.track('cv_download')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-2 border border-border text-text-primary text-sm font-semibold no-underline transition-colors hover:border-accent/40 hover:text-accent"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Скачать резюме (PDF)
             </a>
           </div>
         </Reveal>

@@ -111,42 +111,6 @@ export function ProductsEcosystem({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[42%_1fr] gap-8 lg:gap-12 items-start">
 
-      {/* ── Mobile: product grid ── */}
-      <div className="lg:hidden">
-        <div className="grid grid-cols-3 gap-2 mb-2">
-          {products.slice(0, 3).map(p => {
-            const st = statusConfig[p.status]
-            const active = selectedId === p.id
-            return (
-              <button key={p.id} onClick={() => setSelectedId(p.id)}
-                className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-[12px] font-semibold transition-all border ${
-                  active ? 'bg-accent text-white border-accent shadow-lg shadow-accent/20' : 'bg-surface border-border text-muted'
-                }`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : st.dotColor}`} />
-                {p.name}
-              </button>
-            )
-          })}
-        </div>
-        <div className="grid grid-cols-2 gap-2 max-w-[67%] mx-auto">
-          {products.slice(3).map(p => {
-            const st = statusConfig[p.status]
-            const active = selectedId === p.id
-            return (
-              <button key={p.id} onClick={() => setSelectedId(p.id)}
-                className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-[12px] font-semibold transition-all border ${
-                  active ? 'bg-accent text-white border-accent shadow-lg shadow-accent/20' : 'bg-surface border-border text-muted'
-                }`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : st.dotColor}`} />
-                {p.name}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
       {/* ── Ecosystem graph (desktop — sticky) ── */}
       <div className="hidden lg:flex items-center justify-center sticky top-24 h-[calc(100vh-8rem)]">
         <div className="aspect-square w-full max-w-[520px] mx-auto relative overflow-visible">
@@ -204,23 +168,13 @@ export function ProductsEcosystem({
         </div>
       </div>
 
-      {/* ── Detail cards: mobile shows only selected, desktop shows all ── */}
+      {/* ── Detail cards stack: mobile = all at full opacity, desktop = scroll-driven activation ── */}
       <div className="flex flex-col gap-6 lg:gap-[40vh] lg:pt-[30vh] lg:pb-[50vh] relative z-10">
-        {/* Mobile: compact card */}
-        <div className="lg:hidden">
-          <MobileCard
-            product={products.find(p => p.id === selectedId)!}
-            demo={demos[selectedId]}
-          />
-        </div>
-
-        {/* Desktop: all cards stacked */}
         {products.map(p => (
           <div
             key={p.id}
             ref={setCardRef(p.id)}
             data-product-id={p.id}
-            className="hidden lg:block"
           >
             <DetailCard
               product={p}
@@ -250,7 +204,7 @@ function Spotlight({ children, isActive }: { children: React.ReactNode; isActive
       onMouseLeave={() => setSpot(p => ({ ...p, on: false }))}
     >
       <div
-        className={`pointer-events-none absolute inset-0 rounded-2xl z-[1] transition-opacity duration-300 ${spot.on && isActive ? 'opacity-100' : 'opacity-0'}`}
+        className={`cursor-spotlight pointer-events-none absolute inset-0 rounded-2xl z-[1] transition-opacity duration-300 ${spot.on && isActive ? 'opacity-100' : 'opacity-0'}`}
         style={{
           background: spot.on
             ? `radial-gradient(400px circle at ${spot.x}px ${spot.y}px, var(--color-accent-soft), transparent 60%)`
@@ -258,49 +212,6 @@ function Spotlight({ children, isActive }: { children: React.ReactNode; isActive
         }}
       />
       <div className="relative z-[2]">{children}</div>
-    </div>
-  )
-}
-
-/* ── Mobile compact card ── */
-function MobileCard({
-  product,
-  demo,
-}: {
-  product: Product
-  demo?: React.ReactNode
-}) {
-  const status = statusConfig[product.status]
-  return (
-    <div className="border border-border/60 border-t-white/[0.06] rounded-2xl bg-surface/60 backdrop-blur-xl spring-card opacity-100 scale-100 shadow-2xl">
-      <div className="px-5 py-4">
-        {/* Header */}
-        <div className="mb-3">
-          <div className="flex items-center gap-2 mb-1">
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dotColor}`} />
-            <span className={`text-[10px] font-bold uppercase tracking-wider ${status.textColor}`}>{status.label}</span>
-          </div>
-          <h3 className="font-display text-xl font-bold text-text-primary">{product.name}</h3>
-          <p className="text-muted text-xs mt-0.5">{product.oneliner}</p>
-        </div>
-
-        {/* Metrics */}
-        <div className="grid grid-cols-3 gap-2">
-          {product.metrics.map((m, i) => (
-            <div key={i} className="bg-surface-2 rounded-lg px-2 py-2 text-center">
-              <div className="text-base font-extrabold text-green leading-tight">{m.value}</div>
-              <div className="text-[10px] text-muted mt-0.5 leading-tight">{m.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* CTA demo block */}
-        {demo && (
-          <div className="mt-4 pt-3 border-t border-border">
-            {demo}
-          </div>
-        )}
-      </div>
     </div>
   )
 }
@@ -318,10 +229,8 @@ function DetailCard({
   const status = statusConfig[product.status]
   return (
     <div
-      className={`flex flex-col border border-border/60 border-t-white/[0.06] rounded-2xl bg-surface/60 backdrop-blur-xl relative spring-card ${
-        isActive
-          ? 'opacity-100 scale-100 grayscale-0 shadow-2xl'
-          : 'opacity-30 scale-95 grayscale-[50%]'
+      className={`flex flex-col border border-border/60 border-t-white/[0.06] rounded-2xl bg-surface/60 backdrop-blur-xl relative spring-card opacity-100 scale-100 grayscale-0 shadow-2xl ${
+        !isActive ? 'lg:opacity-30 lg:scale-95 lg:grayscale-[50%] lg:shadow-none' : ''
       }`}
     >
       <Spotlight isActive={isActive}>
@@ -336,8 +245,19 @@ function DetailCard({
             <p className="text-muted text-xs mt-0.5">{product.oneliner}</p>
           </div>
 
-          {/* Metrics */}
-          <div className="grid grid-cols-3 gap-2 mb-3">
+          {/* Metrics — mobile: compact 1-col list (stacked rows); desktop: 3-tile grid */}
+          <ul className="lg:hidden space-y-2 mb-3">
+            {product.metrics.map((m, i) => (
+              <li key={i} className="flex gap-2.5 leading-tight">
+                <span className="w-1 h-1 rounded-full bg-green shrink-0 mt-[7px]" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-text-primary">{m.value}</div>
+                  <div className="text-xs text-muted mt-0.5">{m.label}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="hidden lg:grid grid-cols-3 gap-2 mb-3">
             {product.metrics.map((m, i) => (
               <div key={i} className="bg-surface-2 rounded-lg px-2 py-2 text-center">
                 <div className="text-base font-extrabold text-green leading-tight">{m.value}</div>
@@ -346,8 +266,8 @@ function DetailCard({
             ))}
           </div>
 
-          {/* Timeline: Pain → Solution → Result */}
-          <div className="flex gap-4 mb-3">
+          {/* Timeline: Pain → Solution → Result — desktop only (covered by demo on mobile) */}
+          <div className="hidden lg:flex gap-4 mb-3">
             {/* Vertical line with dots */}
             <div className="flex flex-col items-center shrink-0 py-1">
               <div className="w-2.5 h-2.5 rounded-full bg-red border-2 border-red-soft shrink-0" />
@@ -365,8 +285,8 @@ function DetailCard({
             </div>
           </div>
 
-          {/* Tech tags */}
-          <div className="flex flex-wrap gap-1">
+          {/* Tech tags — desktop only (avoid clutter on mobile) */}
+          <div className="hidden lg:flex flex-wrap gap-1">
             {product.tech.map(t => (
               <span key={t} className="px-1.5 py-0.5 bg-surface-3 border border-border rounded text-[10px] text-muted font-medium">
                 {t}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { tracker } from '../utils/tracker'
 
-type Screen = 'apps' | 'chat' | 'prompts' | 'tools' | 'monitoring' | 'users' | 'appAccess' | 'adminAi' | 'adminTools'
+type Screen = 'apps' | 'chat' | 'prompts' | 'tools' | 'monitoring' | 'users' | 'appAccess' | 'aiSlots' | 'architecture'
 
 /* ── SVG Icons ── */
 const Ico = {
@@ -18,7 +18,7 @@ const Ico = {
 
 const IcoBot = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8.5" cy="16" r="1.5"/><circle cx="15.5" cy="16" r="1.5"/><path d="M12 2v5M8 8h8"/></svg>
 const IcoAppWindow = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><circle cx="5" cy="6" r="0.5" fill="currentColor"/><circle cx="7.5" cy="6" r="0.5" fill="currentColor"/></svg>
-const IcoWrench = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+const IcoNetwork = () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="2.2"/><circle cx="5" cy="5" r="1.6"/><circle cx="19" cy="5" r="1.6"/><circle cx="5" cy="19" r="1.6"/><circle cx="19" cy="19" r="1.6"/><line x1="10.5" y1="10.5" x2="6.1" y2="6.1"/><line x1="13.5" y1="10.5" x2="17.9" y2="6.1"/><line x1="10.5" y1="13.5" x2="6.1" y2="17.9"/><line x1="13.5" y1="13.5" x2="17.9" y2="17.9"/></svg>
 
 const nav: { key: Screen; icon: () => React.JSX.Element; label: string; admin?: boolean }[] = [
   { key: 'apps', icon: Ico.Apps, label: 'Приложения' },
@@ -28,14 +28,14 @@ const nav: { key: Screen; icon: () => React.JSX.Element; label: string; admin?: 
   { key: 'monitoring', icon: Ico.Monitor, label: 'Мониторинг', admin: true },
   { key: 'users', icon: Ico.Users, label: 'Пользователи и группы' },
   { key: 'appAccess', icon: IcoAppWindow, label: 'Приложения и доступ' },
-  { key: 'adminAi', icon: IcoBot, label: 'AI и промпты' },
-  { key: 'adminTools', icon: IcoWrench, label: 'Инструменты' },
+  { key: 'aiSlots', icon: IcoBot, label: 'Модели AI' },
+  { key: 'architecture', icon: IcoNetwork, label: 'Экосистема' },
 ]
 
 const titles: Record<Screen, string> = {
   apps: 'Приложения', chat: 'AI-чат', prompts: 'Промпты', tools: 'Инструменты',
   monitoring: 'Панель администратора', users: 'Пользователи и группы',
-  appAccess: 'Приложения и доступ', adminAi: 'AI и промпты', adminTools: 'Инструменты',
+  appAccess: 'Приложения и доступ', aiSlots: 'Модели AI', architecture: 'Экосистема',
 }
 
 /* ===== EXPORT ===== */
@@ -104,20 +104,6 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
     else goNext()
   }
 
-  /* ── Slide icons (inline SVGs) ── */
-  const IcoServer = () => (
-    <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/>
-      <line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>
-      {/* "crash" X */}
-      <line x1="16" y1="4" x2="20" y2="8" className="text-red-400" stroke="currentColor"/><line x1="20" y1="4" x2="16" y2="8" className="text-red-400" stroke="currentColor"/>
-    </svg>
-  )
-  const IcoShield = () => (
-    <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4" strokeWidth="2"/>
-    </svg>
-  )
   const IcoEye = () => (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -127,16 +113,6 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
       <line x1="1" y1="1" x2="23" y2="23"/>
-    </svg>
-  )
-  const IcoBot = () => (
-    <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8.5" cy="16" r="1.5"/><circle cx="15.5" cy="16" r="1.5"/><path d="M12 2v5M8 8h8"/>
-    </svg>
-  )
-  const IcoMonitor = () => (
-    <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
     </svg>
   )
 
@@ -276,7 +252,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
             <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8.5" cy="16" r="1.5"/><circle cx="15.5" cy="16" r="1.5"/><path d="M12 2v5M8 8h8"/></svg>
           </div>
           <div className="bg-white/10 border border-white/10 rounded-2xl rounded-tl-md px-3.5 py-2 text-[12px] text-white/70 leading-relaxed text-left max-w-[82%] whitespace-pre-line">
-            {'Исх. №156/ДЦТ от 16.02.2026\n\nУважаемый Иван Иванович!\nВ связи с нарушением сроков по Корпусу 3...'}
+            {'Исх. №156/ИТ от 16.02.2026\n\nУважаемый Иван Иванович!\nВ связи с нарушением сроков по Корпусу 3...'}
           </div>
         </div>
         {/* Token counter */}
@@ -407,8 +383,8 @@ function Modal({ onClose }: { onClose: () => void }) {
               {screen === 'monitoring' && <PgMonitoring />}
               {screen === 'users' && <PgUsers />}
               {screen === 'appAccess' && <PgAppAccess />}
-              {screen === 'adminAi' && <PgAdminAi />}
-              {screen === 'adminTools' && <PgAdminTools />}
+              {screen === 'aiSlots' && <PgAiSlots />}
+              {screen === 'architecture' && <PgArchitecture />}
             </div>
           </div>
         </div>
@@ -485,7 +461,7 @@ const convData: Record<ConvKey, { title: string; suggestion: string; userMsg: st
     title: 'Письмо подрядчику',
     suggestion: 'Составь письмо подрядчику',
     userMsg: 'Составь письмо подрядчику ООО "СтройМонтаж" о задержке сроков по корпусу 3',
-    aiReply: `Исх. No 156/ДЦТ от 16.02.2026\n\nГенеральному директору\nООО "СтройМонтаж"\nИванову И.И.\n\nУважаемый Иван Иванович!\n\nВ связи с нарушением сроков выполнения работ по объекту "Корпус 3" (договор No 78/2025 от 15.03.2025), просим Вас в срок до 20.02.2026:\n\n1. Предоставить актуализированный график производства работ\n2. Обеспечить мобилизацию дополнительных бригад\n3. Представить план компенсационных мероприятий\n\nВ случае дальнейшего нарушения сроков оставляем за собой право применения штрафных санкций согласно п.8.3 договора.\n\nС уважением,\nРуководитель ДЦТ`,
+    aiReply: `Исх. No 156/ИТ от 16.02.2026\n\nГенеральному директору\nООО "СтройМонтаж"\nИванову И.И.\n\nУважаемый Иван Иванович!\n\nВ связи с нарушением сроков выполнения работ по объекту "Корпус 3" (договор No 78/2025 от 15.03.2025), просим Вас в срок до 20.02.2026:\n\n1. Предоставить актуализированный график производства работ\n2. Обеспечить мобилизацию дополнительных бригад\n3. Представить план компенсационных мероприятий\n\nВ случае дальнейшего нарушения сроков оставляем за собой право применения штрафных санкций согласно п.8.3 договора.\n\nС уважением,\nРуководитель управления`,
   },
   ks2: {
     title: 'Анализ КС-2 январь',
@@ -908,12 +884,12 @@ function PgUsers() {
 function UsersTab() {
   const [filter, setFilter] = useState('Все')
   const users = [
-    { name: 'Хроменок Н.В.', email: 'khromenok@company.ru', dept: 'ДЦТ', role: 'admin', active: true, last: '16.02.2026' },
+    { name: 'Хроменок Н.В.', email: 'khromenok@company.ru', dept: 'Цифровизация', role: 'admin', active: true, last: '16.02.2026' },
     { name: 'Иванов А.С.', email: 'ivanov@company.ru', dept: 'Стройконтроль', role: 'user', active: true, last: '16.02.2026' },
     { name: 'Петрова М.В.', email: 'petrova@company.ru', dept: 'Экономика', role: 'user', active: true, last: '15.02.2026' },
     { name: 'Сидоров К.Л.', email: 'sidorov@company.ru', dept: 'ПТО', role: 'user', active: true, last: '14.02.2026' },
     { name: 'Козлова Е.А.', email: 'kozlova@company.ru', dept: 'Юридический', role: 'user', active: true, last: '16.02.2026' },
-    { name: 'Морозов Д.И.', email: 'morozov@company.ru', dept: 'ДЦТ', role: 'admin', active: true, last: '16.02.2026' },
+    { name: 'Морозов Д.И.', email: 'morozov@company.ru', dept: 'Цифровизация', role: 'admin', active: true, last: '16.02.2026' },
     { name: 'Волкова Н.П.', email: 'volkova@company.ru', dept: 'Бухгалтерия', role: 'user', active: false, last: '13.02.2026' },
   ]
   const filtered = filter === 'Все' ? users : filter === 'Админы' ? users.filter(u => u.role === 'admin') : filter === 'Активные' ? users.filter(u => u.active) : users.filter(u => !u.active)
@@ -1131,169 +1107,181 @@ function IntOAuth() {
   )
 }
 
-/* ===== ADMIN AI & PROMPTS ===== */
-function PgAdminAi() {
-  const [tab, setTab] = useState<'prompts' | 'settings'>('prompts')
+/* ===== AI SLOTS ===== */
+function PgAiSlots() {
+  const slots = [
+    { key: 'fast', name: 'Быстрый ответ', desc: 'Повседневные вопросы сотрудников: формулировки, краткие справки, типовые письма', model: 'Gemini 2.5 Flash', accent: '#3B82F6', limit: 50, used: 34, icon: '⚡' },
+    { key: 'deep', name: 'Глубокий анализ', desc: 'Работа с большими документами: договоры, отчёты, нормативы. Отвечает вдумчиво', model: 'Gemini 2.5 Pro', accent: '#E52713', limit: 20, used: 11, icon: '◎' },
+    { key: 'image', name: 'Генерация изображений', desc: 'Иллюстрации для презентаций, схемы, визуальные концепции', model: 'Imagen 3', accent: '#8B5CF6', limit: 15, used: 4, icon: '✦' },
+  ]
+  const catalog = [
+    { name: 'Gemini 2.5 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: 'Глубокий анализ' },
+    { name: 'Gemini 2.5 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: 'Быстрый ответ' },
+    { name: 'Gemini 2.5 Flash-Lite', ctx: 'До 500 тыс.', files: true, images: true, usedIn: null },
+    { name: 'Gemini 2.0 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: null },
+    { name: 'Gemini 2.0 Flash-Lite', ctx: 'До 500 тыс.', files: true, images: false, usedIn: null },
+    { name: 'Gemini 1.5 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: null },
+    { name: 'Gemini 1.5 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: null },
+    { name: 'Gemini 1.5 Flash-8B', ctx: 'До 1 млн символов', files: true, images: false, usedIn: null },
+    { name: 'Imagen 3', ctx: '—', files: false, images: true, usedIn: 'Генерация изображений' },
+    { name: 'Imagen 3 Fast', ctx: '—', files: false, images: true, usedIn: null },
+    { name: 'Gemini Nano Banana', ctx: 'Редактор изображений', files: false, images: true, usedIn: null },
+    { name: 'Gemini 2.5 Pro Thinking', ctx: 'Рассуждающая модель', files: true, images: true, usedIn: null },
+  ]
   return (
     <div className="p-6">
-      <div className="flex items-center gap-2 mb-5"><TabBtn active={tab === 'prompts'} onClick={() => setTab('prompts')}>Промпты</TabBtn><TabBtn active={tab === 'settings'} onClick={() => setTab('settings')}>Настройки AI</TabBtn></div>
-      {tab === 'prompts' ? <AdminPrompts /> : <AdminAiSettings />}
+      <div className="mb-5">
+        <div className="text-[0.95rem] font-bold text-gray-800 mb-1">Под каждую задачу — своя модель</div>
+        <div className="text-[0.78rem] text-gray-500 leading-relaxed max-w-[720px]">Администратор назначает, какая AI-модель отвечает за быстрые вопросы, какая — за глубокий анализ, какая — за картинки. У каждого слота свой лимит на сотрудника в день. Сотрудник в чате просто выбирает режим и работает — без знания конкретных моделей.</div>
+      </div>
+
+      {/* Slots */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        {slots.map(s => {
+          const pct = Math.round((s.used / s.limit) * 100)
+          return (
+            <div key={s.key} className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0" style={{ background: `${s.accent}15`, color: s.accent }}>{s.icon}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[0.88rem] font-semibold text-gray-800">{s.name}</div>
+                  <div className="text-[0.7rem] text-gray-500 mt-0.5 leading-snug">{s.desc}</div>
+                </div>
+              </div>
+              <div className="mb-3">
+                <div className="text-[0.65rem] text-gray-400 uppercase font-bold tracking-wider mb-1.5">Назначенная модель</div>
+                <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-300 transition-colors">
+                  <span className="text-[0.8rem] font-semibold text-gray-800">{s.model}</span>
+                  <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between text-[0.68rem] text-gray-500 mb-1"><span>Лимит {s.limit} / день на сотрудника</span><span className="font-mono text-gray-600">{s.used}/{s.limit}</span></div>
+                <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden"><div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: s.accent }} /></div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Catalog */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-5">
+        <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200">
+          <span className="text-[0.82rem] font-semibold text-gray-700">Каталог доступных моделей</span>
+          <span className="text-[0.7rem] text-gray-500">{catalog.length} моделей</span>
+        </div>
+        <table className="w-full">
+          <thead><tr className="text-[0.65rem] text-gray-400 uppercase tracking-wider"><th className="text-left px-5 py-2.5 font-semibold">Модель</th><th className="text-left px-4 py-2.5 font-semibold">Контекст</th><th className="text-center px-4 py-2.5 font-semibold">Файлы</th><th className="text-center px-4 py-2.5 font-semibold">Картинки</th><th className="text-left px-4 py-2.5 font-semibold">Назначена на</th></tr></thead>
+          <tbody>{catalog.map(m => (
+            <tr key={m.name} className="border-t border-gray-100 hover:bg-gray-50/50 text-[0.78rem]">
+              <td className="px-5 py-2 font-medium text-gray-800">{m.name}</td>
+              <td className="px-4 py-2 text-gray-500 text-[0.72rem]">{m.ctx}</td>
+              <td className="px-4 py-2 text-center">{m.files ? <span className="text-green-500">&#10003;</span> : <span className="text-gray-300">—</span>}</td>
+              <td className="px-4 py-2 text-center">{m.images ? <span className="text-green-500">&#10003;</span> : <span className="text-gray-300">—</span>}</td>
+              <td className="px-4 py-2">{m.usedIn ? <span className="px-2 py-0.5 bg-[#E52713]/10 text-[#E52713] rounded-md text-[0.65rem] font-semibold">{m.usedIn}</span> : <span className="text-gray-400 text-[0.7rem]">резерв</span>}</td>
+            </tr>
+          ))}</tbody>
+        </table>
+      </div>
+
+      {/* How assistant behaves */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="text-[0.82rem] font-semibold text-gray-800 mb-1">Как отвечает ассистент</div>
+        <div className="text-[0.7rem] text-gray-500 mb-3">Администратор задаёт общие правила поведения для всех слотов — стиль, язык, ограничения.</div>
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-[0.78rem] text-gray-700 leading-relaxed">Отвечай кратко и по делу на русском языке. Не раскрывай конфиденциальную информацию о компании, клиентах и подрядчиках. При необходимости ссылайся на внутренние нормативные документы. Если вопрос требует согласования — предлагай обратиться к руководителю.</div>
+        <div className="flex items-center justify-between mt-3">
+          <div className="text-[0.65rem] text-gray-400">Обновлено 14 февр. 2026, 11:30 · Иванов И.И.</div>
+          <button className="px-3 py-1.5 bg-[#E52713] text-white rounded-lg text-[0.72rem] font-semibold border-none cursor-pointer hover:bg-[#E52713]/90 transition-colors">Изменить правила</button>
+        </div>
+      </div>
     </div>
   )
 }
 
-function AdminPrompts() {
-  const prompts = [
-    { name: 'Деловое письмо', cat: 'Написание', order: 1, active: true },
-    { name: 'Анализ договора', cat: 'Анализ', order: 2, active: true },
-    { name: 'Code Review', cat: 'Код', order: 3, active: true },
-    { name: 'Перевод документа', cat: 'Перевод', order: 4, active: true },
-    { name: 'Протокол совещания', cat: 'Написание', order: 5, active: true },
-    { name: 'Анализ КС-2', cat: 'Анализ', order: 6, active: true },
-    { name: 'SQL-запрос', cat: 'Код', order: 7, active: false },
-    { name: 'Краткое содержание', cat: 'Анализ', order: 8, active: true },
+/* ===== ARCHITECTURE ===== */
+function PgArchitecture() {
+  const services = [
+    { name: 'DataBook / Scanner', role: 'AI-поиск по строительным нормам и конструктор предписаний по фото', color: '#3B82F6' },
+    { name: 'Автопротокол', role: 'Протоколирование совещаний по аудио- и видеозаписям', color: '#8B5CF6' },
+    { name: 'CostManager', role: 'Валидация смет через базу объектов-аналогов', color: '#10B981' },
+    { name: 'Puls', role: 'Оперативная отчётность и управление портфелем проектов', color: '#F59E0B' },
+    { name: 'AI-чат', role: 'Корпоративный ассистент внутри Hub', color: '#E52713' },
   ]
-  const catColor: Record<string, string> = { 'Написание': '#3B82F6', 'Анализ': '#10B981', 'Код': '#F59E0B', 'Перевод': '#8B5CF6' }
-  return (<>
-    <div className="flex items-center justify-between mb-4">
-      <span className="text-[0.78rem] text-gray-500">{prompts.length} промптов</span>
-      <button className="px-3 py-1.5 bg-[#E52713] text-white rounded-lg text-[0.75rem] font-medium border-none cursor-pointer hover:bg-[#E52713]/90 transition-colors">+ Создать промпт</button>
-    </div>
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <table className="w-full">
-        <thead><tr className="text-[0.65rem] text-gray-400 uppercase tracking-wider bg-gray-50"><th className="text-left px-5 py-2.5 font-semibold">Название</th><th className="text-left px-4 py-2.5 font-semibold">Категория</th><th className="text-center px-4 py-2.5 font-semibold">Порядок</th><th className="text-center px-4 py-2.5 font-semibold">Статус</th><th className="text-center px-4 py-2.5 font-semibold">Действия</th></tr></thead>
-        <tbody>{prompts.map(p => (
-          <tr key={p.name} className="border-t border-gray-100 hover:bg-gray-50/50 text-[0.78rem]">
-            <td className="px-5 py-2.5 font-medium text-gray-800">{p.name}</td>
-            <td className="px-4 py-2.5"><span className="px-2 py-0.5 rounded-md text-[0.65rem] font-semibold" style={{ color: catColor[p.cat] || '#6B7280', background: `${catColor[p.cat] || '#6B7280'}15` }}>{p.cat}</span></td>
-            <td className="px-4 py-2.5 text-center text-gray-400">{p.order}</td>
-            <td className="px-4 py-2.5 text-center"><div className={`w-8 h-4 rounded-full mx-auto relative cursor-pointer ${p.active ? 'bg-green-500' : 'bg-gray-300'}`}><div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-all ${p.active ? 'left-4' : 'left-0.5'}`}/></div></td>
-            <td className="px-4 py-2.5 text-center"><div className="flex items-center justify-center gap-1"><button className="px-2 py-0.5 bg-gray-100 rounded text-[0.65rem] text-gray-500 cursor-pointer border-none hover:bg-gray-200">Ред.</button><button className="px-2 py-0.5 bg-red-50 rounded text-[0.65rem] text-red-500 cursor-pointer border-none hover:bg-red-100">Удал.</button></div></td>
-          </tr>
-        ))}</tbody>
-      </table>
-    </div>
-  </>)
-}
-
-function AdminAiSettings() {
+  const arrow = <div className="flex items-center justify-center px-1"><svg className="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></div>
   return (
-    <div className="space-y-5">
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <div className="text-[0.82rem] font-semibold text-gray-800 mb-4">Модель</div>
-        <div className="space-y-3">
-          {[
-            { name: 'Быстрая', desc: 'Быстрые ответы на простые вопросы', selected: false },
-            { name: 'Продвинутая', desc: 'Глубокий анализ и сложные задачи', selected: true },
-          ].map(m => (
-            <label key={m.name} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${m.selected ? 'border-[#E52713]/30 bg-[#E52713]/5' : 'border-gray-200 hover:border-gray-300'}`}>
-              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${m.selected ? 'border-[#E52713]' : 'border-gray-300'}`}>{m.selected && <div className="w-2 h-2 rounded-full bg-[#E52713]"/>}</div>
-              <div><div className="text-[0.82rem] font-medium text-gray-800">{m.name}</div><div className="text-[0.7rem] text-gray-400">{m.desc}</div></div>
-            </label>
+    <div className="p-6">
+      <div className="mb-5">
+        <div className="text-[0.95rem] font-bold text-gray-800 mb-1">Hub — центр экосистемы</div>
+        <div className="text-[0.78rem] text-gray-500 leading-relaxed max-w-[760px]">Один вход под корпоративным паролем открывает доступ ко всем внутренним продуктам. Сотрудник логинится в Hub — и дальше открывает любой сервис без повторных паролей. Руководитель в одной панели видит, кто чем пользуется и что делал.</div>
+      </div>
+
+      {/* Flow diagram */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-5">
+        <div className="text-[0.7rem] font-bold text-gray-400 uppercase tracking-wider mb-4">Как сотрудник попадает в любой сервис</div>
+        <div className="flex items-stretch gap-0">
+          {/* Step 1: employee */}
+          <div className="flex-1 bg-gray-50 rounded-xl border border-gray-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-7 h-7 rounded-full bg-[#E52713]/15 flex items-center justify-center text-[0.65rem] font-bold text-[#E52713]">1</div>
+              <div className="text-[0.82rem] font-semibold text-gray-800">Сотрудник</div>
+            </div>
+            <div className="text-[0.72rem] text-gray-500 leading-snug">Заходит в Hub под корпоративной учётной записью. Один раз в день.</div>
+          </div>
+          {arrow}
+          {/* Step 2: Hub */}
+          <div className="flex-[1.3] bg-[#E52713]/5 rounded-xl border border-[#E52713]/30 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-7 h-7 rounded-lg bg-[#E52713] flex items-center justify-center text-[0.65rem] font-bold text-white">AI</div>
+              <div className="text-[0.82rem] font-semibold text-gray-800">AI-Hub</div>
+            </div>
+            <div className="text-[0.72rem] text-gray-500 leading-snug mb-2">Проверяет корпоративный пароль. Смотрит, к каким сервисам у сотрудника есть доступ.</div>
+            <div className="flex flex-wrap gap-1">{['каталог', 'права', 'AI', 'аудит'].map(t => <span key={t} className="px-1.5 py-0.5 bg-white border border-gray-200 rounded text-[0.6rem] text-gray-500">{t}</span>)}</div>
+          </div>
+          {arrow}
+          {/* Step 3: service */}
+          <div className="flex-1 bg-gray-50 rounded-xl border border-gray-200 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-[0.65rem] font-bold text-green-600">2</div>
+              <div className="text-[0.82rem] font-semibold text-gray-800">Внутренний сервис</div>
+            </div>
+            <div className="text-[0.72rem] text-gray-500 leading-snug">Открывается сразу — без повторного ввода паролей. Сервис узнаёт сотрудника от Hub.</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Connected services */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-5">
+        <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-200">
+          <span className="text-[0.82rem] font-semibold text-gray-700">Подключённые продукты</span>
+          <span className="text-[0.7rem] text-gray-500">{services.length} сервисов</span>
+        </div>
+        <div className="divide-y divide-gray-100">
+          {services.map(s => (
+            <div key={s.name} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-50/60 transition-colors">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[0.72rem] font-bold shrink-0" style={{ background: `${s.color}15`, color: s.color }}>{s.name.slice(0, 2).toUpperCase()}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[0.85rem] font-semibold text-gray-800">{s.name}</div>
+                <div className="text-[0.72rem] text-gray-500 leading-snug mt-0.5">{s.role}</div>
+              </div>
+              <span className="px-2 py-0.5 bg-green-50 text-green-600 rounded-md text-[0.65rem] font-bold border border-green-200">подключён</span>
+            </div>
           ))}
         </div>
       </div>
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-[0.82rem] font-semibold text-gray-800">Чат</div>
-          <div className="w-10 h-5 rounded-full bg-green-500 relative cursor-pointer"><div className="absolute top-0.5 left-5 w-4 h-4 rounded-full bg-white shadow"/></div>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <div className="text-[0.72rem] text-gray-500 mb-1.5">Лимит сообщений (в день / на пользователя)</div>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[0.82rem] text-gray-800 font-medium">50</div>
+
+      {/* Value for manager */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[
+          { title: 'Сотруднику', desc: 'Один вход во все внутренние сервисы. Не нужно запоминать разные пароли и ходить через VPN.', color: '#3B82F6' },
+          { title: 'Руководителю', desc: 'Прозрачная картина: кто чем пользуется, что делал и когда. Доступ закрывается в один клик.', color: '#10B981' },
+          { title: 'Безопасности', desc: 'Корпоративные данные не уходят в сторонние AI-сервисы. Весь трафик и действия — внутри периметра.', color: '#E52713' },
+        ].map(c => (
+          <div key={c.title} className="bg-white rounded-xl border border-gray-200 p-4" style={{ borderLeftWidth: 3, borderLeftColor: c.color }}>
+            <div className="text-[0.78rem] font-bold text-gray-800 mb-1">{c.title}</div>
+            <div className="text-[0.72rem] text-gray-500 leading-relaxed">{c.desc}</div>
           </div>
-          <div>
-            <div className="text-[0.72rem] text-gray-500 mb-1.5">Макс. токенов на ответ</div>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[0.82rem] text-gray-800 font-medium">8 192</div>
-          </div>
-        </div>
+        ))}
       </div>
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <div className="text-[0.82rem] font-semibold text-gray-800 mb-3">Системный промпт</div>
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-[0.75rem] text-gray-600 font-mono leading-relaxed min-h-[80px]">Ты корпоративный AI-ассистент. Отвечай кратко и по делу на русском языке. Не раскрывай конфиденциальную информацию. При необходимости ссылайся на внутренние нормативные документы.</div>
-        <div className="text-[0.65rem] text-gray-400 mt-2">Последнее обновление: 14 февр. 2026, 11:30</div>
-      </div>
-      <button className="px-5 py-2 bg-[#E52713] text-white rounded-lg text-[0.78rem] font-semibold border-none cursor-pointer hover:bg-[#E52713]/90 transition-colors">Сохранить настройки</button>
     </div>
   )
-}
-
-/* ===== ADMIN TOOLS ===== */
-function PgAdminTools() {
-  const [tab, setTab] = useState<'tools' | 'servers'>('tools')
-  return (
-    <div className="p-6">
-      <div className="flex items-center gap-2 mb-5"><TabBtn active={tab === 'tools'} onClick={() => setTab('tools')}>Инструменты</TabBtn><TabBtn active={tab === 'servers'} onClick={() => setTab('servers')}>Серверы</TabBtn></div>
-      {tab === 'tools' ? <AdminToolsList /> : <AdminServers />}
-    </div>
-  )
-}
-
-function AdminToolsList() {
-  const tools = [
-    { name: 'PDF to Excel', slug: 'pdf-to-excel', server: 'tools-main', color: '#10B981', active: true, uses: 342, last: '16.02.2026' },
-    { name: 'OCR', slug: 'ocr', server: 'tools-main', color: '#3B82F6', active: true, uses: 218, last: '16.02.2026' },
-    { name: 'Word to PDF', slug: 'word-to-pdf', server: 'tools-main', color: '#8B5CF6', active: true, uses: 567, last: '16.02.2026' },
-    { name: 'Сжатие изображений', slug: 'image-compress', server: 'tools-media', color: '#F59E0B', active: true, uses: 189, last: '15.02.2026' },
-    { name: 'Извлечение таблиц', slug: 'table-extract', server: 'tools-ai', color: '#E52713', active: false, uses: 95, last: '14.02.2026' },
-    { name: 'Объединение PDF', slug: 'pdf-merge', server: 'tools-main', color: '#06B6D4', active: true, uses: 276, last: '16.02.2026' },
-  ]
-  return (<>
-    <div className="flex items-center justify-between mb-4">
-      <span className="text-[0.78rem] text-gray-500">{tools.length} инструментов</span>
-      <button className="px-3 py-1.5 bg-[#E52713] text-white rounded-lg text-[0.75rem] font-medium border-none cursor-pointer hover:bg-[#E52713]/90 transition-colors">+ Создать инструмент</button>
-    </div>
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <table className="w-full">
-        <thead><tr className="text-[0.65rem] text-gray-400 uppercase tracking-wider bg-gray-50"><th className="text-left px-5 py-2.5 font-semibold">Инструмент</th><th className="text-left px-4 py-2.5 font-semibold">Slug</th><th className="text-left px-4 py-2.5 font-semibold">Сервер</th><th className="text-center px-4 py-2.5 font-semibold">Использований</th><th className="text-left px-4 py-2.5 font-semibold">Последний</th><th className="text-center px-4 py-2.5 font-semibold">Статус</th></tr></thead>
-        <tbody>{tools.map(t => (
-          <tr key={t.slug} className="border-t border-gray-100 hover:bg-gray-50/50 text-[0.78rem]">
-            <td className="px-5 py-2.5"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-sm" style={{ background: t.color }}/><span className="font-medium text-gray-800">{t.name}</span></div></td>
-            <td className="px-4 py-2.5 font-mono text-[0.7rem] text-gray-500">{t.slug}</td>
-            <td className="px-4 py-2.5 text-[0.72rem] text-gray-500">{t.server}</td>
-            <td className="px-4 py-2.5 text-center text-gray-600">{t.uses}</td>
-            <td className="px-4 py-2.5 text-[0.72rem] text-gray-400">{t.last}</td>
-            <td className="px-4 py-2.5 text-center"><div className={`w-8 h-4 rounded-full mx-auto relative cursor-pointer ${t.active ? 'bg-green-500' : 'bg-gray-300'}`}><div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-all ${t.active ? 'left-4' : 'left-0.5'}`}/></div></td>
-          </tr>
-        ))}</tbody>
-      </table>
-    </div>
-  </>)
-}
-
-function AdminServers() {
-  const servers = [
-    { name: 'tools-main', desc: 'Основной сервер инструментов', url: 'https://tools.internal:8080', health: 'healthy', tools: 4, key: 'sk-tools-***8f2m' },
-    { name: 'tools-media', desc: 'Обработка медиа-файлов', url: 'https://media.internal:8081', health: 'healthy', tools: 1, key: 'sk-media-***3x9p' },
-    { name: 'tools-ai', desc: 'AI-инструменты (OCR, извлечение)', url: 'https://ai-tools.internal:8082', health: 'unhealthy', tools: 1, key: 'sk-ai-***7k1n' },
-  ]
-  const stColor = (s: string) => s === 'healthy' ? 'text-green-600 bg-green-50 border-green-200' : s === 'unhealthy' ? 'text-red-600 bg-red-50 border-red-200' : 'text-amber-600 bg-amber-50 border-amber-200'
-  return (<>
-    <div className="flex items-center justify-between mb-4">
-      <span className="text-[0.78rem] text-gray-500">{servers.length} серверов</span>
-      <button className="px-3 py-1.5 bg-[#E52713] text-white rounded-lg text-[0.75rem] font-medium border-none cursor-pointer hover:bg-[#E52713]/90 transition-colors">+ Добавить сервер</button>
-    </div>
-    <div className="space-y-3">
-      {servers.map(s => (
-        <div key={s.name} className="bg-white rounded-xl border border-gray-200 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <div className="text-[0.85rem] font-semibold text-gray-800">{s.name}</div>
-              <div className="text-[0.72rem] text-gray-400 mt-0.5">{s.desc}</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className={`px-2.5 py-0.5 rounded-lg text-[0.68rem] font-bold border ${stColor(s.health)}`}>{s.health}</span>
-              <button className="px-2.5 py-1 bg-gray-100 rounded-lg text-[0.7rem] text-gray-500 font-medium cursor-pointer border-none hover:bg-gray-200 transition-colors">Check</button>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-4 text-[0.72rem]">
-            <div><span className="text-gray-400">URL:</span> <span className="font-mono text-gray-600">{s.url}</span></div>
-            <div><span className="text-gray-400">Инструментов:</span> <span className="font-semibold text-gray-700">{s.tools}</span></div>
-            <div><span className="text-gray-400">API Key:</span> <span className="font-mono text-gray-500">{s.key}</span></div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </>)
 }

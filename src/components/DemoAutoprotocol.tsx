@@ -242,7 +242,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
     <Slide key={2} title="5 документов на выходе" caption="Все артефакты формируются автоматически на основе structured output LLM.">
       <div className="w-full max-w-[300px] space-y-2">
         {[
-          { icon: '\uD83D\uDEE1\uFE0F', name: 'Risk Brief', ext: 'DOCX', desc: 'Матрица рисков, root cause (ДПУ)', color: '#EF4444' },
+          { icon: '\uD83D\uDEE1\uFE0F', name: 'Risk Brief', ext: 'DOCX', desc: 'Матрица рисков, root cause (стройконтроль)', color: '#EF4444' },
           { icon: '\uD83D\uDCCA', name: 'Excel-отчёт', ext: 'XLSX', desc: 'Задачи, сроки, приоритеты', color: '#10B981' },
           { icon: '\uD83D\uDCC4', name: 'Word-протокол', ext: 'DOCX', desc: 'Резюме, повестка, решения', color: '#3B82F6' },
           { icon: '\uD83D\uDCD6', name: 'Конспект', ext: 'DOCX', desc: 'Краткий пересказ совещания', color: '#F59E0B' },
@@ -265,11 +265,11 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
       <div className="w-full max-w-[300px]">
         <div className="space-y-1.5 mb-3">
           {[
-            { name: 'ДПУ', icon: '🏗', desc: 'Строительный контроль · Risk Brief', active: true },
-            { name: 'ДЦТ', icon: '🏢', desc: 'Цифровая трансформация', active: false },
-            { name: 'ДФТА', icon: '📊', desc: 'Финансово-технический аудит', active: false },
-            { name: 'Business', icon: '💼', desc: '7 типов переговоров', active: false },
-            { name: 'CEO', icon: '👔', desc: 'НОТЕХ · стратегические', active: false },
+            { name: 'Стройконтроль', icon: '🏗', desc: 'Совещания на объекте · Risk Brief', active: true },
+            { name: 'Цифровизация',  icon: '🏢', desc: 'IT-команда · спринты, ретро', active: false },
+            { name: 'Аудит',         icon: '📊', desc: 'Финансово-технический аудит', active: false },
+            { name: 'Business',      icon: '💼', desc: '7 типов переговоров', active: false },
+            { name: 'C-level',       icon: '👔', desc: 'Стратегические совещания', active: false },
           ].map(d => (
             <div key={d.name} className={`flex items-center gap-3 rounded-xl px-3 py-2 border ${d.active ? 'bg-purple-500/15 border-purple-500/30' : 'bg-white/5 border-white/5 opacity-60'}`}>
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0 ${d.active ? 'bg-purple-500/20' : 'bg-white/5'}`}>{d.icon}</div>
@@ -297,11 +297,11 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
           </div>
           <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-white/5 border border-white/5 shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-            <span className="text-[10px] text-white/50">Казань Озеро</span>
+            <span className="text-[10px] text-white/50">Объект-A</span>
           </div>
           <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-white/5 border border-white/5 shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            <span className="text-[10px] text-white/50">Сколково Парк</span>
+            <span className="text-[10px] text-white/50">Объект-B</span>
           </div>
         </div>
 
@@ -313,11 +313,11 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
           </div>
           <div className="space-y-[3px]">
             {[
-              { day: 'пн', d: 3, events: [{ name: 'Казань Озеро', code: '1041', color: '#EF4444' }, { name: 'Сколково Парк', code: '2073', color: '#F59E0B' }] },
+              { day: 'пн', d: 3, events: [{ name: 'Объект-A', code: '1041', color: '#EF4444' }, { name: 'Объект-B', code: '2073', color: '#F59E0B' }] },
               { day: 'вт', d: 4, events: [] },
-              { day: 'ср', d: 5, events: [{ name: 'Казань Озеро', code: '1041', color: '#EF4444' }] },
-              { day: 'чт', d: 6, events: [{ name: 'Ростов Центр', code: '3012', color: '#3B82F6' }] },
-              { day: 'пт', d: 7, events: [{ name: 'Сколково Парк', code: '2073', color: '#F59E0B' }, { name: 'Казань Озеро', code: '1041', color: '#EF4444' }] },
+              { day: 'ср', d: 5, events: [{ name: 'Объект-A', code: '1041', color: '#EF4444' }] },
+              { day: 'чт', d: 6, events: [{ name: 'Объект-C', code: '3012', color: '#3B82F6' }] },
+              { day: 'пт', d: 7, events: [{ name: 'Объект-B', code: '2073', color: '#F59E0B' }, { name: 'Объект-A', code: '1041', color: '#EF4444' }] },
             ].map(row => (
               <div key={row.d} className="flex items-center gap-2">
                 <div className="w-[28px] shrink-0 text-right">
@@ -340,8 +340,8 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
         <div className="bg-white/[0.04] border border-white/5 rounded-xl p-2.5">
           <div className="text-[9px] text-white/25 font-bold mb-1.5">Требуют внимания</div>
           {[
-            { text: 'Не подтверждено выделение электромощности', proj: 'Казань Озеро' },
-            { text: 'Нет согласования расхода воды', proj: 'Сколково Парк' },
+            { text: 'Не подтверждено выделение электромощности', proj: 'Объект-A' },
+            { text: 'Нет согласования расхода воды', proj: 'Объект-B' },
           ].map(t => (
             <div key={t.text} className="flex items-start gap-2 mb-1.5 last:mb-0">
               <svg className="w-3 h-3 text-red-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -398,7 +398,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
           <div className="px-3.5 py-3 space-y-1.5">
             <div className="flex justify-between text-[10px]">
               <span className="text-white/30">Проект</span>
-              <span className="text-white/60 font-medium">ЖК Казань Озеро</span>
+              <span className="text-white/60 font-medium">ЖК «Объект-A»</span>
             </div>
             <div className="flex justify-between text-[10px]">
               <span className="text-white/30">Статус</span>
@@ -1637,7 +1637,7 @@ function DashIT() {
 function DashBusiness() {
   const clients = [
     { id: 'acme', name: 'Acme Corp', stage: 'Согласование', value: '₽ 4.2M', meetings: 6, lastMeeting: 'Переговоры · 22.04', nextStep: 'Ответ по срокам до 25.04', health: 'warm' },
-    { id: 'north', name: 'Nordvent', stage: 'Due diligence', value: '₽ 12.5M', meetings: 9, lastMeeting: 'Встреча с клиентом · 21.04', nextStep: 'Запрос фин. модели до 26.04', health: 'hot' },
+    { id: 'north', name: 'ООО «Альфа»', stage: 'Due diligence', value: '₽ 12.5M', meetings: 9, lastMeeting: 'Встреча с клиентом · 21.04', nextStep: 'Запрос фин. модели до 26.04', health: 'hot' },
     { id: 'orbit', name: 'Orbit Systems', stage: 'Презентация', value: '₽ 1.8M', meetings: 3, lastMeeting: 'Презентация · 19.04', nextStep: 'Обратная связь до 24.04', health: 'cold' },
     { id: 'nucleo', name: 'Nucleo Holdings', stage: 'Переговоры', value: '₽ 8.0M', meetings: 5, lastMeeting: 'Рабочее совещание · 23.04', nextStep: 'Согласование перечня до 29.04', health: 'warm' },
   ]
@@ -1646,7 +1646,7 @@ function DashBusiness() {
 
   const commitments = [
     { party: 'Acme Corp', text: 'Предоставить финальный перечень требований', owner: 'Клиент', date: '25.04', overdue: false },
-    { party: 'Nordvent', text: 'Фин. модель и прогноз окупаемости', owner: 'Наша сторона', date: '26.04', overdue: false },
+    { party: 'ООО «Альфа»', text: 'Фин. модель и прогноз окупаемости', owner: 'Наша сторона', date: '26.04', overdue: false },
     { party: 'Orbit Systems', text: 'Принципиальное решение по масштабу пилота', owner: 'Клиент', date: '24.04', overdue: false },
     { party: 'Acme Corp', text: 'Юридическое заключение по вариантам договора', owner: 'Наша сторона', date: '20.04', overdue: true },
   ]
@@ -1943,7 +1943,7 @@ function AdminStats() {
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <div className="text-[0.82rem] font-semibold text-slate-700 mb-3">Использование по доменам</div>
         <div className="space-y-3">
-          {[{ d: 'ДПУ (строит. контроль)', v: 234, pct: 52, risk: 45 }, { d: 'ДЦТ', v: 98, pct: 22, risk: 0 }, { d: 'ДФТА', v: 62, pct: 14, risk: 0 }, { d: 'Business', v: 38, pct: 8, risk: 0 }, { d: 'CEO', v: 18, pct: 4, risk: 0 }].map(d => (
+          {[{ d: 'Стройконтроль', v: 234, pct: 52, risk: 45 }, { d: 'Цифровизация', v: 98, pct: 22, risk: 0 }, { d: 'Аудит', v: 62, pct: 14, risk: 0 }, { d: 'Business', v: 38, pct: 8, risk: 0 }, { d: 'C-level', v: 18, pct: 4, risk: 0 }].map(d => (
             <div key={d.d} className="p-3 bg-slate-50 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[0.78rem] font-medium text-slate-700">{d.d}</span>
@@ -2019,10 +2019,10 @@ function AdminUsers() {
 
 function AdminProjects() {
   const projs = [
-    { code: '1234', name: 'Объект-A', domain: 'ДПУ', users: 8, reports: 12, status: 'active' },
-    { code: '2001', name: 'Объект-B', domain: 'ДПУ', users: 5, reports: 8, status: 'active' },
-    { code: '3045', name: 'Объект-C', domain: 'ДЦТ', users: 4, reports: 15, status: 'active' },
-    { code: '4102', name: 'Объект-D', domain: 'ДФТА', users: 3, reports: 6, status: 'active' },
+    { code: '1234', name: 'Объект-A', domain: 'Стройконтроль', users: 8, reports: 12, status: 'active' },
+    { code: '2001', name: 'Объект-B', domain: 'Стройконтроль', users: 5, reports: 8, status: 'active' },
+    { code: '3045', name: 'Объект-C', domain: 'Цифровизация', users: 4, reports: 15, status: 'active' },
+    { code: '4102', name: 'Объект-D', domain: 'Аудит', users: 3, reports: 6, status: 'active' },
     { code: '5001', name: 'NEXUS', domain: 'Business', users: 2, reports: 18, status: 'active' },
   ]
   return (

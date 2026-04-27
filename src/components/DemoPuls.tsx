@@ -5,7 +5,7 @@ import { tracker } from '../utils/tracker'
 /* ═══════════════════════════════════════════════════════════
    TYPES
    ═══════════════════════════════════════════════════════════ */
-type PMTab = 'dashboard' | 'progress' | 'contract' | 'issues' | 'letters' | 'team' | 'shift-logs' | 'prescriptions' | 'references'
+type PMTab = 'dashboard' | 'progress' | 'contract' | 'issues' | 'team' | 'references'
 
 /* ═══════════════════════════════════════════════════════════
    STATIC DATA
@@ -48,26 +48,6 @@ const ISSUE_CATEGORIES = [
   { id: 'quality', name: 'Качество', icon: 'bg-yellow-100 text-yellow-600', count: 1, subs: ['Геодезия', 'Лаборатория', 'ОТК'] },
   { id: 'docs', name: 'Документация', icon: 'bg-gray-200 text-gray-600', count: 1, subs: ['ИРД', 'Согласования', 'Реестры'] },
   { id: 'external', name: 'Внешние', icon: 'bg-teal-100 text-teal-600', count: 1, subs: ['Погода', 'Инфраструктура'] },
-]
-
-const PRESCRIPTIONS = [
-  { id: 1, num: 'ППС-001', desc: 'Отсутствие ограждения котлована на отм. -4.200', loc: 'Секция А, ось 3-5', severity: 'CRITICAL', date: '15.01.2026', contractor: 'ООО СтройМонтаж', due: '22.01.2026', status: 'OVERDUE', delay: 38, items: 2, photos: 4 },
-  { id: 2, num: 'ППС-002', desc: 'Нарушение технологии сварки арматурных стержней', loc: 'Блок Б, отм. +3.300', severity: 'SIGNIFICANT', date: '20.01.2026', contractor: 'АО Атомспецстрой', due: '03.02.2026', status: 'IN_PROGRESS', delay: 0, items: 1, photos: 2 },
-  { id: 3, num: 'ППС-003', desc: 'Несоответствие марки бетона проектной документации', loc: 'Фундамент Ф-12', severity: 'CRITICAL', date: '25.01.2026', contractor: 'ООО БетонРесурс', due: '01.02.2026', status: 'RESOLVED_ON_TIME', delay: 0, items: 3, photos: 6 },
-  { id: 4, num: 'ППС-004', desc: 'Отклонение оси колонны К-12 от проектного положения на 18мм', loc: 'Ряд Г, ось 7', severity: 'SIGNIFICANT', date: '28.01.2026', contractor: 'АО Атомспецстрой', due: '10.02.2026', status: 'IN_PROGRESS', delay: 0, items: 1, photos: 3 },
-  { id: 5, num: 'ППС-005', desc: 'Складирование материалов вне отведенных зон', loc: 'Площадка №2', severity: 'MINOR', date: '01.02.2026', contractor: 'ООО СтройМонтаж', due: '05.02.2026', status: 'RESOLVED_ON_TIME', delay: 0, items: 1, photos: 1 },
-  { id: 6, num: 'ППС-006', desc: 'Повреждение гидроизоляции фундаментной плиты', loc: 'Секция В, отм. -1.500', severity: 'CRITICAL', date: '05.02.2026', contractor: 'ООО ГидроТех', due: '12.02.2026', status: 'OVERDUE', delay: 16, items: 2, photos: 5 },
-]
-
-const SEV = { CRITICAL: { label: 'Критический', c: 'bg-red-100 text-red-700 font-semibold' }, SIGNIFICANT: { label: 'Значительный', c: 'bg-yellow-100 text-yellow-700' }, MINOR: { label: 'Малозначительный', c: 'bg-gray-100 text-gray-700' } }
-const PST: Record<string, { label: string; c: string }> = { OVERDUE: { label: 'Просрочено', c: 'bg-red-100 text-red-800' }, IN_PROGRESS: { label: 'В работе', c: 'bg-yellow-100 text-yellow-800' }, RESOLVED_ON_TIME: { label: 'Устранено в срок', c: 'bg-green-100 text-green-800' }, ISSUED: { label: 'Выдано', c: 'bg-blue-100 text-blue-800' } }
-
-const LETTERS = [
-  { id: 1, number: 'ИСХ-2026/041', date: '25.02.2026', type: 'OUTGOING', category: 'Запрос', title: 'Запрос актуализированного графика поставок', recipient: 'ООО СтройМонтаж', status: 'Отправлено', sc: 'bg-blue-100 text-blue-700', deadline: 3, files: 1, issues: 0 },
-  { id: 2, number: 'ВХ-2026/087', date: '24.02.2026', type: 'INCOMING', category: 'Уведомление', title: 'Уведомление о замене субподрядчика', recipient: 'АО Атомспецстрой', status: 'На рассмотрении', sc: 'bg-yellow-100 text-yellow-700', deadline: null, files: 2, issues: 0 },
-  { id: 3, number: 'ИСХ-2026/040', date: '22.02.2026', type: 'OUTGOING', category: 'Претензия', title: 'Претензия по срокам устранения замечаний ППС-001', recipient: 'ООО СтройМонтаж', status: 'Ожидает ответа', sc: 'bg-orange-100 text-orange-700', deadline: -2, files: 1, issues: 1 },
-  { id: 4, number: 'ВХ-2026/085', date: '20.02.2026', type: 'INCOMING', category: 'Согласование', title: 'Согласование изменений в проект КЖ секция 4', recipient: 'ПАО Проектант', status: 'Закрыто', sc: 'bg-gray-100 text-gray-600', deadline: null, files: 3, issues: 0 },
-  { id: 5, number: 'ИСХ-2026/039', date: '18.02.2026', type: 'OUTGOING', category: 'Информационное', title: 'Отчет о ходе работ за январь 2026', recipient: 'Заказчик', status: 'Отправлено', sc: 'bg-blue-100 text-blue-700', deadline: null, files: 4, issues: 0 },
 ]
 
 // @ts-expect-error reserved for future use
@@ -117,17 +97,14 @@ const TEAM_MEMBERS = [
 const fmtMoney = (n: number | null) => n != null ? new Intl.NumberFormat('ru-RU').format(n) + ' ₽' : '—'
 
 /* ═══════════════════════════════════════════════════════════
-   TAB CONFIG — 9 tabs matching real ProjectHeader
+   TAB CONFIG — 6 tabs matching real ProjectHeader
    ═══════════════════════════════════════════════════════════ */
 const PM_TABS: { key: PMTab; label: string }[] = [
   { key: 'dashboard', label: 'Дашборд' },
   { key: 'progress', label: 'Ход работ' },
   { key: 'contract', label: 'Договор' },
   { key: 'issues', label: 'Канбан проблем' },
-  { key: 'letters', label: 'Письма' },
   { key: 'team', label: 'Команда' },
-  { key: 'shift-logs', label: 'Журналы' },
-  { key: 'prescriptions', label: 'Предписания' },
   { key: 'references', label: 'Справочники' },
 ]
 
@@ -195,8 +172,8 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
           <div className="text-[9px] text-slate-400 px-1">Выберите проект для работы</div>
           {[
             { code: 'KUR2-B1', name: 'АЭС Курск-2. Блок 1', pct: 67, status: 'В работе', color: 'green', team: 8, issues: 3 },
-            { code: 'SV-RIV', name: 'ЖК FORIVER корп. 7-11', pct: 89, status: 'В работе', color: 'green', team: 12, issues: 1 },
-            { code: 'SV-PAR', name: 'ЖК Парк Мира корп. 3', pct: 34, status: 'В работе', color: 'green', team: 6, issues: 5 },
+            { code: 'RES-A', name: 'ЖК «Объект-A» корп. 7-11', pct: 89, status: 'В работе', color: 'green', team: 12, issues: 1 },
+            { code: 'RES-B', name: 'ЖК «Объект-B» корп. 3', pct: 34, status: 'В работе', color: 'green', team: 6, issues: 5 },
             { code: 'OFF-01', name: 'Офисный центр Сириус', pct: 12, status: 'Планирование', color: 'amber', team: 3, issues: 0 },
           ].map((p, i) => (
             <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm cursor-pointer" onClick={() => setScr('pm')}>
@@ -362,40 +339,44 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
         {scr === 'operations' && <>
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200/50">
             <div className="text-[10px] font-bold text-blue-800 mb-1">Операционная отчётность</div>
-            <div className="text-[9px] text-blue-600 leading-relaxed">Инженеры и РП ежедневно фиксируют рапорты, предписания и статусы. Данные консолидируются наверх.</div>
+            <div className="text-[9px] text-blue-600 leading-relaxed">Инженеры и РП фиксируют прогресс по этапам и проблемы на объектах. Данные консолидируются в портфельную картину наверх.</div>
           </div>
 
-          {/* Shift logs */}
-          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1">Рапорты за смену</div>
+          {/* Progress updates */}
+          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1">Прогресс по этапам</div>
           {[
-            { date: '05.03', eng: 'Петров И.А.', work: 'Бетонирование плиты П-7 (отм. +12.6). Объём 48м³.', remarks: 'Задержка бетона 2ч — пробки' },
-            { date: '05.03', eng: 'Козлов Д.В.', work: 'Армирование стен 3 этажа, оси 1-4/А-В', remarks: 'Нехватка Ø16 — 2.4т' },
-          ].map((log, i) => (
+            { obj: 'Блок 1 · Монолит', stage: 'Перекрытие отм. +12.6', pct: 78, delta: '+12%', status: 'В срок' },
+            { obj: 'Блок 1 · Стены', stage: 'Армирование 3 этаж', pct: 45, delta: '+8%', status: 'Отстаёт' },
+          ].map((p, i) => (
             <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-semibold text-slate-700">{log.eng}</span>
-                <span className="text-[9px] text-slate-400">{log.date}</span>
+                <span className="text-[10px] font-semibold text-slate-700">{p.obj}</span>
+                <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${p.status === 'В срок' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>{p.status}</span>
               </div>
-              <div className="text-[10px] text-slate-600 mb-1">{log.work}</div>
-              {log.remarks && <div className="text-[9px] text-amber-600 bg-amber-50 rounded px-2 py-1">⚠ {log.remarks}</div>}
+              <div className="text-[10px] text-slate-600 mb-1.5">{p.stage}</div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full bg-blue-500" style={{ width: `${p.pct}%` }} />
+                </div>
+                <span className="text-[10px] font-bold text-slate-600">{p.pct}%</span>
+                <span className="text-[8px] text-green-600 font-semibold">{p.delta}</span>
+              </div>
             </div>
           ))}
 
-          {/* Prescriptions */}
-          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1 mt-1">Предписания</div>
+          {/* Critical issues */}
+          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1 mt-1">Критические проблемы</div>
           {[
-            { num: 'П-087', text: 'Защитный слой бетона 15мм при треб. 25мм', severity: 'Значительный', sColor: 'red', status: 'Выдано', due: '12.03' },
-            { num: 'П-086', text: 'Прогиб опалубки 8мм при допуске 3мм', severity: 'Критический', sColor: 'red', status: 'В работе', due: '08.03' },
-            { num: 'П-084', text: 'Не оформлен АОСР на армирование', severity: 'Незначительный', sColor: 'amber', status: 'Устранено', due: '—' },
+            { cat: 'Снабжение', text: 'Задержка поставки арматуры А500С', daysAgo: 18, priority: 'critical' },
+            { cat: 'Персонал', text: 'Дефицит сварщиков НАКС 6 разряда', daysAgo: 14, priority: 'critical' },
+            { cat: 'Качество', text: 'Превышение допуска по осадке фундамента', daysAgo: 8, priority: 'critical' },
           ].map((p, i) => (
             <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
               <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-[9px] font-mono font-bold text-slate-500">{p.num}</span>
-                <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-${p.sColor}-100 text-${p.sColor}-600`}>{p.severity}</span>
-                <span className={`text-[8px] ml-auto ${p.status === 'Устранено' ? 'text-green-600' : 'text-slate-400'}`}>{p.status}</span>
+                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-600">{p.cat}</span>
+                <span className="text-[8px] ml-auto text-slate-400">{p.daysAgo} дн. назад</span>
               </div>
               <div className="text-[10px] text-slate-700">{p.text}</div>
-              {p.due !== '—' && <div className="text-[8px] text-slate-400 mt-1">Срок: {p.due}</div>}
             </div>
           ))}
 
@@ -430,8 +411,8 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
           {/* Project cards with consolidated metrics */}
           {[
             { name: 'АЭС Курск-2', pct: 67, critical: 2, staff: '7/8', contract: 'OK', cColor: 'green' },
-            { name: 'ЖК FORIVER к.7-11', pct: 89, critical: 0, staff: '12/12', contract: '<60д', cColor: 'amber' },
-            { name: 'ЖК Парк Мира к.3', pct: 34, critical: 1, staff: '5/6', contract: 'OK', cColor: 'green' },
+            { name: 'ЖК «Объект-A» к.7-11', pct: 89, critical: 0, staff: '12/12', contract: '<60д', cColor: 'amber' },
+            { name: 'ЖК «Объект-B» к.3', pct: 34, critical: 1, staff: '5/6', contract: 'OK', cColor: 'green' },
           ].map((p, i) => (
             <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
               <div className="flex items-center justify-between mb-2">
@@ -460,7 +441,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
           {[
             { project: 'Курск-2', issue: 'Задержка поставки арматуры', days: 12 },
             { project: 'Курск-2', issue: 'Несогласованные изменения в РД', days: 5 },
-            { project: 'Парк Мира', issue: 'Подрядчик приостановил работы', days: 3 },
+            { project: 'Объект-B', issue: 'Подрядчик приостановил работы', days: 3 },
           ].map((c, i) => (
             <div key={i} className="bg-red-50 rounded-lg p-2.5 border border-red-200/50 flex items-start gap-2">
               <span className="text-[8px] font-bold text-red-500 mt-0.5">!</span>
@@ -552,10 +533,10 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
 
             {/* Per-project finance */}
             {[
-              { name: 'Курск-2', rev: '2.45M', margin: '32%' },
-              { name: 'FORIVER', rev: '3.80M', margin: '38%' },
-              { name: 'Парк Мира', rev: '1.95M', margin: '29%' },
-              { name: 'Сириус', rev: '1.60M', margin: '35%' },
+              { name: 'IND-1',    rev: '2.45M', margin: '32%' },
+              { name: 'Объект-A', rev: '3.80M', margin: '38%' },
+              { name: 'Объект-B', rev: '1.95M', margin: '29%' },
+              { name: 'OFF-01',   rev: '1.60M', margin: '35%' },
             ].map((p, i) => (
               <div key={i} className="bg-white rounded-lg p-2.5 border border-slate-200 flex items-center justify-between">
                 <span className="text-[10px] font-semibold text-slate-700">{p.name}</span>
@@ -718,10 +699,7 @@ export function DemoPuls() {
           {tab === 'progress' && <ProgressScreen />}
           {tab === 'contract' && <ContractScreen />}
           {tab === 'issues' && <IssuesScreen />}
-          {tab === 'letters' && <LettersScreen />}
           {tab === 'team' && <TeamScreen />}
-          {tab === 'shift-logs' && <ShiftLogsScreen />}
-          {tab === 'prescriptions' && <PrescriptionsScreen />}
           {tab === 'references' && <ReferencesScreen />}
         </div>
       </div>
@@ -1149,54 +1127,6 @@ function IssuesScreen() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   5. LETTERS
-   ═══════════════════════════════════════════════════════════ */
-function LettersScreen() {
-  return (
-    <div className="h-full overflow-auto p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div><h1 className="text-xl font-bold text-gray-900">Письма проекта</h1><p className="text-sm text-gray-500">Реестр официальной корреспонденции</p></div>
-        <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">+ Новое письмо</button>
-      </div>
-      <div className="mb-6 grid grid-cols-6 gap-4">
-        {[{ v: LETTERS.length, l: 'Всего', c: 'text-gray-900' }, { v: 3, l: 'Исходящих', c: 'text-blue-600' }, { v: 2, l: 'Входящих', c: 'text-green-600' }, { v: 1, l: 'Ожидают ответа', c: 'text-yellow-600' }, { v: 1, l: 'Просрочено', c: 'text-red-600' }, { v: 1, l: 'Претензий', c: 'text-orange-600' }].map((s, i) => (
-          <div key={i} className="rounded-lg border bg-white p-4"><div className={`text-2xl font-bold ${s.c}`}>{s.v}</div><div className="text-xs text-gray-500">{s.l}</div></div>
-        ))}
-      </div>
-      <div className="mb-6 rounded-lg border bg-white p-4"><div className="grid grid-cols-4 gap-4">
-        <div><label className="mb-1 block text-sm font-medium text-gray-700">Поиск</label><input placeholder="Номер, тема..." className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" /></div>
-        <div><label className="mb-1 block text-sm font-medium text-gray-700">Тип</label><select className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"><option>Все типы</option></select></div>
-        <div><label className="mb-1 block text-sm font-medium text-gray-700">Категория</label><select className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"><option>Все категории</option></select></div>
-        <div><label className="mb-1 block text-sm font-medium text-gray-700">Статус</label><select className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"><option>Все статусы</option></select></div>
-      </div></div>
-      <div className="rounded-lg border bg-white">
-        <div className="grid grid-cols-12 gap-4 border-b bg-gray-50 px-4 py-3 text-xs font-medium text-gray-500">
-          <div className="col-span-2">Номер / Дата</div><div className="col-span-1">Тип</div><div className="col-span-2">Категория</div><div className="col-span-3">Тема</div><div className="col-span-2">Адресат</div><div className="col-span-2">Статус</div>
-        </div>
-        {LETTERS.map(l => (
-          <div key={l.id} className="grid grid-cols-12 gap-4 border-b px-4 py-4 hover:bg-gray-50">
-            <div className="col-span-2"><div className="font-medium text-gray-900 text-sm">{l.number}</div><div className="text-xs text-gray-500">{l.date}</div></div>
-            <div className="col-span-1 text-sm">{l.type === 'OUTGOING' ? '↗️' : '↙️'} {l.type === 'OUTGOING' ? 'Исх.' : 'Вх.'}</div>
-            <div className="col-span-2 text-sm">{l.category}</div>
-            <div className="col-span-3">
-              <div className="font-medium text-gray-900 text-sm">{l.title}</div>
-              <div className="flex gap-2 mt-1">
-                {l.files > 0 && <span className="text-[10px] text-gray-500">📎 {l.files} файлов</span>}
-                {l.issues > 0 && <span className="text-[10px] text-blue-600">🔗 {l.issues} проблем</span>}
-              </div>
-            </div>
-            <div className="col-span-2 text-sm text-gray-900">{l.recipient}</div>
-            <div className="col-span-2">
-              <span className={`inline-block rounded px-2 py-1 text-xs font-medium ${l.sc}`}>{l.status}</span>
-              {l.deadline !== null && <div className={`mt-1 text-xs ${l.deadline < 0 ? 'font-medium text-red-600' : 'text-gray-500'}`}>{l.deadline < 0 ? `Просрочено на ${Math.abs(l.deadline)} дн.` : `Срок: через ${l.deadline} дн.`}</div>}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 /* ═══════════════════════════════════════════════════════════
    6. TEAM — full PM cabinet with collapsible sidebar
@@ -2008,108 +1938,7 @@ function ContractStaffTab() {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════
-   7. SHIFT LOGS
-   ═══════════════════════════════════════════════════════════ */
-function ShiftLogsScreen() {
-  const logs = [
-    { date: '28.02.2026', shift: 'Дневная', author: 'Иванов И.И.', workers: 18, weather: 'Ясно, -5°C', works: 'Бетонирование перекрытия отм. +6.600 (85м³), Монтаж арматурного каркаса секция Г', issues: 'Задержка бетоновоза на 40 мин' },
-    { date: '27.02.2026', shift: 'Дневная', author: 'Иванов И.И.', workers: 22, weather: 'Облачно, -3°C', works: 'Сварка арматуры блок Б, Монтаж опалубки колонн ряд В', issues: '—' },
-    { date: '26.02.2026', shift: 'Дневная', author: 'Петров П.С.', workers: 20, weather: 'Снег, -8°C', works: 'Прогрев бетона секция А, Устройство гидроизоляции', issues: 'Остановка работ на 2ч из-за снегопада' },
-  ]
-  return (
-    <div className="h-full overflow-auto p-6 bg-gray-50">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Журналы смены</h1>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">+ Новая запись</button>
-      </div>
-      <div className="space-y-4">{logs.map((l, i) => (
-        <div key={i} className="bg-white rounded-lg shadow-md p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3"><span className="font-semibold text-gray-900">{l.date}</span><span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">{l.shift}</span></div>
-            <div className="flex items-center gap-3 text-sm text-gray-500"><span>👷 {l.workers} чел.</span><span>🌤 {l.weather}</span><span>Автор: {l.author}</span></div>
-          </div>
-          <div className="mb-2"><div className="text-xs font-semibold text-gray-500 uppercase mb-1">Выполненные работы</div><p className="text-sm text-gray-700">{l.works}</p></div>
-          {l.issues !== '—' && <div><div className="text-xs font-semibold text-gray-500 uppercase mb-1">Замечания</div><p className="text-sm text-red-600">{l.issues}</p></div>}
-        </div>
-      ))}</div>
-    </div>
-  )
-}
 
-/* ═══════════════════════════════════════════════════════════
-   8. PRESCRIPTIONS — stats + configurable table
-   ═══════════════════════════════════════════════════════════ */
-function PrescriptionsScreen() {
-  const [filterStatus, setFilterStatus] = useState('')
-  const filtered = filterStatus ? PRESCRIPTIONS.filter(p => p.status === filterStatus) : PRESCRIPTIONS
-  return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-auto p-6 bg-gray-50">
-        <div className="mb-6 grid grid-cols-4 gap-4">
-          <div className="bg-white p-4 rounded-lg shadow"><div className="text-sm text-gray-600">Всего</div><div className="text-2xl font-bold text-gray-900">{PRESCRIPTIONS.length}</div></div>
-          <div className="bg-white p-4 rounded-lg shadow"><div className="text-sm text-gray-600">Просрочено</div><div className="text-2xl font-bold text-red-600">{PRESCRIPTIONS.filter(p => p.status === 'OVERDUE').length}</div></div>
-          <div className="bg-white p-4 rounded-lg shadow"><div className="text-sm text-gray-600">Выдано в этом мес.</div><div className="text-2xl font-bold text-blue-600">3</div></div>
-          <div className="bg-white p-4 rounded-lg shadow"><div className="text-sm text-gray-600">Устранено в этом мес.</div><div className="text-2xl font-bold text-green-600">2</div></div>
-        </div>
-        <div className="bg-white p-4 rounded-lg shadow mb-4"><div className="flex flex-wrap gap-2">
-          {Object.entries(PST).map(([k, v]) => { const cnt = PRESCRIPTIONS.filter(p => p.status === k).length; return cnt > 0 ? <span key={k} className={`px-3 py-1 rounded-full text-xs font-medium ${v.c}`}>{v.label}: {cnt}</span> : null })}
-        </div></div>
-        <div className="bg-white p-4 rounded-lg shadow mb-4">
-          <div className="flex items-center gap-3">
-            <select className="px-3 py-2 border border-gray-300 rounded-md text-sm" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
-              <option value="">Все статусы</option>{Object.entries(PST).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-            </select>
-            <input placeholder="Поиск по подрядчику..." className="px-3 py-2 border border-gray-300 rounded-md text-sm flex-1 min-w-[200px]" />
-            <div className="flex gap-2 ml-auto">
-              <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md text-sm font-medium">⚙ Колонки</button>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium">+ Создать</button>
-              <button className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium">Экспорт Excel</button>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto"><table className="w-full"><thead className="bg-gray-50 border-b"><tr>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-10"><input type="checkbox" className="rounded" /></th>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-12">№</th>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-24">№ ППС</th>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Описание нарушения</th>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-28">Признак</th>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-24">Дата</th>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-36">Подрядчик</th>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-24">Срок</th>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-32">Статус</th>
-            <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase w-24">Действия</th>
-          </tr></thead><tbody className="divide-y">{filtered.map((p, i) => {
-            const sev = SEV[p.severity as keyof typeof SEV] || SEV.MINOR
-            const pst = PST[p.status] || PST.IN_PROGRESS
-            return (
-              <tr key={p.id} className="hover:bg-gray-50">
-                <td className="px-3 py-3"><input type="checkbox" className="rounded" /></td>
-                <td className="px-3 py-3 text-sm text-gray-600">{i + 1}</td>
-                <td className="px-3 py-3"><span className="text-sm font-semibold text-blue-600 cursor-pointer hover:underline">{p.num}</span></td>
-                <td className="px-3 py-3 text-sm">
-                  <div className="font-medium text-gray-900 line-clamp-2">{p.desc}</div>
-                  {p.loc && <div className="text-xs text-gray-500 mt-0.5">📍 {p.loc}</div>}
-                  <div className="text-xs text-blue-600 mt-0.5">📋 {p.items} пунктов · 📷 {p.photos} фото</div>
-                </td>
-                <td className="px-3 py-3"><span className={`inline-block px-2 py-0.5 text-xs rounded ${sev.c}`}>{sev.label}</span></td>
-                <td className="px-3 py-3 text-sm text-gray-600 whitespace-nowrap">{p.date}</td>
-                <td className="px-3 py-3 text-sm text-gray-700">{p.contractor}</td>
-                <td className="px-3 py-3 text-sm text-gray-700 whitespace-nowrap">{p.due}</td>
-                <td className="px-3 py-3">
-                  <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${pst.c}`}>{pst.label}</span>
-                  {p.delay > 0 && <div className="text-xs text-red-600 font-medium mt-1">+{p.delay} дн.</div>}
-                </td>
-                <td className="px-3 py-3"><div className="flex flex-col gap-1"><button className="text-xs text-blue-600 hover:text-blue-800 text-left">Просмотр</button><button className="text-xs text-gray-600 hover:text-gray-800 text-left">Редактировать</button><button className="text-xs text-red-600 hover:text-red-800 text-left">Удалить</button></div></td>
-              </tr>
-            )
-          })}</tbody></table></div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 /* ═══════════════════════════════════════════════════════════
    9. REFERENCES (Справочники)
@@ -2118,9 +1947,9 @@ function ReferencesScreen() {
   const refs = [
     { name: 'Подрядные организации', count: 6, icon: '🏢' },
     { name: 'Локальные объекты', count: 14, icon: '📍' },
-    { name: 'Классификатор нарушений', count: 48, icon: '📋' },
-    { name: 'Нормативная база', count: 23, icon: '📖' },
-    { name: 'Шаблоны документов', count: 8, icon: '📄' },
+    { name: 'Классификатор проблем', count: 48, icon: '📋' },
+    { name: 'Должности', count: 24, icon: '👤' },
+    { name: 'Производственный календарь', count: 365, icon: '📅' },
   ]
   return (
     <div className="h-full overflow-auto p-6 bg-gray-50">

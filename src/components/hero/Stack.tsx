@@ -65,7 +65,7 @@ export function Stack() {
                 y={cy + 3}
                 fill="var(--color-muted)"
                 fontFamily="var(--font-sans)"
-                fontSize="8"
+                fontSize="10"
                 fontWeight="600"
                 textAnchor="end"
               >
@@ -141,10 +141,10 @@ export function Stack() {
               />
               <text
                 x={CX + W_HALF + 16}
-                y={cy - 1}
+                y={cy - 2}
                 fill={isActive ? 'var(--color-accent)' : 'var(--color-text-primary)'}
                 fontFamily="var(--font-display)"
-                fontSize="12"
+                fontSize="14"
                 fontWeight="700"
                 style={{ transition: 'fill 0.5s' }}
               >
@@ -152,10 +152,10 @@ export function Stack() {
               </text>
               <text
                 x={CX + W_HALF + 16}
-                y={cy + 13}
+                y={cy + 14}
                 fill="var(--color-muted)"
                 fontFamily="var(--font-sans)"
-                fontSize="10"
+                fontSize="11"
               >
                 {layer.sub}
               </text>

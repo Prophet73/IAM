@@ -41,6 +41,12 @@ __pycache__/
 /uploads/
 /output/
 
+# Секреты и переменные окружения (хранится только .env.example)
+.env
+.env.local
+.env.*.local
+/backend/.env
+
 # Генерируемые бандлы скриптов
 /scripts/bundles/
 /scripts/*.png

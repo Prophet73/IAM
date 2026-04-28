@@ -4,22 +4,25 @@ import { tracker } from '../utils/tracker'
 
 /* ===== TYPES & DATA ===== */
 
-type Screen = 'databook' | 'scanner' | 'citations' | 'document' | 'admin' | 'architecture' | 'taxonomy' | 'quality'
-type AdminTab = 'overview' | 'unresolved' | 'errors' | 'users'
+type Screen = 'databook' | 'docs' | 'scanner' | 'citations' | 'document' | 'admin' | 'architecture' | 'taxonomy' | 'quality' | 'cycle'
+type AdminTab = 'overview' | 'unresolved' | 'errors'
 
 const BRAND = '#2563EB'
 
 const nav: { key: Screen; emoji: string; label: string; section?: string }[] = [
-  { key: 'databook',     emoji: '📚', label: 'DataBook' },
   { key: 'scanner',      emoji: '📷', label: 'Сканер + конструктор' },
+  { key: 'docs',         emoji: '📋', label: 'Docs · нормативка' },
+  { key: 'databook',     emoji: '📚', label: 'DataBook' },
   { key: 'admin',        emoji: '🛠',  label: 'Админ · использование', section: 'АДМИНИСТРИРОВАНИЕ' },
   { key: 'architecture', emoji: '⚙️', label: 'Как работает',           section: 'АРХИТЕКТУРА' },
   { key: 'taxonomy',     emoji: '🌳', label: 'Таксономия' },
   { key: 'quality',      emoji: '📊', label: 'Качество поиска' },
+  { key: 'cycle',        emoji: '🔄', label: 'Цикл улучшения' },
 ]
 
 const titles: Record<Screen, string> = {
   databook:     'DataBook — архив выявленных предписаний',
+  docs:         'Docs — нормативная документация',
   scanner:      'Сканер + конструктор предписаний',
   citations:    'Нормативное обоснование',
   document:     'Документ (DOCX)',
@@ -27,6 +30,7 @@ const titles: Record<Screen, string> = {
   architecture: 'Как это работает',
   taxonomy:     'Таксономия · структура данных',
   quality:      'Качество поиска',
+  cycle:        'Цикл улучшения системы',
 }
 
 /* ── Реальная таксономия work_types (из emb2/data/work_types_taxonomy.json) ── */
@@ -269,7 +273,99 @@ const ARCHIVE: PrescItem[] = [
     hasPhoto: true },
 ]
 
-const ARCHIVE_STATS = { total: 8577, norms: 70, clauses: 14933, chunks: 20722, workTypes: WORK_TYPES.length, tagCats: 8, deduped: 'из ~25 000 исходных' }
+const ARCHIVE_STATS = { workTypes: WORK_TYPES.length, tagCats: 8 }
+
+/* ── Docs · нормативка — выборка пунктов из библиотеки НТД для демонстрации каскада ── */
+type ClauseItem = {
+  id: number
+  tab: Exclude<TabKey, 'all'>
+  workCode: string
+  subtype: string
+  control: string
+  doc: string
+  clause: string
+  text: string
+  tags: { c: string; v: string }[]
+}
+
+const NTD_CLAUSES: ClauseItem[] = [
+  // ОТ
+  { id: 1, tab: 'ot', workCode: '20', subtype: 'охрана_труда', control: 'охрана_труда',
+    doc: 'СП 48.13330.2019', clause: 'п.6.2.3',
+    text: 'При работе на высоте более 1.8 м от земли или пола при отсутствии ограждений применяется страховочная привязь.',
+    tags: [{ c: 'hazards', v: 'высота' }, { c: 'ppe', v: 'страховка' }] },
+  { id: 2, tab: 'ot', workCode: '20', subtype: 'охрана_труда', control: 'охрана_труда',
+    doc: 'Приказ Минтруда 782н', clause: 'п.52',
+    text: 'Работы на высоте допускается выполнять только работникам, прошедшим обучение и аттестацию, с применением СИЗ от падения.',
+    tags: [{ c: 'hazards', v: 'высота' }, { c: 'ppe', v: 'СИЗ' }] },
+  { id: 3, tab: 'ot', workCode: '20', subtype: 'охрана_труда', control: 'охрана_труда',
+    doc: 'ГОСТ 12.4.059-89', clause: 'п.5.4',
+    text: 'Открытые края перекрытий и технологические проёмы ограждаются временными ограждениями высотой не менее 1.1 м.',
+    tags: [{ c: 'barriers', v: 'ограждение' }, { c: 'hazards', v: 'высота' }] },
+  { id: 4, tab: 'ot', workCode: '20', subtype: 'охрана_труда', control: 'охрана_труда',
+    doc: 'СП 48.13330.2019', clause: 'п.6.1.7',
+    text: 'Каска защитная должна применяться всеми работниками и ИТР на строительной площадке.',
+    tags: [{ c: 'ppe', v: 'каска' }] },
+  { id: 5, tab: 'ot', workCode: '20', subtype: 'санитарная_безопасность', control: 'охрана_труда',
+    doc: 'СНиП 12-03-2001', clause: 'п.6.1.6',
+    text: 'На территории строительной площадки должна обеспечиваться своевременная уборка снега и наледи проходов к рабочим местам и бытовым помещениям.',
+    tags: [{ c: 'hazards', v: 'скользко' }, { c: 'barriers', v: 'проход' }] },
+  // Конструктив
+  { id: 6, tab: 'construction', workCode: '10', subtype: 'Подстилающие слои', control: 'операционный',
+    doc: 'СП 17.13330.2017', clause: 'п.5.4',
+    text: 'При устройстве кровельного покрытия температура воздуха должна быть не ниже минус 5 °C. Не допускается укладка по мёрзлому или загрязнённому основанию.',
+    tags: [{ c: 'materials', v: 'теплоизоляция' }, { c: 'constructs', v: 'кровля' }] },
+  { id: 7, tab: 'construction', workCode: '5', subtype: 'Уход за бетоном', control: 'операционный',
+    doc: 'СП 70.13330.2012', clause: 'п.5.4.1',
+    text: 'Открытые поверхности уложенного бетона должны защищаться от испарения воды и атмосферных осадков укрытием, поливом или нанесением плёнкообразующих составов.',
+    tags: [{ c: 'materials', v: 'бетон' }, { c: 'defects', v: 'ТВР' }] },
+  { id: 8, tab: 'construction', workCode: '5', subtype: 'Установка опалубки', control: 'геодезический',
+    doc: 'СП 70.13330.2019', clause: 'табл.5.11',
+    text: 'Отклонения от вертикали поверхностей опалубки на 1 м высоты не должны превышать 5 мм; общее отклонение по высоте — не более 20 мм.',
+    tags: [{ c: 'defects', v: 'отклонение' }, { c: 'materials', v: 'опалубка' }] },
+  { id: 9, tab: 'construction', workCode: '6', subtype: 'Входной контроль', control: 'входной',
+    doc: 'СП 70.13330.2012', clause: 'Приложение Х',
+    text: 'Входной контроль сборных ЖБ-конструкций включает проверку наличия документов о качестве, маркировки и осмотр на отсутствие пустот, сколов и трещин выше допустимых.',
+    tags: [{ c: 'documents', v: 'паспорт качества' }, { c: 'defects', v: 'сколы' }] },
+  { id: 10, tab: 'construction', workCode: '8', subtype: 'Кладка из газобетона', control: 'операционный',
+    doc: 'СП 70.13330.2012', clause: 'п.9.2.1',
+    text: 'При выполнении кладки из газобетонных блоков в углах и местах сопряжения внутренних и наружных стен должна выполняться перевязка между рядами не менее половины блока.',
+    tags: [{ c: 'materials', v: 'газобетон' }, { c: 'defects', v: 'нет перевязки' }] },
+  { id: 11, tab: 'construction', workCode: '14', subtype: 'Штукатурка', control: 'операционный',
+    doc: 'СП 71.13330.2017', clause: 'п.7.2',
+    text: 'Штукатурные работы следует выполнять при температуре воздуха не ниже +5 °C и не выше +30 °C. Поверхность основания должна быть сухой, очищенной от пыли и старых покрытий.',
+    tags: [{ c: 'materials', v: 'штукатурка' }, { c: 'defects', v: 'ТВР' }] },
+  { id: 12, tab: 'construction', workCode: '13', subtype: 'Направляющие', control: 'операционный',
+    doc: 'СТО НОСТРОЙ 2.14.62', clause: 'п.7.3.4',
+    text: 'Шаг крепления кронштейнов навесного вентилируемого фасада определяется проектом; отклонения от проектного шага не допускаются.',
+    tags: [{ c: 'constructs', v: 'НВФ' }, { c: 'materials', v: 'крепёж' }] },
+  { id: 13, tab: 'construction', workCode: '7', subtype: 'Антикоррозия', control: 'приёмочный',
+    doc: 'СП 16.13330.2017', clause: 'п.6.5',
+    text: 'Антикоррозионная защита металлоконструкций выполняется в соответствии с проектом; требуется протокол испытаний и акт скрытых работ.',
+    tags: [{ c: 'documents', v: 'акт' }, { c: 'constructs', v: 'каркас' }] },
+  { id: 14, tab: 'construction', workCode: '3', subtype: 'Устройство котлованов', control: 'операционный',
+    doc: 'СП 22.13330.2016', clause: 'п.5.7',
+    text: 'Крутизна откосов котлованов и траншей в нескальных грунтах принимается по таблице 6.1 в зависимости от вида грунта, глубины и срока эксплуатации.',
+    tags: [{ c: 'defects', v: 'геометрия' }, { c: 'hazards', v: 'обрушение' }] },
+  { id: 15, tab: 'construction', workCode: '1', subtype: 'Разбивка осей и отметок', control: 'геодезический',
+    doc: 'СП 126.13330.2017', clause: 'п.6.10',
+    text: 'Высотные репера на монтажном горизонте должны быть закреплены и сохраняться в течение всего периода строительства; их повреждение или утрата фиксируется в журнале.',
+    tags: [{ c: 'equip', v: 'репера' }] },
+  // Организация
+  { id: 16, tab: 'organization', workCode: '19', subtype: 'Аттестационно-разрешительная документация', control: 'организационный',
+    doc: 'СП 48.13330.2019', clause: 'п.4.6',
+    text: 'Производство работ ведётся по рабочей документации, выданной в производство и согласованной заказчиком. До начала работ узлы и спецификации должны быть утверждены.',
+    tags: [{ c: 'documents', v: 'РД' }] },
+  { id: 17, tab: 'organization', workCode: '19', subtype: 'Приказы на ответственных лиц', control: 'организационный',
+    doc: 'Постановление №468', clause: 'положение о СК',
+    text: 'Лицо, осуществляющее строительство, обязано до начала работ оформить приказы на ответственных за охрану труда, пожарную и электробезопасность.',
+    tags: [{ c: 'documents', v: 'приказ' }] },
+  // Документы
+  { id: 18, tab: 'documents', workCode: '21', subtype: 'Общий журнал работ', control: 'документационный',
+    doc: 'ГОСТ Р 21.101', clause: 'раздел 6',
+    text: 'Общий журнал работ ведётся ответственным за производство работ; в нём фиксируются результаты входного, операционного и приёмочного контроля.',
+    tags: [{ c: 'documents', v: 'общий журнал' }] },
+]
 
 const TAG_COLOR: Record<string, string> = {
   materials:  'bg-amber-50/70 border-amber-200 text-amber-800',
@@ -324,31 +420,6 @@ const DOC_TEMPLATES = [
   { id: 'report', name: 'Детальный отчёт',                 desc: 'С фото, анализом и рекомендациями' },
 ]
 
-/* ── Эвал — реальные цифры production-прогона 2026-04-17 ─────── */
-const EVAL = {
-  goldenCases: 88,
-  recall30: 90.9,           // Правильный пункт в топ-30
-  exactFirst: 56.8,         // Первый же ответ — точный (50/88)
-  top5: 77.3,               // В топ-5 (68/88)
-  top10: 83.0,              // В топ-10 (73/88)
-  llmExact: 75.0,           // LLM выбрала точно target (66/88)
-  inTopic: 80.7,            // Цитата «в тему» (по Claude-судье, 155/192)
-  hallucinations: 0,        // % галлюцинаций
-  linksTotal: 192,          // всего ссылок дала модель
-  abTest: [
-    { method: 'Смешанный поиск + переранжирование (продакшен)', recall: 90.9, active: true },
-    { method: 'Взвешенная сумма оценок',                        recall: 73.9 },
-    { method: 'Только семантический поиск',                     recall: 70.5 },
-    { method: 'Только по ключевым словам',                      recall: 56.8 },
-  ],
-  rankDistribution: [
-    { pos: 'В 1-м результате', hits: 50, total: 88 },
-    { pos: 'В первых 5',       hits: 68, total: 88 },
-    { pos: 'В первых 10',      hits: 73, total: 88 },
-    { pos: 'В первых 30',      hits: 80, total: 88 },
-  ],
-}
-
 /* ── Admin — usage, unresolved, top queries (только ОТ) ──────── */
 const ADMIN_USAGE = [
   { label: 'Поисков за сутки',          value: '126', sub: '+8% к среднему',    spark: [38, 41, 52, 48, 57, 126] },
@@ -372,16 +443,6 @@ const UNRESOLVED_CASES = [
   { q: 'порядок допуска персонала субподрядчиков на высотные работы', n: 4, reason: 'пограничный домен: ОТ ↔ организация' },
   { q: 'средства коллективной защиты при работе с ручным электроинструментом на высоте', n: 3, reason: 'требование на стыке ОТ и электробезопасности' },
 ]
-
-/* ── Admin taxonomy (для admin tab) ─────────────────────────── */
-const ADMIN_TAXO_STATS = {
-  workTypes: WORK_TYPES.length,
-  univSubtypes: UNIVERSAL_SUBTYPES.length,
-  materialTags: 29,
-  defectTags: 15,
-  toolTags: 7,
-  totalTagPairs: 52, // tag-categories × values
-}
 
 /* ═════════════════════ EXPORT ═════════════════════ */
 export function DataBookDemo() {
@@ -460,14 +521,14 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
                 <div className="w-7 h-7 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-base shrink-0">📚</div>
                 <div>
                   <div className="text-[12px] font-semibold text-slate-800">DataBook</div>
-                  <div className="text-[11px] text-slate-500 leading-snug">Архив {ARCHIVE_STATS.total.toLocaleString('ru-RU')} реальных предписаний — классифицирован и размечен.</div>
+                  <div className="text-[11px] text-slate-500 leading-snug">Архив дедуплицированных предписаний — классифицирован и размечен.</div>
                 </div>
               </div>
               <div className="flex items-start gap-2">
                 <div className="w-7 h-7 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-base shrink-0">📋</div>
                 <div>
                   <div className="text-[12px] font-semibold text-slate-800">Библиотека нормативов</div>
-                  <div className="text-[11px] text-slate-500 leading-snug">{ARCHIVE_STATS.clauses.toLocaleString('ru-RU')} пунктов СП/ГОСТ — размечены <b>по той же таксономии</b>. Это даёт симметрию для точного поиска.</div>
+                  <div className="text-[11px] text-slate-500 leading-snug">Пункты СП/ГОСТ — размечены <b>по той же таксономии</b>. Это даёт симметрию для точного поиска.</div>
                 </div>
               </div>
               <div className="flex items-start gap-2">
@@ -485,11 +546,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
           </div>
         </>}
         {scr === 'databook' && <>
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-white rounded-xl p-2.5 border border-slate-200 text-center">
-              <div className="text-sm font-bold text-slate-800">{ARCHIVE_STATS.total.toLocaleString('ru-RU')}</div>
-              <div className="text-[8px] text-slate-400 mt-0.5">предписаний</div>
-            </div>
+          <div className="grid grid-cols-2 gap-2">
             <div className="bg-white rounded-xl p-2.5 border border-slate-200 text-center">
               <div className="text-sm font-bold text-slate-800">{ARCHIVE_STATS.workTypes}</div>
               <div className="text-[8px] text-slate-400 mt-0.5">видов работ</div>
@@ -602,7 +659,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
 
 /* ═════════════════════ MODAL ═════════════════════ */
 function Modal({ onClose }: { onClose: () => void }) {
-  const [screen, setScreen] = useState<Screen>('databook')
+  const [screen, setScreen] = useState<Screen>('scanner')
   const handleKey = useCallback((e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }, [onClose])
   useEffect(() => {
     document.addEventListener('keydown', handleKey)
@@ -649,11 +706,13 @@ function Modal({ onClose }: { onClose: () => void }) {
             </div>
             <div className="flex-1 overflow-y-auto">
               {screen === 'databook'     && <PgDataBook   onOpenScanner={() => setScreen('scanner')} />}
+              {screen === 'docs'         && <PgDocs />}
               {screen === 'scanner'      && <PgScannerFlow />}
               {screen === 'admin'        && <PgAdmin />}
               {screen === 'architecture' && <PgArchitecture />}
               {screen === 'taxonomy'     && <PgTaxonomy />}
               {screen === 'quality'      && <PgQuality />}
+              {screen === 'cycle'        && <PgCycle />}
             </div>
           </div>
         </div>
@@ -712,18 +771,16 @@ function PgDataBook({ onOpenScanner }: { onOpenScanner: () => void }) {
           <div>
             <h3 className="text-[0.9rem] font-bold text-slate-800 m-0 mb-1">DataBook — архив + источник таксономии</h3>
             <p className="text-[0.76rem] text-slate-600 leading-relaxed">
-              {ARCHIVE_STATS.total.toLocaleString('ru-RU')} дедуплицированных предписаний ({ARCHIVE_STATS.deduped}). Классифицированы по {ARCHIVE_STATS.workTypes} видам работ, {UNIVERSAL_SUBTYPES.length} универсальным подвидам и {ARCHIVE_STATS.tagCats} категориям тегов. Инженер ищет здесь прецеденты; система использует эти данные как <b>вторую плоскость к таксономии</b> (первую формирует сама нормативка) — и как эталонный набор для проверки качества поиска.
+              Архив дедуплицированных предписаний компании, классифицированный по {ARCHIVE_STATS.workTypes} видам работ, {UNIVERSAL_SUBTYPES.length} универсальным подвидам и {ARCHIVE_STATS.tagCats} категориям тегов. Инженер ищет здесь прецеденты; система использует эти данные как <b>вторую плоскость к таксономии</b> (первую формирует сама нормативка) — и как калибровочный набор для проверки качества поиска.
             </p>
           </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3 mb-4">
-        <StatMini label="Предписаний"      value={ARCHIVE_STATS.total.toLocaleString('ru-RU')} sub="дедуплицированы" />
+      <div className="grid grid-cols-2 gap-3 mb-4">
         <StatMini label="Видов работ"      value={ARCHIVE_STATS.workTypes.toString()} sub="включая организацию и ИД" />
         <StatMini label="Категорий тегов"  value={ARCHIVE_STATS.tagCats.toString()} sub="materials, defects, ppe..." />
-        <StatMini label="Ссылок в НТД"     value={ARCHIVE_STATS.norms.toString()} sub="документов СП/ГОСТ/приказов" />
       </div>
 
       {/* Filters card — реальная 5-слойная иерархия из emb2 */}
@@ -840,7 +897,7 @@ function PgDataBook({ onOpenScanner }: { onOpenScanner: () => void }) {
 
       {/* Result count */}
       <div className="flex items-center justify-between text-[0.72rem] text-slate-500 mb-2 px-1">
-        <span>Показано <b className="text-slate-700">{filtered.length}</b> из {ARCHIVE_STATS.total.toLocaleString('ru-RU')}</span>
+        <span>Показано <b className="text-slate-700">{filtered.length}</b> предписаний</span>
         <button onClick={onOpenScanner} className="text-[0.7rem] font-semibold text-[#2563EB] hover:underline cursor-pointer border-none bg-transparent">
           🧠 Создать новое предписание через Сканер →
         </button>
@@ -896,6 +953,172 @@ function PgDataBook({ onOpenScanner }: { onOpenScanner: () => void }) {
         </table>
         {filtered.length === 0 && <div className="py-10 text-center text-[0.78rem] text-slate-400">Ничего не найдено</div>}
       </div>
+    </div>
+  )
+}
+
+/* ═════════════════════ PG: DOCS — нормативная документация ═════════════════════ */
+function PgDocs() {
+  const [tab, setTab] = useState<TabKey>('all')
+  const [wt, setWt]   = useState<string>('all')
+  const [ct, setCt]   = useState<string>('all')
+  const [us, setUs]   = useState<string>('all')
+  const [q, setQ]     = useState('')
+
+  useEffect(() => { setWt('all'); setCt('all'); setUs('all') }, [tab])
+
+  const filtered = useMemo(() => NTD_CLAUSES.filter(p =>
+    (tab === 'all' || p.tab === tab) &&
+    (wt === 'all' || p.workCode === wt) &&
+    (ct === 'all' || p.control === ct) &&
+    (us === 'all' || p.subtype.toLowerCase().includes(us.toLowerCase())) &&
+    (q === '' || p.text.toLowerCase().includes(q.toLowerCase()) || p.doc.toLowerCase().includes(q.toLowerCase()) || p.clause.toLowerCase().includes(q.toLowerCase())),
+  ), [tab, wt, ct, us, q])
+
+  const thirdLayer = tab === 'ot' ? OT_SUBTYPES.map(s => ({ code: s.code, name: s.name, icon: s.icon }))
+                   : tab === 'organization' ? ORG_TYPES.map(o => ({ code: o, name: o, icon: '📋' }))
+                   : tab === 'documents' ? DOC_TYPES.map(d => ({ code: d, name: d, icon: '📓' }))
+                   : WORK_TYPES
+
+  const thirdLayerLabel = tab === 'ot' ? `Направление охраны труда (${OT_SUBTYPES.length})`
+                        : tab === 'organization' ? `Организационный вопрос (${ORG_TYPES.length})`
+                        : tab === 'documents' ? `Тип документа (${DOC_TYPES.length})`
+                        : `Вид работ (${WORK_TYPES.length})`
+
+  const showControlType = tab === 'construction' || tab === 'all'
+  const showUniSubtype = tab === 'construction' || tab === 'all'
+
+  return (
+    <div className="p-5 max-w-[1320px] mx-auto">
+      {/* Intro */}
+      <div className="bg-gradient-to-br from-[#2563EB]/5 to-[#4F46E5]/5 border border-[#2563EB]/15 rounded-2xl p-4 mb-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-lg shrink-0">📋</div>
+          <div>
+            <h3 className="text-[0.9rem] font-bold text-slate-800 m-0 mb-1">Docs — нормативная документация</h3>
+            <p className="text-[0.76rem] text-slate-600 leading-relaxed">
+              Библиотека размеченных пунктов СП, ГОСТ и приказов. Каждый пункт классифицирован по той же таксономии, что и архив предписаний — это <b>симметрия</b>, без неё точного смешанного поиска не будет. Ниже — каскадная навигация: <i>геодезический контроль → монолитные ЖБ → установка опалубки</i> покажет ровно те пункты, что относятся к этому слою.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-3">
+        {/* СЛОЙ 1 */}
+        <div className="px-3 py-3 border-b border-slate-200 bg-slate-50/50">
+          <div className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-wider mb-2">Слой 1 · главный раздел</div>
+          <div className="flex gap-1.5 items-center flex-wrap">
+            {MAIN_TABS.map(t => {
+              const isOT = t.key === 'ot'
+              const active = tab === t.key
+              return (
+                <button key={t.key} onClick={() => setTab(t.key)} className={`shrink-0 px-3 py-1.5 rounded-md text-[0.75rem] font-semibold border cursor-pointer transition-colors flex items-center gap-1.5 ${active ? (isOT ? 'bg-red-500 text-white border-red-500' : 'bg-[#2563EB] text-white border-[#2563EB]') : (isOT ? 'bg-red-50 text-red-700 border-red-200 hover:border-red-300' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300')}`}>
+                  <span className="text-[0.85rem]">{t.icon}</span>
+                  <span>{t.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* СЛОЙ 2: control_type (только Construction) */}
+        {showControlType && (
+          <div className="px-3 py-3 border-b border-slate-100 overflow-x-auto">
+            <div className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-wider mb-2">Слой 2 · вид контроля</div>
+            <div className="flex gap-1.5 items-center">
+              {CONSTRUCTION_CONTROL_TYPES.map(c => (
+                <button key={c.code} onClick={() => setCt(c.code)} className={`shrink-0 px-2.5 py-1.5 rounded-md text-[0.7rem] font-medium border cursor-pointer transition-colors ${ct === c.code ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}`}>
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* СЛОЙ 3 */}
+        <div className="px-3 py-3 border-b border-slate-100 overflow-x-auto">
+          <div className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-wider mb-2">Слой 3 · {thirdLayerLabel}</div>
+          <div className="flex gap-1.5 items-center">
+            <button onClick={() => setWt('all')} className={`shrink-0 px-2.5 py-1.5 rounded-md text-[0.7rem] font-medium border cursor-pointer transition-colors ${wt === 'all' ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}`}>Все</button>
+            {thirdLayer.map(w => (
+              <button key={w.code} onClick={() => setWt(w.code)} className={`shrink-0 px-2.5 py-1.5 rounded-md text-[0.7rem] font-medium border cursor-pointer transition-colors flex items-center gap-1 ${wt === w.code ? (tab === 'ot' ? 'bg-red-500 text-white border-red-500' : 'bg-[#2563EB] text-white border-[#2563EB]') : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}`}>
+                <span className="text-[0.8rem]">{w.icon}</span>
+                <span>{w.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* СЛОЙ 4: подвиды */}
+        {showUniSubtype && (
+          <div className="px-3 py-2 border-b border-slate-100 bg-slate-50/30 overflow-x-auto">
+            <div className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              Слой 4 · подвид работ
+              {wt !== 'all' && tab === 'construction' && WORK_SUBTYPES[wt] ? ` для «${WORK_TYPES.find(w => w.code === wt)?.name}»` : ' (выбери вид работ — появятся специфичные)'}
+              {' '}⊕ универсальные
+            </div>
+            <div className="flex gap-1.5 items-center flex-wrap">
+              <button onClick={() => setUs('all')} className={`shrink-0 px-2 py-1 rounded text-[0.65rem] font-medium border cursor-pointer ${us === 'all' ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-500 border-slate-200'}`}>Все</button>
+              {wt !== 'all' && tab === 'construction' && WORK_SUBTYPES[wt] && WORK_SUBTYPES[wt].map(u => (
+                <button key={u} onClick={() => setUs(u)} className={`shrink-0 px-2 py-1 rounded text-[0.65rem] font-medium border cursor-pointer ${us === u ? 'bg-teal-600 text-white border-teal-600' : 'bg-teal-50/60 text-teal-800 border-teal-200 hover:border-teal-300'}`}>{u}</button>
+              ))}
+              {wt !== 'all' && tab === 'construction' && WORK_SUBTYPES[wt] && (<span className="text-slate-300 mx-1 shrink-0">│</span>)}
+              {UNIVERSAL_SUBTYPES.map(u => (
+                <button key={u} onClick={() => setUs(u)} className={`shrink-0 px-2 py-1 rounded text-[0.65rem] font-medium border cursor-pointer ${us === u ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'}`}>{u}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Search */}
+        <div className="p-3 border-b border-slate-100 flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2 border border-slate-200">
+            <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input value={q} onChange={e => setQ(e.target.value)} placeholder="Поиск по тексту, документу или пункту..." className="flex-1 bg-transparent border-none outline-none text-[0.78rem] text-slate-700 placeholder:text-slate-400" />
+          </div>
+        </div>
+
+        {/* Active chips */}
+        {(tab !== 'all' || wt !== 'all' || ct !== 'all' || us !== 'all' || q !== '') && (
+          <div className="px-3 py-2 bg-slate-50/50 border-b border-slate-100 flex items-center gap-1.5 flex-wrap">
+            <span className="text-[0.62rem] text-slate-400 uppercase font-bold tracking-wider">Активно:</span>
+            {tab !== 'all' && (<Chip label={MAIN_TABS.find(t => t.key === tab)?.label || ''} onClear={() => setTab('all')} color={tab === 'ot' ? 'red' : 'blue'} />)}
+            {wt !== 'all' && (<Chip label={thirdLayer.find(w => w.code === wt)?.name || ''} onClear={() => setWt('all')} color="blue" />)}
+            {ct !== 'all' && (<Chip label={CONSTRUCTION_CONTROL_TYPES.find(c => c.code === ct)?.label || ''} onClear={() => setCt('all')} color="slate" />)}
+            {us !== 'all' && <Chip label={us} onClear={() => setUs('all')} color="green" />}
+            {q && <Chip label={`«${q}»`} onClear={() => setQ('')} color="amber" />}
+          </div>
+        )}
+      </div>
+
+      {/* Result count */}
+      <div className="flex items-center justify-between text-[0.72rem] text-slate-500 mb-2 px-1">
+        <span>Показано <b className="text-slate-700">{filtered.length}</b> пунктов</span>
+      </div>
+
+      {/* Clauses — карточки */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+        {filtered.map(p => (
+          <div key={p.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:border-[#2563EB]/30 transition-colors">
+            <div className="flex items-start justify-between mb-2 gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="text-[0.78rem] font-mono font-bold text-slate-800">{p.doc}</div>
+                <div className="text-[0.7rem] font-mono text-[#2563EB] mt-0.5">{p.clause}</div>
+              </div>
+              <a className="text-[0.62rem] text-slate-400 hover:text-[#2563EB] hover:underline cursor-pointer shrink-0">ТехЭксперт →</a>
+            </div>
+            <div className="text-[0.78rem] text-slate-700 leading-relaxed mb-2.5">{p.text}</div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[0.6rem] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">{p.control}</span>
+              {p.tags.map(t => (
+                <span key={t.v} className={`text-[0.62rem] px-1.5 py-0.5 rounded border ${TAG_COLOR[t.c] || ''}`}>{t.v}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      {filtered.length === 0 && <div className="py-10 text-center text-[0.78rem] text-slate-400">Ничего не найдено</div>}
     </div>
   )
 }
@@ -1013,7 +1236,7 @@ function PgScanner({ onNext }: { onNext: () => void }) {
         </div>
 
         {step === 'upload' && (
-          <button onClick={() => setStep('analyzing')} className="w-full mt-4 py-3 rounded-xl text-white text-[0.85rem] font-semibold border-none cursor-pointer shadow-sm animate-guide-pulse" style={{ background: BRAND }}>
+          <button onClick={() => setStep('analyzing')} className="w-full mt-4 py-3 rounded-xl bg-white text-[#2563EB] text-[0.85rem] font-semibold border border-[#2563EB]/30 cursor-pointer shadow-sm animate-guide-pulse hover:bg-[#2563EB]/5 transition-colors">
             🧠 Запустить AI-анализ
           </button>
         )}
@@ -1443,7 +1666,6 @@ function PgAdmin() {
             { k: 'overview',   l: 'Обзор' },
             { k: 'unresolved', l: '🟠 Нерешённые кейсы' },
             { k: 'errors',     l: 'Ошибки' },
-            { k: 'users',      l: 'Пользователи' },
           ].map(t => (
             <button key={t.k} onClick={() => setTab(t.k as AdminTab)} className={`shrink-0 px-3 py-1.5 rounded-md text-[0.74rem] font-medium border cursor-pointer transition-colors ${tab === t.k ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white text-slate-600 border-transparent hover:bg-slate-50'}`}>
               {t.l}
@@ -1455,7 +1677,6 @@ function PgAdmin() {
       {tab === 'overview' && <AdminOverview />}
       {tab === 'unresolved' && <AdminUnresolved />}
       {tab === 'errors' && <AdminErrors />}
-      {tab === 'users' && <AdminUsers />}
     </div>
   )
 }
@@ -1504,7 +1725,7 @@ function AdminUnresolved() {
           Нерешённые кейсы — пробелы в базе
         </h3>
         <p className="text-[0.74rem] text-slate-500 leading-relaxed">
-          Запросы инженеров, которые не завершились скачиванием цитаты или созданием предписания. Это сырьё для <b>расширения базы нормативов</b> и <b>уточнения таксономии</b>. Решения по каждому кейсу принимает оператор системы.
+          Запросы, на которые поиск выдал нулевую релевантность (событие <code className="font-mono px-1 py-0.5 rounded bg-slate-100 text-slate-700">rag_zero_match</code>). Это <b>первоклассный сигнал</b>, не ошибка — корпус не покрывает запрос. Каждое нерешённое — кандидат на новый размеченный пункт нормативки или новый тег таксономии.
         </p>
       </div>
 
@@ -1559,41 +1780,92 @@ function AdminErrors() {
   )
 }
 
-function AdminUsers() {
-  const users = [
-    { name: 'Хроменок Н.В.',   role: 'admin',    active: true,  searches: 28, copies: 14 },
-    { name: 'Иванов А.С.',     role: 'инженер',  active: true,  searches: 42, copies: 23 },
-    { name: 'Петрова М.В.',    role: 'инженер',  active: true,  searches: 19, copies: 7  },
-    { name: 'Сидоров К.Л.',    role: 'инженер',  active: false, searches: 3,  copies: 1  },
-    { name: 'Козлова Е.А.',    role: 'инженер',  active: true,  searches: 26, copies: 11 },
-    { name: 'Васин В.И.',      role: 'viewer',   active: true,  searches: 8,  copies: 0  },
+function PgCycle() {
+  const cycle = [
+    { n: 1, title: 'Использование инженерами',         icon: '📷', desc: 'Инженер делает запрос в Конструкторе или Docs, копирует цитату, сохраняет предписание.' },
+    { n: 2, title: 'Запись событий в журнал',          icon: '📊', desc: 'Каждое действие пишется в фоне: запрос инженера, какую цитату принял и какую отверг, сколько времени и токенов ушло на шаг пайплайна.' },
+    { n: 3, title: 'Сборка калибровочного набора',     icon: '🗃', desc: 'Пары «запрос ↔ принятый пункт» и «запрос ↔ отвергнутый пункт» копятся как эталон. Оператор фильтрует их и выгружает для проверки качества поиска.' },
+    { n: 4, title: 'Сравнение вариантов поиска',       icon: '⚙️', desc: 'На одном калибровочном наборе прогоняются разные конфигурации: смешанное ранжирование, переранжировщик, простая семантика, поиск по словам — кто точнее.' },
+    { n: 5, title: 'Лучший вариант → в продакшен',     icon: '🏆', desc: 'Победитель по метрикам качества записывается в конфиг продакшена и подхватывается бэкендом без передеплоя кода.' },
   ]
+
+  const categories = [
+    { icon: '🔍', name: 'Воронка использования',
+      collected: 'запрос инженера → копирование цитаты → сохранение документа',
+      principle: 'Видеть, на каком шаге люди отваливаются от запроса до выпущенного документа.' },
+    { icon: '⚙️', name: 'Шаги OT-конвейера',
+      collected: 'разбор нарушения, поиск пунктов НТД, формирование DOCX — для каждого шага время и расход токенов',
+      principle: 'Видеть узкое место: где медленно или дорого по каждому LLM-шагу отдельно.' },
+    { icon: '🚧', name: 'Покрытие корпуса',
+      collected: 'запросы, на которые поиск не нашёл точного попадания',
+      principle: 'Первоклассный сигнал «корпус не покрывает», а не баг поиска — сырьё для расширения базы НТД.' },
+    { icon: '🎯', name: 'Выбор инженера по цитатам',
+      collected: 'какой пункт инженер принял, какой предложили — но отверг (пары «запрос ↔ пункт»)',
+      principle: 'Каждое использование пополняет калибровочный набор для следующего прогона ранжировщика.' },
+    { icon: '🛡', name: 'Здоровье эндпоинтов',
+      collected: 'необработанные ошибки бэкенда: где упало, на каком методе, сколько отрабатывал запрос',
+      principle: 'Оперативная картина деградации, не воронка использования.' },
+  ]
+
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-        <h3 className="text-[0.88rem] font-bold text-slate-800 m-0">Пользователи пилота · {users.filter(u => u.active).length} активных</h3>
-        <button className="px-3 py-1.5 rounded-md text-white text-[0.7rem] font-semibold border-none cursor-pointer" style={{ background: BRAND }}>+ Пригласить</button>
+    <div className="p-6 max-w-[1100px] mx-auto space-y-4">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-slate-900 to-slate-700 text-white rounded-2xl p-5 shadow-sm">
+        <div className="text-[0.62rem] uppercase tracking-widest opacity-70 mb-2">Как система улучшается</div>
+        <h3 className="text-lg font-bold m-0 mb-2">Замкнутый контур обратной связи</h3>
+        <p className="text-[0.84rem] opacity-90 leading-relaxed max-w-[780px]">
+          Каждое использование оставляет след: что инженер искал, какой пункт принял или отверг, сколько времени и токенов потратил пайплайн на шаг. Эти сигналы копятся в журнале событий, периодически попадают в <b>калибровочный набор</b>; на нём сравниваются разные конфигурации поиска — лучшая уезжает в продакшен через конфиг-файл.
+        </p>
       </div>
-      <table className="w-full">
-        <thead><tr className="text-[0.6rem] text-slate-400 uppercase tracking-wider bg-slate-50/50">
-          <th className="text-left px-4 py-2 font-semibold">Пользователь</th>
-          <th className="text-left px-4 py-2 font-semibold">Роль</th>
-          <th className="text-center px-4 py-2 font-semibold">Поисков (неделя)</th>
-          <th className="text-center px-4 py-2 font-semibold">Копирований</th>
-          <th className="text-center px-4 py-2 font-semibold">Статус</th>
-        </tr></thead>
-        <tbody>
-          {users.map((u, i) => (
-            <tr key={i} className="border-t border-slate-100 text-[0.75rem] hover:bg-slate-50/50">
-              <td className="px-4 py-2.5 font-medium text-slate-700">{u.name}</td>
-              <td className="px-4 py-2.5"><span className={`px-2 py-0.5 rounded text-[0.62rem] font-bold ${u.role === 'admin' ? 'bg-red-100 text-red-600' : u.role === 'viewer' ? 'bg-slate-100 text-slate-500' : 'bg-[#2563EB]/10 text-[#2563EB]'}`}>{u.role}</span></td>
-              <td className="px-4 py-2.5 text-center font-mono text-slate-600">{u.searches}</td>
-              <td className="px-4 py-2.5 text-center font-mono text-slate-600">{u.copies}</td>
-              <td className="px-4 py-2.5 text-center"><span className={`inline-block w-2 h-2 rounded-full ${u.active ? 'bg-green-500' : 'bg-slate-300'}`} /></td>
-            </tr>
+
+      {/* Cycle diagram */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <h4 className="text-[0.86rem] font-bold text-slate-800 mb-3">Цикл из 5 шагов</h4>
+        <div className="space-y-1.5">
+          {cycle.map((s, i) => (
+            <div key={s.n}>
+              <div className="flex gap-3 items-center bg-slate-50 rounded-xl border border-slate-200 p-3">
+                <div className="w-8 h-8 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[0.78rem] font-bold text-[#2563EB] shrink-0">{s.n}</div>
+                <div className="text-xl shrink-0">{s.icon}</div>
+                <div className="min-w-0">
+                  <div className="text-[0.84rem] font-bold text-slate-800 leading-tight">{s.title}</div>
+                  <div className="text-[0.74rem] text-slate-600 leading-snug mt-0.5">{s.desc}</div>
+                </div>
+              </div>
+              {i < cycle.length - 1 && (
+                <div className="flex justify-center py-0.5">
+                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none">
+                    <path d="M7 1 V 14 M2 9 L 7 14 L 12 9" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              )}
+            </div>
           ))}
-        </tbody>
-      </table>
+        </div>
+        <div className="mt-3 pt-3 border-t border-slate-100 text-[0.72rem] text-slate-500 leading-relaxed">
+          <b>Принцип:</b> метрика — это не «сколько народу пришло», а сигнал, который попадёт в калибровочный набор следующего прогона. Каждое поле события выбрано под конкретное «зачем».
+        </div>
+      </div>
+
+      {/* 5 Categories */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <h4 className="text-[0.86rem] font-bold text-slate-800 mb-1">Что именно копится</h4>
+        <p className="text-[0.72rem] text-slate-500 mb-3">Пять категорий сигналов — у каждой свой принцип «зачем».</p>
+        <div className="space-y-2">
+          {categories.map(c => (
+            <div key={c.name} className="border border-slate-200 rounded-xl p-3 hover:bg-slate-50/50 transition-colors">
+              <div className="flex items-start gap-3">
+                <div className="text-xl shrink-0">{c.icon}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[0.84rem] font-bold text-slate-800 leading-tight mb-1">{c.name}</div>
+                  <div className="text-[0.74rem] text-slate-600 mb-1.5 leading-snug"><span className="text-slate-400">Что копится:</span> {c.collected}</div>
+                  <div className="text-[0.74rem] text-slate-700 leading-snug"><b>Зачем:</b> {c.principle}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -1612,7 +1884,7 @@ function PgTaxonomy() {
         <div>
           <h3 className="text-[0.9rem] font-bold text-slate-800 m-0 mb-1">Структура данных</h3>
           <p className="text-[0.76rem] text-slate-600 leading-relaxed">
-            Все 8 577 предписаний и 14 933 пункта нормативов размечены <b>по одной и той же структуре</b>. Это симметрия — она даёт точный поиск нормативки по описанию нарушения. Ниже — дерево: как устроены разделы, какие поля используются в каждом.
+            Архив предписаний и библиотека нормативов размечены <b>по одной и той же структуре</b>. Это симметрия — она даёт точный поиск нормативки по описанию нарушения. Ниже — дерево: как устроены разделы, какие поля используются в каждом.
           </p>
         </div>
       </div>
@@ -1623,7 +1895,7 @@ function PgTaxonomy() {
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="text-[0.92rem] font-bold text-slate-800 m-0">Структура данных — дерево таксономии</h3>
-          <p className="text-[0.72rem] text-slate-500 mt-0.5">Как устроены 8 577 предписаний · кликай чтобы раскрыть ветку</p>
+          <p className="text-[0.72rem] text-slate-500 mt-0.5">Как устроен архив предписаний · кликай чтобы раскрыть ветку</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setExpanded(['root', 'construction', 'con-wt', 'con-wt-5', 'con-wt-10', 'con-vs', 'ot', 'organization', 'documents', 'tags'])} className="text-[0.65rem] font-semibold text-[#2563EB] hover:underline cursor-pointer bg-transparent border-none">развернуть всё</button>
@@ -1633,7 +1905,7 @@ function PgTaxonomy() {
       </div>
 
       <div className="text-[0.8rem] text-slate-700 space-y-0.5">
-        <TreeNode id="root" label="Все 8 577 предписаний" open={isOpen('root')} onToggle={() => toggle('root')} icon="📚" bold sub="классифицированы по 5 осям">
+        <TreeNode id="root" label="Архив предписаний" open={isOpen('root')} onToggle={() => toggle('root')} icon="📚" bold sub="классифицированы по 5 осям">
 
           <TreeNode id="construction" label="Строительный контроль" open={isOpen('construction')} onToggle={() => toggle('construction')} icon="🏗" sub="обычная инженерная работа на объекте">
             <TreeLeaf>Пять видов контроля: <b>входной · операционный · приёмочный · геодезический · лабораторный</b></TreeLeaf>
@@ -1737,9 +2009,9 @@ function PgArchitecture() {
 
         <div className="grid grid-cols-3 gap-3">
           {[
-            { n: 1, title: 'DataBook', sub: `${ARCHIVE_STATS.total.toLocaleString('ru-RU')} реальных предписаний`, icon: '📚',
+            { n: 1, title: 'DataBook', sub: 'архив реальных предписаний', icon: '📚',
               body: 'Что инженер писал в реальности. Каждое предписание классифицировано по 4 осям и размечено тегами.' },
-            { n: 2, title: 'Библиотека нормативов', sub: `${ARCHIVE_STATS.clauses.toLocaleString('ru-RU')} пунктов СП/ГОСТ`, icon: '📋',
+            { n: 2, title: 'Библиотека нормативов', sub: 'размеченные пункты СП/ГОСТ', icon: '📋',
               body: 'Каждый пункт размечен по ТОЙ ЖЕ таксономии, что и предписания. Теги предписания → теги нормативов — симметрия.' },
             { n: 3, title: 'Сканер', sub: 'фото → DOCX', icon: '📷',
               body: 'Workflow: фото → AI-описание → таксономическая классификация → фильтр + поиск → выбор цитат → документ.' },
@@ -1831,10 +2103,19 @@ function PgArchitecture() {
           </TaxoLayer>
 
           {/* Layer 6: Tags */}
-          <TaxoLayer num="6" name="Теги (сквозные, JSONB)" sub={`${ARCHIVE_STATS.tagCats} категорий · ${ADMIN_TAXO_STATS.materialTags + ADMIN_TAXO_STATS.defectTags + ADMIN_TAXO_STATS.toolTags}+ значений`} color="amber">
+          <TaxoLayer num="6" name="Теги (сквозные, JSONB)" sub={`${ARCHIVE_STATS.tagCats} категорий`} color="amber">
             <div className="flex flex-wrap gap-1">
-              {['materials', 'defects', 'constructs', 'documents', 'hazards', 'equip', 'ppe', 'barriers'].map(c => (
-                <span key={c} className={`text-[0.6rem] px-1.5 py-0.5 rounded border ${TAG_COLOR[c]}`}>{c}</span>
+              {[
+                { key: 'materials',  label: 'материалы' },
+                { key: 'defects',    label: 'дефекты' },
+                { key: 'constructs', label: 'конструктивы' },
+                { key: 'documents',  label: 'документы' },
+                { key: 'hazards',    label: 'опасности' },
+                { key: 'equip',      label: 'оборудование' },
+                { key: 'ppe',        label: 'СИЗ' },
+                { key: 'barriers',   label: 'ограждения' },
+              ].map(t => (
+                <span key={t.key} className={`text-[0.6rem] px-1.5 py-0.5 rounded border ${TAG_COLOR[t.key]}`}>{t.label}</span>
               ))}
             </div>
           </TaxoLayer>
@@ -1847,7 +2128,7 @@ function PgArchitecture() {
 
       {/* Ключевые инженерные решения */}
       <div className="grid grid-cols-2 gap-3">
-        <ArchCard title="Проверка качества на реальных связках" body="Теги из реальных предписаний сопоставлены с тегами нормативов — это даёт эталонные связки «нарушение ↔ пункт НТД». На этих парах собран набор из 88 эталонных случаев — на нём сравниваем конфигурации ранкера." tag="данные, не эвристика" />
+        <ArchCard title="Проверка качества на реальных связках" body="Теги из реальных предписаний сопоставлены с тегами нормативов — это даёт эталонные связки «нарушение ↔ пункт НТД». На этих парах собран эталонный набор — на нём сравниваем конфигурации ранкера." tag="данные, не эвристика" />
         <ArchCard title="Поиск по нормам в простом переводе" body="AI не «знает» нормативы — их нужно подать в момент запроса. Алгоритм: ищем пункты параллельно по смыслу и по ключевым словам → сливаем списки по позициям → AI выбирает из проверенного пула, а не сочиняет." tag="смешанный поиск" />
       </div>
     </div>
@@ -1888,105 +2169,99 @@ function ArchCard({ title, body, tag }: { title: string; body: string; tag: stri
 
 /* ═════════════════════ PG: QUALITY ═════════════════════ */
 function PgQuality() {
+  const breakdown = [
+    { icon: '🎯', label: 'Совпало с экспертом',  pct: 75, color: 'bg-emerald-500',  desc: 'Модель выбрала тот же пункт, что и эксперт в эталоне' },
+    { icon: '✅', label: 'Не эталон, но в тему', pct: 22, color: 'bg-emerald-400',  desc: 'Независимый AI-судья подтвердил релевантность' },
+    { icon: '🟡', label: 'Косвенно применимо',   pct: 2,  color: 'bg-amber-400',    desc: 'Общее правило или соседняя тема' },
+    { icon: '❌', label: 'Не по теме',           pct: 1,  color: 'bg-rose-400',     desc: 'Ответ нерелевантен' },
+  ]
+  const distribution = [
+    { label: 'В первом результате', pct: 57 },
+    { label: 'В первых 5',          pct: 77 },
+    { label: 'В первых 10',         pct: 83 },
+    { label: 'В первых 30',         pct: 91 },
+  ]
   return (
-    <div className="p-6 max-w-[1100px] mx-auto">
-      <div className="bg-gradient-to-br from-[#2563EB] to-[#4F46E5] text-white rounded-2xl p-6 shadow-sm mb-4 relative overflow-hidden">
+    <div className="p-6 max-w-[1100px] mx-auto space-y-4">
+      {/* Hero — 4 ключевые цифры */}
+      <div className="bg-gradient-to-br from-[#2563EB] to-[#4F46E5] text-white rounded-2xl p-5 shadow-sm relative overflow-hidden">
         <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10" />
         <div className="relative">
-          <div className="text-[0.68rem] uppercase tracking-widest opacity-80 mb-2">Ключевая метрика · прод-прогон от 17.04.2026</div>
-          <div className="flex items-baseline gap-3 mb-2">
-            <div className="text-5xl font-extrabold">{EVAL.recall30}%</div>
-            <div className="text-sm opacity-80">правильный пункт в топ-30 результатов</div>
+          <div className="text-[0.6rem] uppercase tracking-widest opacity-70 mb-1">Прод-прогон · 17.04.2026 · независимый AI-судья</div>
+          <h3 className="text-base font-bold m-0 mb-3">Качество поиска нормативки</h3>
+          <div className="grid grid-cols-4 gap-3">
+            <div>
+              <div className="text-3xl font-extrabold leading-none">0</div>
+              <div className="text-[0.68rem] opacity-80 mt-1 leading-snug">выдуманных<br/>пунктов</div>
+            </div>
+            <div>
+              <div className="text-3xl font-extrabold leading-none">97<span className="text-lg">%</span></div>
+              <div className="text-[0.68rem] opacity-80 mt-1 leading-snug">ответ в тему<br/>(≥1 точная ссылка)</div>
+            </div>
+            <div>
+              <div className="text-3xl font-extrabold leading-none">75<span className="text-lg">%</span></div>
+              <div className="text-[0.68rem] opacity-80 mt-1 leading-snug">точное совпадение<br/>с экспертом</div>
+            </div>
+            <div>
+              <div className="text-3xl font-extrabold leading-none">91<span className="text-lg">%</span></div>
+              <div className="text-[0.68rem] opacity-80 mt-1 leading-snug">правильный пункт<br/>попал в выдачу</div>
+            </div>
           </div>
-          <div className="text-[0.78rem] opacity-90">Из {EVAL.goldenCases} реальных кейсов — {Math.round(EVAL.goldenCases * EVAL.recall30 / 100)} нашли корректный пункт НТД.</div>
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-3 mb-4">
-        <StatMini label="Эталонные кейсы"     value={EVAL.goldenCases.toString()} sub="размечены вручную из DataBook" />
-        <StatMini label="Первый ответ точный" value={`${EVAL.exactFirst}%`}       sub="в точку с 1-го результата" />
-        <StatMini label="В топ-5"             value={`${EVAL.top5}%`}             sub="инженер пролистает 5" />
-        <StatMini label="LLM = target"        value={`${EVAL.llmExact}%`}         sub="модель выбрала именно тот пункт" />
-      </div>
-
-      {/* Semantic quality (Claude judge) */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm mb-4">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h3 className="text-[0.88rem] font-bold text-slate-800 m-0">Семантическая проверка цитат</h3>
-            <p className="text-[0.72rem] text-slate-500 mt-0.5">Независимый судья (Claude) оценивает {EVAL.linksTotal} ссылок, которые дала модель</p>
-          </div>
-          <span className="text-[0.6rem] font-bold px-2 py-0.5 rounded bg-green-100 text-green-700 uppercase tracking-wider">0% галлюцинаций</span>
-        </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-green-700">{EVAL.inTopic}%</div>
-            <div className="text-[0.7rem] text-slate-600 mt-1">в точку</div>
-            <div className="text-[0.62rem] text-slate-400">155 из {EVAL.linksTotal}</div>
-          </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-amber-700">{(100 - EVAL.inTopic - EVAL.hallucinations).toFixed(1)}%</div>
-            <div className="text-[0.7rem] text-slate-600 mt-1">частично / косвенно</div>
-            <div className="text-[0.62rem] text-slate-400">37 из {EVAL.linksTotal}</div>
-          </div>
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-slate-700">{EVAL.hallucinations}%</div>
-            <div className="text-[0.7rem] text-slate-600 mt-1">выдуманных пунктов</div>
-            <div className="text-[0.62rem] text-slate-400">0 из {EVAL.linksTotal}</div>
-          </div>
-        </div>
-        <div className="mt-3 text-[0.72rem] text-slate-500 leading-snug">
-          Ноль галлюцинаций — потому что AI <b>выбирает из существующих пунктов</b> библиотеки, а не сочиняет тексты.
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm mb-4">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-[0.88rem] font-bold text-slate-800 m-0">Какая конфигурация поиска работает лучше</h3>
-            <p className="text-[0.72rem] text-slate-500 mt-0.5">Все варианты — на одних и тех же {EVAL.goldenCases} эталонных случаях</p>
-          </div>
-          <span className="text-[0.6rem] font-bold px-2 py-0.5 rounded bg-green-100 text-green-700 uppercase tracking-wider">продакшен</span>
-        </div>
-        <div className="space-y-3">
-          {EVAL.abTest.map((t, i) => (
-            <div key={i}>
-              <div className="flex items-center justify-between mb-1">
-                <span className={`text-[0.78rem] ${t.active ? 'font-bold text-slate-800' : 'text-slate-600'}`}>{t.method}</span>
-                <span className="text-[0.76rem] font-mono font-semibold text-slate-700">{t.recall}%</span>
-              </div>
-              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all" style={{ width: `${t.recall}%`, background: t.active ? BRAND : '#94a3b8' }} />
+      {/* Что система сделала на наборе кейсов */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <h4 className="text-[0.86rem] font-bold text-slate-800 mb-1">Что система сделала на калибровочном наборе</h4>
+        <p className="text-[0.72rem] text-slate-500 mb-3">Каждый кейс из набора независимо оценил AI-судья (Claude) — попал ли ответ модели в тему</p>
+        <div className="space-y-2">
+          {breakdown.map(b => (
+            <div key={b.label} className="flex items-center gap-3">
+              <div className="text-base shrink-0 w-5 text-center">{b.icon}</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[0.76rem] font-semibold text-slate-800">{b.label}</span>
+                  <span className="text-[0.74rem] font-mono font-semibold text-slate-700">{b.pct}%</span>
+                </div>
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full ${b.color}`} style={{ width: `${Math.max(b.pct, 1.5)}%` }} />
+                </div>
+                <div className="text-[0.66rem] text-slate-500 mt-1 leading-snug">{b.desc}</div>
               </div>
             </div>
           ))}
         </div>
-        <div className="mt-4 pt-4 border-t border-slate-100 text-[0.74rem] text-slate-600 leading-relaxed">
-          <b>Инсайт:</b> взвешенные формулы теряют качество когда часть тегов предписания отсутствует — ложный бонус сбивает ранжирование. Переранжирование <b>по позициям</b> в двух списках — устойчиво к таким пробелам.
+        <div className="mt-3 pt-3 border-t border-slate-100 text-[0.72rem] text-slate-600 leading-relaxed">
+          <b>Итого:</b> ответ в тему в 97% случаев. Ноль галлюцинаций — модель цитирует только реальные пункты из библиотеки, а не сочиняет.
         </div>
       </div>
 
+      {/* Где находится правильный ответ */}
       <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <h3 className="text-[0.88rem] font-bold text-slate-800 m-0 mb-1">Где находится правильный ответ</h3>
-        <p className="text-[0.72rem] text-slate-500 mb-4">Накопительная точность по позиции в результатах поиска</p>
-        <div className="space-y-2.5">
-          {EVAL.rankDistribution.map(r => {
-            const pct = (r.hits / r.total) * 100
-            return (
-              <div key={r.pos}>
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[0.74rem] font-semibold text-slate-700">{r.pos}</span>
-                  <span className="text-[0.72rem] text-slate-500">{r.hits} из {r.total} <span className="ml-1 font-mono text-slate-400">({pct.toFixed(0)}%)</span></span>
-                </div>
-                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full" style={{ width: `${pct}%`, background: BRAND }} />
-                </div>
+        <h4 className="text-[0.86rem] font-bold text-slate-800 mb-1">Где находится правильный ответ</h4>
+        <p className="text-[0.72rem] text-slate-500 mb-3">Накопительно: какая доля кейсов покрыта первыми N результатами</p>
+        <div className="space-y-2">
+          {distribution.map(d => (
+            <div key={d.label}>
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[0.76rem] font-semibold text-slate-700">{d.label}</span>
+                <span className="text-[0.74rem] font-mono text-slate-700">{d.pct}%</span>
               </div>
-            )
-          })}
+              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width: `${d.pct}%`, background: BRAND }} />
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="mt-4 pt-4 border-t border-slate-100 text-[0.74rem] text-slate-600">
-          В половине случаев правильный ответ — уже первый в выдаче. В 77% случаев инженеру достаточно пролистать 5 результатов.
+        <div className="mt-3 pt-3 border-t border-slate-100 text-[0.72rem] text-slate-600 leading-relaxed">
+          В половине запросов правильный пункт — уже первый в выдаче. В трёх четвертях случаев инженеру хватит пролистать пять результатов.
+        </div>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="bg-amber-50/50 border border-amber-200/60 rounded-2xl p-3.5">
+        <div className="text-[0.7rem] text-slate-700 leading-relaxed">
+          <b>Это срез на 17.04.2026.</b> Продукт в активном R&D — следующие прогоны могут показать как улучшения, так и регрессии. Найденные R&D-паттерны (новые umbrella-правила, эксперименты с реранкером, расширения таксономии) могут менять отдельные цифры в обе стороны. Логика проверки и выкатки конфигов — в разделе «Цикл улучшения».
         </div>
       </div>
     </div>

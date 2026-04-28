@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { tracker } from '../utils/tracker'
 
 /* ═══════════════════════════════════════════════════════════
    TYPES
    ═══════════════════════════════════════════════════════════ */
-type PMTab = 'dashboard' | 'progress' | 'contract' | 'issues' | 'team' | 'references'
+type PMTab = 'dashboard' | 'progress' | 'contract' | 'issues' | 'team' | 'economy' | 'references'
 
 /* ═══════════════════════════════════════════════════════════
    STATIC DATA
    ═══════════════════════════════════════════════════════════ */
 const PROJECT = {
-  name: 'АЭС Курск-2. Блок 1', code: 'KUR2-B1', status: 'В работе',
+  name: 'БЦ «Магеллан», корп. А1', code: 'MGL-A1', status: 'В работе',
   statusColor: 'bg-green-100 text-green-700', completion: 67,
   startDate: '01.03.2024', plannedEnd: '30.11.2026',
   teamCount: 24, headcount: 28,
@@ -105,8 +105,173 @@ const PM_TABS: { key: PMTab; label: string }[] = [
   { key: 'contract', label: 'Договор' },
   { key: 'issues', label: 'Канбан проблем' },
   { key: 'team', label: 'Команда' },
+  { key: 'economy', label: 'Экономика' },
   { key: 'references', label: 'Справочники' },
 ]
+
+/* ═══════════════════════════════════════════════════════════
+   ECONOMY MOCK DATA — 30 months (Apr 2024 — Sep 2026), 6 positions
+   ═══════════════════════════════════════════════════════════ */
+const ECONOMY_TOTAL_MONTHS = 30
+const ECONOMY_CLOSED_MONTHS = 18  // апр'24 — сен'25 закрыто, окт'25 — прогноз
+
+const MONTH_SHORT = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек']
+
+type Tone = 'ok' | 'under' | 'over_minor' | 'over_critical' | 'empty'
+
+interface EconomyMonth {
+  contract: number
+  plan: number
+  fact: number | null
+}
+
+interface TimelinePoint {
+  label: string      // "Апр'24"
+  monthShort: string // "Апр"
+  yearShort: string  // "24"
+  year: number
+  month: number      // 1..12
+  isYearStart: boolean // январь
+}
+
+interface EconomyPosition {
+  id: string
+  name: string
+  months: EconomyMonth[]
+}
+
+const ECONOMY_TIMELINE: TimelinePoint[] = (() => {
+  const out: TimelinePoint[] = []
+  const startY = 2024, startM = 4 // апрель 2024
+  for (let i = 0; i < ECONOMY_TOTAL_MONTHS; i++) {
+    const m = ((startM - 1 + i) % 12) + 1
+    const y = startY + Math.floor((startM - 1 + i) / 12)
+    const monthShort = MONTH_SHORT[m - 1]
+    const yearShort = String(y).slice(-2)
+    out.push({
+      label: `${monthShort}'${yearShort}`,
+      monthShort, yearShort, year: y, month: m,
+      isYearStart: m === 1,
+    })
+  }
+  return out
+})()
+
+/* Линейная интерполяция между keypoints с округлением до шага 0.5 */
+type Keypoint = [m: number, v: number]
+function interp(keys: Keypoint[]): number[] {
+  const out: number[] = []
+  for (let i = 0; i < ECONOMY_TOTAL_MONTHS; i++) {
+    let prev = keys[0], next = keys[keys.length - 1]
+    for (let k = 0; k < keys.length - 1; k++) {
+      if (keys[k][0] <= i && keys[k + 1][0] >= i) { prev = keys[k]; next = keys[k + 1]; break }
+    }
+    const v = prev[0] === next[0] ? prev[1] : prev[1] + (next[1] - prev[1]) * ((i - prev[0]) / (next[0] - prev[0]))
+    out.push(Math.max(0, Math.round(v * 2) / 2))
+  }
+  return out
+}
+
+/* Детерминированный «шум» в [-1, 1] для индекса позиции и месяца */
+function noise(seed: number, i: number): number {
+  const h = Math.sin(seed * 12.9898 + i * 78.233) * 43758.5453
+  return (h - Math.floor(h)) * 2 - 1
+}
+
+function buildPosition(
+  id: string, name: string, seedIdx: number,
+  contractKeys: Keypoint[],
+  planKeys: Keypoint[] | null,    // если null → план = договор
+  factNoise: number,              // амплитуда шума факта (например 0.05 = ±5%)
+  factBias: number = 0,           // смещение факта (например -0.05 = систематический недобор 5%)
+): EconomyPosition {
+  const contract = interp(contractKeys)
+  const plan = planKeys ? interp(planKeys) : [...contract]
+  const months: EconomyMonth[] = contract.map((c, i) => {
+    const p = plan[i]
+    let fact: number | null
+    if (i >= ECONOMY_CLOSED_MONTHS) fact = null
+    else if (p === 0) fact = 0
+    else fact = Math.round((p * (1 + factBias + noise(seedIdx, i) * factNoise)) * 100) / 100
+    return { contract: c, plan: p, fact }
+  })
+  return { id, name, months }
+}
+
+const ECONOMY_POSITIONS: EconomyPosition[] = [
+  // Ведущий инженер: стабильный, чуть растёт в пиковую фазу
+  buildPosition('lead', 'Ведущий инженер', 1,
+    [[0, 0.5], [3, 1.0], [8, 1.0], [12, 1.5], [22, 1.5], [26, 1.0], [29, 0.5]],
+    null,
+    0.04,
+  ),
+  // Инженер участка: основная масса, колоколом, недобор плана в пик
+  buildPosition('site', 'Инженер участка', 2,
+    [[0, 1.0], [3, 2.5], [6, 4.0], [10, 5.0], [16, 5.0], [20, 4.0], [24, 3.0], [29, 1.0]],
+    [[0, 1.0], [3, 2.5], [6, 4.0], [10, 4.5], [13, 4.0], [16, 4.5], [20, 4.0], [24, 3.0], [29, 1.0]],
+    0.06, -0.02,
+  ),
+  // Инженер по спецразделу: появляется только в стадии 2 (с ДС №2, мес 6)
+  buildPosition('spec', 'Инженер по спецразделу', 3,
+    [[0, 0], [5, 0], [6, 1.0], [20, 1.0], [22, 0.5], [24, 0]],
+    null,
+    0.05, 0.04, // лёгкий перегруз (иногда работают сверх плана)
+  ),
+  // Инженер контроля качества: стабильный 2.0, на пике 2.5
+  buildPosition('qc', 'Инженер контроля качества', 4,
+    [[0, 1.5], [4, 2.0], [10, 2.5], [18, 2.5], [22, 2.0], [26, 1.5], [29, 1.0]],
+    null,
+    0.04,
+  ),
+  // Геодезист: волнообразный, бывает 0.5 (точечные работы)
+  buildPosition('geo', 'Геодезист', 5,
+    [[0, 0.5], [3, 1.0], [6, 1.5], [10, 1.0], [14, 0.5], [18, 1.0], [22, 1.5], [26, 0.5], [29, 0.5]],
+    [[0, 0.5], [3, 1.0], [6, 1.0], [10, 0.5], [14, 0.5], [18, 1.0], [22, 1.0], [26, 0.5], [29, 0.5]],
+    0.05, -0.04, // систематический недобор плана
+  ),
+  // Руководитель ПТО: ровная единица всё время
+  buildPosition('pto', 'Руководитель ПТО', 6,
+    [[0, 1.0], [29, 1.0]],
+    null,
+    0.03,
+  ),
+]
+
+const ECONOMY_VERSIONS = [
+  { id: 'v1', label: 'Договор + ДС №1',  note: 'стартовая версия (апр 2024)',           active: false },
+  { id: 'v2', label: 'Договор + ДС №2',  note: '+1 позиция по спецразделу (с окт 2024)', active: false },
+  { id: 'v3', label: 'Договор + ДС №3',  note: 'продление до сен 2026',                  active: true  },
+]
+
+const ECONOMY_CURRENT_MONTH_IDX = ECONOMY_CLOSED_MONTHS - 1 // последний закрытый = сен'25
+
+function classifyFact(fact: number | null, contract: number): Tone {
+  if (fact == null) return 'empty'
+  if (contract === 0 && fact === 0) return 'empty'
+  if (contract === 0) return 'over_critical'
+  const diff = fact - contract
+  const pct = (diff / contract) * 100
+  if (diff > 0 && pct >= 10) return 'over_critical'
+  if (diff > 0 && pct >= 5)  return 'over_minor'
+  if (diff < -0.05)           return 'under'
+  return 'ok'
+}
+
+function classifyPositionLight(plan: number, contract: number): 'green' | 'yellow' | 'red' | 'gray' {
+  if (contract === 0) return plan > 0 ? 'red' : 'gray'
+  if (plan > contract + 0.001)   return 'red'
+  if (plan < contract * 0.7)      return 'yellow'
+  return 'green'
+}
+
+const TONE_BG: Record<Tone, string> = {
+  ok: 'bg-emerald-50 text-emerald-700',
+  under: 'bg-amber-50 text-amber-700',
+  over_minor: 'bg-orange-50 text-orange-700',
+  over_critical: 'bg-rose-50 text-rose-700',
+  empty: 'bg-slate-50 text-slate-300',
+}
+
 
 /* ═══════════════════════════════════════════════════════════
    MOBILE TEASER
@@ -171,7 +336,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
         {scr === 'projects' && <>
           <div className="text-[9px] text-slate-400 px-1">Выберите проект для работы</div>
           {[
-            { code: 'KUR2-B1', name: 'АЭС Курск-2. Блок 1', pct: 67, status: 'В работе', color: 'green', team: 8, issues: 3 },
+            { code: 'MGL-A1', name: 'БЦ «Магеллан», корп. А1', pct: 67, status: 'В работе', color: 'green', team: 8, issues: 3 },
             { code: 'RES-A', name: 'ЖК «Объект-A» корп. 7-11', pct: 89, status: 'В работе', color: 'green', team: 12, issues: 1 },
             { code: 'RES-B', name: 'ЖК «Объект-B» корп. 3', pct: 34, status: 'В работе', color: 'green', team: 6, issues: 5 },
             { code: 'OFF-01', name: 'Офисный центр Сириус', pct: 12, status: 'Планирование', color: 'amber', team: 3, issues: 0 },
@@ -204,7 +369,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
           {/* Project header */}
           <div className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold text-slate-800">АЭС Курск-2. Блок 1</span>
+              <span className="text-[11px] font-bold text-slate-800">БЦ «Магеллан», корп. А1</span>
               <span className="text-[8px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">67%</span>
             </div>
             <div className="text-[9px] text-slate-400">РП: Иванов А.С. · Срок: 15.12.2026</div>
@@ -410,7 +575,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
 
           {/* Project cards with consolidated metrics */}
           {[
-            { name: 'АЭС Курск-2', pct: 67, critical: 2, staff: '7/8', contract: 'OK', cColor: 'green' },
+            { name: 'БЦ «Магеллан»', pct: 67, critical: 2, staff: '7/8', contract: 'OK', cColor: 'green' },
             { name: 'ЖК «Объект-A» к.7-11', pct: 89, critical: 0, staff: '12/12', contract: '<60д', cColor: 'amber' },
             { name: 'ЖК «Объект-B» к.3', pct: 34, critical: 1, staff: '5/6', contract: 'OK', cColor: 'green' },
           ].map((p, i) => (
@@ -439,8 +604,8 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
           {/* Critical issues across projects */}
           <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1">Критичные проблемы</div>
           {[
-            { project: 'Курск-2', issue: 'Задержка поставки арматуры', days: 12 },
-            { project: 'Курск-2', issue: 'Несогласованные изменения в РД', days: 5 },
+            { project: 'Магеллан', issue: 'Задержка поставки арматуры', days: 12 },
+            { project: 'Магеллан', issue: 'Несогласованные изменения в РД', days: 5 },
             { project: 'Объект-B', issue: 'Подрядчик приостановил работы', days: 3 },
           ].map((c, i) => (
             <div key={i} className="bg-red-50 rounded-lg p-2.5 border border-red-200/50 flex items-start gap-2">
@@ -660,15 +825,15 @@ export function DemoPuls() {
             <div className="relative flex items-center gap-3">
               <button onClick={handleClose} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 text-base">×</button>
               <button onClick={() => setShowProfile(!showProfile)} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100">
-                <span className="text-xs text-gray-700">Хроменков Н.Д.</span>
+                <span className="text-xs text-gray-700">Хроменок Н.В.</span>
                 <div className="h-7 w-7 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center text-[10px] font-medium shadow-sm">ХН</div>
               </button>
               {showProfile && <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowProfile(false)} />
                 <div className="absolute right-0 top-full mt-1 w-64 bg-white rounded-lg shadow-lg border z-20">
                   <div className="p-3 border-b">
-                    <div className="text-sm font-medium text-gray-900">Хроменков Н.Д.</div>
-                    <div className="text-xs text-gray-500">n.khromenkov@example.com</div>
+                    <div className="text-sm font-medium text-gray-900">Хроменок Н.В.</div>
+                    <div className="text-xs text-gray-500">@psykhrometer</div>
                     <div className="mt-1 inline-block px-2 py-0.5 bg-gradient-to-r from-blue-100 to-indigo-100 text-indigo-700 rounded text-xs font-medium">Руководитель проекта</div>
                   </div>
                   <div className="py-1">
@@ -700,6 +865,7 @@ export function DemoPuls() {
           {tab === 'contract' && <ContractScreen />}
           {tab === 'issues' && <IssuesScreen />}
           {tab === 'team' && <TeamScreen />}
+          {tab === 'economy' && <EconomyScreen />}
           {tab === 'references' && <ReferencesScreen />}
         </div>
       </div>
@@ -1965,5 +2131,527 @@ function ReferencesScreen() {
         ))}
       </div>
     </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════
+   7. ECONOMY — реальный модуль из Puls (адаптация)
+   ═══════════════════════════════════════════════════════════ */
+function EconomyScreen() {
+  const [versionId, setVersionId] = useState('v3')
+  const [view, setView] = useState<'chart' | 'table'>('chart')
+  const monthIdx = ECONOMY_CURRENT_MONTH_IDX
+
+  const monthAgg = useMemo(() => ECONOMY_TIMELINE.map((t, i) => {
+    const contract = ECONOMY_POSITIONS.reduce((s, p) => s + p.months[i].contract, 0)
+    const plan = ECONOMY_POSITIONS.reduce((s, p) => s + p.months[i].plan, 0)
+    const facts = ECONOMY_POSITIONS.map(p => p.months[i].fact)
+    const hasAnyFact = facts.some(f => f != null)
+    const fact = hasAnyFact ? facts.reduce<number>((s, f) => s + (f ?? 0), 0) : null
+    return { tp: t, month: t.label, contract, plan, fact }
+  }), [])
+
+  const totalsClosed = monthAgg.filter(m => m.fact != null)
+  const yearContract = monthAgg.reduce((s, m) => s + m.contract, 0)
+  const yearPlan = monthAgg.reduce((s, m) => s + m.plan, 0)
+  const yearFact = totalsClosed.reduce<number>((s, m) => s + (m.fact ?? 0), 0)
+  const closedContract = totalsClosed.reduce((s, m) => s + m.contract, 0)
+  const closedPlan = monthAgg.slice(0, totalsClosed.length).reduce((s, m) => s + m.plan, 0)
+  const utilization = closedContract > 0 ? (yearFact / closedContract) * 100 : 0
+  const factDelta = yearFact - closedContract
+  const factDeltaPct = closedContract > 0 ? (factDelta / closedContract) * 100 : 0
+  const planDelta = closedPlan - closedContract
+  const planDeltaPct = closedContract > 0 ? (planDelta / closedContract) * 100 : 0
+
+  const lightPositions = ECONOMY_POSITIONS.map(p => {
+    const m = p.months[monthIdx]
+    return { id: p.id, name: p.name, contract: m.contract, plan: m.plan, tone: classifyPositionLight(m.plan, m.contract) }
+  }).sort((a, b) => {
+    const order = { red: 0, yellow: 1, green: 2, gray: 3 } as const
+    return order[a.tone] - order[b.tone] || b.contract - a.contract
+  })
+  const problems = lightPositions.filter(p => p.tone === 'red' || p.tone === 'yellow').length
+
+  return (
+    <div className="h-full overflow-auto bg-slate-50">
+      <div className="p-6 space-y-4">
+
+        {/* ── ContractVersionBanner ── */}
+        <div className="bg-white border border-slate-200 rounded-lg px-4 py-3 flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Версия договора</span>
+          </div>
+          <div className="flex items-center rounded-md border border-slate-200 bg-slate-50 overflow-hidden">
+            {ECONOMY_VERSIONS.map(v => (
+              <button
+                key={v.id}
+                onClick={() => setVersionId(v.id)}
+                className={`px-3 py-1.5 text-xs font-semibold transition-colors border-none cursor-pointer ${
+                  versionId === v.id ? 'bg-white text-indigo-700 shadow-sm' : 'bg-transparent text-slate-500 hover:text-slate-700'
+                }`}
+                title={v.note}
+              >
+                {v.label}
+                {v.active && <span className="ml-1.5 text-[9px] px-1 py-0.5 rounded bg-emerald-100 text-emerald-700">актив</span>}
+              </button>
+            ))}
+          </div>
+          <div className="text-[11px] text-slate-500 ml-auto">
+            {ECONOMY_VERSIONS.find(v => v.id === versionId)?.note}
+          </div>
+        </div>
+
+        {/* ── KPI Cards (за закрытые 6 мес — одинаковая база для сравнения) ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <KPICard
+            accent="indigo"
+            title="Договор"
+            subtitle={`за ${totalsClosed.length} закрытых мес из ${ECONOMY_TOTAL_MONTHS}`}
+            big={`${closedContract.toFixed(1)} FTE·мес`}
+            hint={`весь срок — ${yearContract.toFixed(1)} FTE·мес`}
+          />
+          <KPICard
+            accent="sky"
+            title="План (Штатка)"
+            subtitle={`за ${totalsClosed.length} закрытых мес`}
+            big={`${closedPlan.toFixed(1)} FTE·мес`}
+            hint={`Δ к договору ${planDelta >= 0 ? '+' : ''}${planDelta.toFixed(1)} (${planDeltaPct >= 0 ? '+' : ''}${planDeltaPct.toFixed(1)}%)`}
+            tone={planDelta < -0.5 ? 'amber' : 'emerald'}
+          />
+          <KPICard
+            accent="emerald"
+            title="Факт (Табель)"
+            subtitle={`за ${totalsClosed.length} закрытых мес`}
+            big={`${yearFact.toFixed(1)} FTE·мес`}
+            hint={`Δ к договору ${factDelta >= 0 ? '+' : ''}${factDelta.toFixed(1)} (${factDeltaPct >= 0 ? '+' : ''}${factDeltaPct.toFixed(1)}%)`}
+            tone={factDeltaPct < -8 ? 'amber' : factDeltaPct >= 5 ? 'rose' : 'emerald'}
+          />
+          <KPICard
+            accent="slate"
+            title="Утилизация"
+            subtitle="Факт ÷ Договор"
+            big={`${utilization.toFixed(1)}%`}
+            hint={`${yearFact.toFixed(1)} / ${closedContract.toFixed(1)} FTE·мес`}
+            tone={utilization < 85 ? 'amber' : utilization > 105 ? 'rose' : 'emerald'}
+          />
+        </div>
+
+        {/* ── PositionLighthouse ── */}
+        <div className="bg-white border border-slate-200 rounded-lg px-4 py-3 flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+              Позиции · {ECONOMY_TIMELINE[monthIdx].monthShort} 20{ECONOMY_TIMELINE[monthIdx].yearShort}
+            </span>
+            {problems > 0 && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 font-bold">
+                {problems} внимание
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+            {lightPositions.map(p => {
+              const tone = p.tone
+              const border = tone === 'green' ? 'border-emerald-200' : tone === 'yellow' ? 'border-amber-200' : tone === 'red' ? 'border-rose-200' : 'border-slate-200'
+              const dot = tone === 'green' ? 'bg-emerald-500' : tone === 'yellow' ? 'bg-amber-500' : tone === 'red' ? 'bg-rose-500' : 'bg-slate-300'
+              return (
+                <span
+                  key={p.id}
+                  title={`${p.name} · договор ${p.contract.toFixed(1)} / план ${p.plan.toFixed(1)}`}
+                  className={`inline-flex items-center gap-2 border bg-white rounded-md px-2.5 py-1.5 text-xs transition-colors hover:shadow-sm ${border}`}
+                >
+                  <span className={`w-2 h-2 rounded-full ${dot}`} />
+                  <span className="font-semibold text-slate-700">{p.name}</span>
+                  <span className="tabular-nums text-[11px] text-slate-500 ml-0.5">
+                    <span className="font-bold text-slate-700">{p.contract.toFixed(1)}</span>
+                    <span className="text-slate-400 mx-0.5">/</span>
+                    <span className="font-bold text-slate-700">{p.plan.toFixed(1)}</span>
+                  </span>
+                </span>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* ── Toolbar ── */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="inline-flex rounded border border-slate-300 bg-white overflow-hidden">
+            <button
+              onClick={() => setView('chart')}
+              className={`px-3 py-1 text-xs font-semibold border-none cursor-pointer transition-colors ${view === 'chart' ? 'bg-sky-600 text-white' : 'bg-transparent text-slate-600 hover:bg-slate-50'}`}
+            >📊 Диаграмма</button>
+            <button
+              onClick={() => setView('table')}
+              className={`px-3 py-1 text-xs font-semibold border-none cursor-pointer transition-colors ${view === 'table' ? 'bg-sky-600 text-white' : 'bg-transparent text-slate-600 hover:bg-slate-50'}`}
+            >📋 Таблица</button>
+          </div>
+          <span className="text-[11px] text-slate-500">штатка · {ECONOMY_VERSIONS.find(v => v.id === versionId)?.note}</span>
+          <div className="ml-auto text-[11px] tabular-nums text-slate-600">
+            Весь срок ({ECONOMY_TOTAL_MONTHS} мес) — договор <b>{yearContract.toFixed(1)}</b> · план <b>{yearPlan.toFixed(1)}</b> · факт <b>{yearFact.toFixed(1)}</b> FTE·мес
+          </div>
+        </div>
+
+        {view === 'chart' && <EconomyAreaChart data={monthAgg} closedIdx={monthIdx} />}
+        {view === 'table' && <EconomyHeatmap positions={ECONOMY_POSITIONS} totals={monthAgg} />}
+
+      </div>
+    </div>
+  )
+}
+
+function KPICard({ accent, title, subtitle, big, hint, tone }: {
+  accent: 'indigo' | 'sky' | 'emerald' | 'slate'
+  title: string; subtitle: string; big: string; hint?: string
+  tone?: 'emerald' | 'amber' | 'orange' | 'rose'
+}) {
+  const accentBorder: Record<typeof accent, string> = {
+    indigo: 'border-l-indigo-500', sky: 'border-l-sky-500',
+    emerald: 'border-l-emerald-500', slate: 'border-l-slate-500',
+  }
+  const accentText: Record<typeof accent, string> = {
+    indigo: 'text-indigo-700', sky: 'text-sky-700',
+    emerald: 'text-emerald-700', slate: 'text-slate-700',
+  }
+  const toneText: Record<NonNullable<typeof tone>, string> = {
+    emerald: 'text-emerald-700', amber: 'text-amber-700',
+    orange: 'text-orange-700', rose: 'text-rose-700',
+  }
+  return (
+    <div className={`bg-white border border-slate-200 rounded-xl shadow-sm p-4 border-l-4 ${accentBorder[accent]}`}>
+      <div className="text-[11px] uppercase font-semibold text-slate-500 tracking-wide">{title}</div>
+      <div className="text-[10px] text-slate-400 mt-0.5">{subtitle}</div>
+      <div className={`text-2xl font-bold mt-1 tabular-nums ${tone ? toneText[tone] : accentText[accent]}`}>{big}</div>
+      {hint && <div className="text-[11px] text-slate-500 mt-0.5">{hint}</div>}
+    </div>
+  )
+}
+
+function EconomyAreaChart({ data, closedIdx }: {
+  data: { month: string; contract: number; plan: number; fact: number | null }[]
+  closedIdx: number
+}) {
+  const W = 1280, H = 320
+  const padL = 44, padR = 20, padT = 20, padB = 36
+  const innerW = W - padL - padR
+  const innerH = H - padT - padB
+  const xStep = innerW / (data.length - 1)
+  const rawMax = Math.max(...data.map(d => Math.max(d.contract, d.plan, d.fact ?? 0)))
+  const maxY = Math.ceil(rawMax * 1.15) || 1
+  const yTicks = 5
+
+  const xAt = (i: number) => padL + i * xStep
+  const yAt = (v: number) => padT + innerH - (v / maxY) * innerH
+
+  // Smooth path: cubic bezier с горизонтальными касательными (monotone-like)
+  const smoothPath = (pts: { x: number; y: number }[]) => {
+    if (pts.length === 0) return ''
+    if (pts.length === 1) return `M ${pts[0].x} ${pts[0].y}`
+    let d = `M ${pts[0].x} ${pts[0].y}`
+    for (let i = 1; i < pts.length; i++) {
+      const p0 = pts[i - 1]
+      const p1 = pts[i]
+      const dx = (p1.x - p0.x) / 3
+      d += ` C ${p0.x + dx} ${p0.y}, ${p1.x - dx} ${p1.y}, ${p1.x} ${p1.y}`
+    }
+    return d
+  }
+
+  const collectPts = (key: 'contract' | 'plan' | 'fact', stopAfter?: number) => {
+    const pts: { x: number; y: number }[] = []
+    data.forEach((d, i) => {
+      const v = d[key]
+      if (v == null) return
+      if (stopAfter != null && i > stopAfter) return
+      pts.push({ x: xAt(i), y: yAt(v) })
+    })
+    return pts
+  }
+
+  const linePath = (key: 'contract' | 'plan' | 'fact', stopAfter?: number) =>
+    smoothPath(collectPts(key, stopAfter))
+
+  const areaPath = (key: 'contract' | 'plan' | 'fact', stopAfter?: number) => {
+    const pts = collectPts(key, stopAfter)
+    if (pts.length === 0) return ''
+    const baseY = yAt(0)
+    return `${smoothPath(pts)} L ${pts[pts.length - 1].x} ${baseY} L ${pts[0].x} ${baseY} Z`
+  }
+
+  return (
+    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-sm font-bold text-slate-800">График загрузки · апр 2024 — сен 2026</h4>
+        <div className="text-[11px] text-slate-500">Договор — потолок; план и факт стремятся к нему</div>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full block h-auto">
+        <defs>
+          <linearGradient id="gContract" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#6366f1" stopOpacity={0.22} />
+            <stop offset="95%" stopColor="#6366f1" stopOpacity={0.02} />
+          </linearGradient>
+          <linearGradient id="gPlan" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.18} />
+            <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="gFact" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#10b981" stopOpacity={0.28} />
+            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+
+        {/* Y grid + labels */}
+        {Array.from({ length: yTicks + 1 }, (_, i) => {
+          const v = (maxY / yTicks) * i
+          const y = yAt(v)
+          return (
+            <g key={i}>
+              <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#eef2f7" />
+              <text x={padL - 8} y={y + 4} fontSize="12" fill="#94a3b8" textAnchor="end">{v % 1 === 0 ? v.toFixed(0) : v.toFixed(1)}</text>
+            </g>
+          )
+        })}
+
+        {/* X labels + dividers (year-start = акцент, quarter = бледный) */}
+        {data.map((_, i) => {
+          const tp = ECONOMY_TIMELINE[i]
+          const isQuarter = i % 3 === 0 && i !== 0
+          const isYearStart = tp.isYearStart
+          const showLabel = isYearStart || (isQuarter && !isYearStart)
+          return (
+            <g key={i}>
+              {(isQuarter || isYearStart) && (
+                <line
+                  x1={xAt(i)} y1={padT} x2={xAt(i)} y2={padT + innerH}
+                  stroke={isYearStart ? '#cbd5e1' : '#f1f5f9'}
+                />
+              )}
+              {showLabel && (
+                isYearStart ? (
+                  <text x={xAt(i)} y={H - 12} fontSize="12" fontWeight="700" fill="#475569" textAnchor="middle">
+                    {tp.monthShort}{"'"}{tp.yearShort}
+                  </text>
+                ) : (
+                  <text x={xAt(i)} y={H - 12} fontSize="11" fill="#94a3b8" textAnchor="middle">{tp.monthShort}</text>
+                )
+              )}
+              {/* мини-тик для всех месяцев на оси X */}
+              <line x1={xAt(i)} y1={padT + innerH} x2={xAt(i)} y2={padT + innerH + 4} stroke="#cbd5e1" />
+            </g>
+          )
+        })}
+
+        {/* Baseline */}
+        <line x1={padL} y1={yAt(0)} x2={W - padR} y2={yAt(0)} stroke="#cbd5e1" strokeWidth="1" />
+
+        {/* Closed/forecast separator */}
+        <rect x={xAt(closedIdx)} y={padT} width={W - padR - xAt(closedIdx)} height={innerH} fill="#f8fafc" opacity="0.6" />
+        <line x1={xAt(closedIdx)} y1={padT} x2={xAt(closedIdx)} y2={padT + innerH} stroke="#94a3b8" strokeDasharray="4 4" strokeWidth="1.5" />
+        <text x={xAt(closedIdx) + 8} y={padT + 14} fontSize="11" fill="#64748b" fontWeight="600">прогноз</text>
+
+        {/* Areas */}
+        <path d={areaPath('contract')} fill="url(#gContract)" />
+        <path d={areaPath('plan')} fill="url(#gPlan)" />
+        <path d={areaPath('fact', closedIdx)} fill="url(#gFact)" />
+
+        {/* Lines */}
+        <path d={linePath('contract')} fill="none" stroke="#6366f1" strokeWidth="3" strokeLinecap="round" />
+        <path d={linePath('plan')} fill="none" stroke="#0ea5e9" strokeWidth="2.5" strokeDasharray="6 5" strokeLinecap="round" />
+        <path d={linePath('fact', closedIdx)} fill="none" stroke="#10b981" strokeWidth="3.25" strokeLinecap="round" />
+
+        {/* Dots */}
+        {data.map((d, i) => (
+          <circle key={`c-${i}`} cx={xAt(i)} cy={yAt(d.contract)} r="4" fill="#fff" stroke="#6366f1" strokeWidth="2.25" />
+        ))}
+        {data.map((d, i) => (
+          <circle key={`p-${i}`} cx={xAt(i)} cy={yAt(d.plan)} r="3.5" fill="#fff" stroke="#0ea5e9" strokeWidth="2" />
+        ))}
+        {data.map((d, i) => d.fact != null && i <= closedIdx && (
+          <circle key={`f-${i}`} cx={xAt(i)} cy={yAt(d.fact)} r="4.5" fill="#10b981" stroke="#fff" strokeWidth="1.75" />
+        ))}
+      </svg>
+
+      <div className="flex items-center justify-center gap-5 text-[11px] text-slate-600 mt-2">
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-3 rounded-sm" style={{ background: '#6366f1' }} />Договор</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-3 rounded-sm" style={{ background: '#0ea5e9' }} />План (штатка)</span>
+        <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-3 rounded-sm" style={{ background: '#10b981' }} />Факт (табель)</span>
+      </div>
+
+      <div className="mt-4 border-t border-slate-100 pt-3">
+        <div className="text-[11px] uppercase font-semibold text-slate-500 tracking-wide mb-2">Сводка по месяцам · отклонения от договора</div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs tabular-nums">
+            <thead className="bg-slate-50 text-slate-500">
+              <tr>
+                <th className="text-left px-2 py-1.5 font-semibold">Месяц</th>
+                <th className="text-center px-2 py-1.5 font-semibold">Договор</th>
+                <th className="text-center px-2 py-1.5 font-semibold">План</th>
+                <th className="text-center px-2 py-1.5 font-semibold">Факт</th>
+                <th className="text-center px-2 py-1.5 font-semibold">Δ Факт − Договор</th>
+                <th className="text-center px-2 py-1.5 font-semibold">Статус</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((m, i) => {
+                const tone = classifyFact(m.fact, m.contract)
+                const diff = m.fact != null ? m.fact - m.contract : null
+                const diffPct = diff != null && m.contract > 0 ? (diff / m.contract) * 100 : null
+                const label = tone === 'ok' ? 'Норма' : tone === 'under' ? '↓ Недобор' : tone === 'over_minor' ? '⚠ Перегруз' : tone === 'over_critical' ? '↑ +10%' : '—'
+                return (
+                  <tr key={i} className={`border-t border-slate-100 ${tone === 'empty' ? 'opacity-50' : ''}`}>
+                    <td className="px-2 py-1.5 text-slate-700 font-medium">{m.month}</td>
+                    <td className="text-center text-indigo-700">{m.contract.toFixed(1)}</td>
+                    <td className="text-center text-sky-700">{m.plan.toFixed(1)}</td>
+                    <td className="text-center text-emerald-700 font-semibold">{m.fact != null ? m.fact.toFixed(1) : '—'}</td>
+                    <td className={`text-center font-semibold ${tone === 'ok' ? 'text-emerald-700' : tone === 'under' ? 'text-amber-700' : tone === 'over_minor' ? 'text-orange-700' : tone === 'over_critical' ? 'text-rose-700' : 'text-slate-400'}`}>
+                      {diff != null ? `${diff >= 0 ? '+' : ''}${diff.toFixed(2)}` : '—'}
+                      {diffPct != null && Math.abs(diffPct) > 0.5 && <span className="text-[10px] opacity-70 ml-1">({diffPct >= 0 ? '+' : ''}{diffPct.toFixed(1)}%)</span>}
+                    </td>
+                    <td className="text-center">
+                      <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${TONE_BG[tone]}`}>{label}</span>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function EconomyHeatmap({ positions, totals }: {
+  positions: EconomyPosition[]
+  totals: { month: string; contract: number; plan: number; fact: number | null }[]
+}) {
+  const yearTotal = totals.reduce((s, t) => s + t.contract, 0)
+  return (
+    <div className="space-y-3">
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs tabular-nums border-separate border-spacing-0">
+            <thead>
+              <tr className="bg-slate-50 text-slate-500">
+                <th className="sticky left-0 bg-slate-50 text-left px-3 py-2 w-[180px] text-[11px] font-semibold uppercase border-b border-slate-200 z-10">Итог по проекту</th>
+                {totals.map((_, i) => {
+                  const tp = ECONOMY_TIMELINE[i]
+                  const isQuarter = i % 3 === 0 && i !== 0
+                  return (
+                    <th key={i} className={`px-1.5 py-2 text-center text-[10px] font-semibold min-w-[48px] border-b border-slate-200 ${tp.isYearStart ? 'border-l-2 border-l-slate-300' : isQuarter ? 'border-l border-slate-200' : ''}`}>
+                      {tp.isYearStart && <div className="text-[9px] text-slate-400 font-bold">20{tp.yearShort}</div>}
+                      <div>{tp.monthShort}</div>
+                    </th>
+                  )
+                })}
+                <th className="sticky right-0 px-3 py-2 text-center text-[11px] font-semibold bg-slate-100 border-b border-l border-slate-200 z-10">Σ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <TotalsRow label="Договор" dot="bg-indigo-500" values={totals.map(t => t.contract)} />
+              <TotalsRow label="План (штатка)" dot="bg-sky-500" values={totals.map(t => t.plan)} />
+              <TotalsRow label="Факт (табель)" dot="bg-emerald-500" values={totals.map(t => t.fact)} tones={totals.map(t => classifyFact(t.fact, t.contract))} />
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-4 py-2.5 text-[11px] uppercase font-semibold text-slate-500 tracking-wide border-b border-slate-200 bg-slate-50">
+          Разбивка по позициям · план / договор; ячейки подсвечены тональностью факта
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs tabular-nums border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th className="sticky left-0 bg-white text-left px-4 py-2.5 w-[220px] min-w-[220px] text-[11px] font-semibold text-slate-500 uppercase border-b border-slate-200 z-10">Позиция</th>
+                {totals.map((_, i) => {
+                  const tp = ECONOMY_TIMELINE[i]
+                  const isQuarter = i % 3 === 0 && i !== 0
+                  return (
+                    <th key={i} className={`px-1.5 py-2 text-center text-[10px] font-semibold text-slate-500 min-w-[48px] border-b border-slate-200 ${tp.isYearStart ? 'border-l-2 border-l-slate-300' : isQuarter ? 'border-l border-slate-200' : ''}`}>
+                      {tp.isYearStart && <div className="text-[9px] text-slate-400 font-bold">20{tp.yearShort}</div>}
+                      <div>{tp.monthShort}</div>
+                    </th>
+                  )
+                })}
+                <th className="sticky right-0 bg-slate-50 px-3 py-2.5 text-center text-[11px] font-semibold text-slate-500 uppercase border-b border-l border-slate-200 min-w-[72px] z-10">Σ план</th>
+              </tr>
+            </thead>
+            <tbody>
+              {positions.map(pos => {
+                const posTotal = pos.months.reduce((s, m) => s + m.plan, 0)
+                const posContract = pos.months.reduce((s, m) => s + m.contract, 0)
+                return (
+                  <tr key={pos.id} className="hover:bg-sky-50/40 group">
+                    <td className="sticky left-0 bg-white group-hover:bg-sky-50/40 px-4 py-2 border-b border-slate-100 z-10">
+                      <div className="font-semibold text-slate-800 text-[13px] leading-tight">{pos.name}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">договор {posContract.toFixed(1)} FTE·мес</div>
+                    </td>
+                    {pos.months.map((m, i) => {
+                      const tp = ECONOMY_TIMELINE[i]
+                      const tone = classifyFact(m.fact, m.contract)
+                      const has = m.contract > 0 || m.plan > 0 || (m.fact ?? 0) > 0
+                      const isQuarter = i % 3 === 0 && i !== 0
+                      return (
+                        <td key={i}
+                          title={has ? `${pos.name} · ${tp.label} · договор ${m.contract.toFixed(1)} · план ${m.plan.toFixed(1)} · факт ${m.fact != null ? m.fact.toFixed(2) : '—'}` : 'нет данных'}
+                          className={`px-1 py-1.5 text-center border-b border-slate-100 ${tp.isYearStart ? 'border-l-2 border-l-slate-300' : isQuarter ? 'border-l border-slate-200' : ''} ${TONE_BG[tone]}`}
+                        >
+                          {has ? (
+                            <div className="leading-tight">
+                              <div className="text-[11px] font-semibold">
+                                {m.plan.toFixed(1)}<span className="text-slate-400 font-normal">/{m.contract.toFixed(1)}</span>
+                              </div>
+                              <div className="text-[9px] opacity-70 mt-0.5">{m.fact != null ? m.fact.toFixed(2) : '—'}</div>
+                            </div>
+                          ) : <span className="text-slate-300">·</span>}
+                        </td>
+                      )
+                    })}
+                    <td className="sticky right-0 bg-slate-50 px-3 py-2 text-center font-bold text-slate-800 text-[13px] border-b border-l border-slate-200 z-10">{posTotal.toFixed(1)}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="px-3 py-2 border-t border-slate-200 bg-slate-50 flex items-center gap-3 text-[10px] text-slate-500 flex-wrap">
+          <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-emerald-50 border border-emerald-200" />норма (±5%)</span>
+          <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-amber-50 border border-amber-200" />недобор</span>
+          <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-orange-50 border border-orange-200" />+5–10%</span>
+          <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-sm bg-rose-50 border border-rose-200" />+10% и более</span>
+          <span className="ml-auto text-slate-400">Всего за год · договор {yearTotal.toFixed(1)} FTE·мес</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TotalsRow({ label, dot, values, tones }: {
+  label: string; dot: string; values: (number | null)[]; tones?: Tone[]
+}) {
+  const total = values.reduce<number>((s, v) => s + (v ?? 0), 0)
+  return (
+    <tr>
+      <td className="sticky left-0 bg-white px-3 py-1.5 border-b border-slate-100 z-10">
+        <span className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${dot}`} />
+          <span className="font-semibold text-slate-700">{label}</span>
+        </span>
+      </td>
+      {values.map((v, i) => {
+        const t = tones?.[i]
+        const bg = t ? TONE_BG[t] : ''
+        const tp = ECONOMY_TIMELINE[i]
+        const isQuarter = tp && i % 3 === 0 && i !== 0
+        const sideBorder = tp?.isYearStart ? 'border-l-2 border-l-slate-300' : isQuarter ? 'border-l border-slate-200' : ''
+        return (
+          <td key={i} className={`px-1.5 py-1.5 text-center text-[11px] border-b border-slate-100 ${sideBorder} ${bg}`}>
+            {v != null && v > 0 ? v.toFixed(1) : <span className="text-slate-300">·</span>}
+          </td>
+        )
+      })}
+      <td className="sticky right-0 px-3 py-1.5 text-center font-bold text-slate-800 bg-slate-50 border-b border-l border-slate-200 z-10">{total.toFixed(1)}</td>
+    </tr>
   )
 }

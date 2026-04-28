@@ -516,7 +516,6 @@ function Modal({ onClose }: { onClose: () => void }) {
                 <div className="w-8 h-8 rounded-full bg-[#E52713]/10 flex items-center justify-center text-[0.65rem] text-[#E52713] font-bold">AD</div>
                 <div className="flex-1 min-w-0"><div className="text-[0.75rem] font-semibold text-slate-700 truncate">Администратор</div><div className="text-[0.6rem] text-slate-400">admin@company.ru</div></div>
               </div>
-              <div className="text-[0.55rem] text-slate-400 text-center mt-2">v2.0 · Design by N. Khromenok & V. Vasin</div>
             </div>
           </div>
           {/* Content */}
@@ -525,7 +524,7 @@ function Modal({ onClose }: { onClose: () => void }) {
               <h2 className="text-[0.95rem] font-bold text-slate-800 m-0">{titles[screen]}</h2>
               <div className="flex items-center gap-3">
                 <span className="text-[0.72rem] text-slate-400">{DOMAINS[domain]?.emoji} {DOMAINS[domain]?.short}</span>
-                <span className="text-[0.72rem] text-slate-400">17 февр. 2026</span>
+                <span className="text-[0.72rem] text-slate-400">{new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }).replace(' г.', '')}</span>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto">
@@ -1889,14 +1888,13 @@ function AdminJobs() {
 }
 
 function AdminStats() {
-  const [statTab, setStatTab] = useState<'usage' | 'models' | 'domains' | 'costs'>('usage')
+  const [statTab, setStatTab] = useState<'usage' | 'domains' | 'costs'>('usage')
   const days = ['10.02', '11.02', '12.02', '13.02', '14.02', '15.02', '16.02']
   const vals = [5, 3, 7, 4, 6, 2, 8]
   const max = Math.max(...vals)
   return (<>
     <div className="flex gap-2 mb-4">
       <TabBtn active={statTab === 'usage'} onClick={() => setStatTab('usage')}>Использование</TabBtn>
-      <TabBtn active={statTab === 'models'} onClick={() => setStatTab('models')}>ML-модели</TabBtn>
       <TabBtn active={statTab === 'domains'} onClick={() => setStatTab('domains')}>По доменам</TabBtn>
       <TabBtn active={statTab === 'costs'} onClick={() => setStatTab('costs')}>Стоимость</TabBtn>
     </div>
@@ -1920,25 +1918,6 @@ function AdminStats() {
         </div>
       </div>
     </>)}
-    {statTab === 'models' && (
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <div className="text-[0.82rem] font-semibold text-slate-700 mb-3">Производительность ML-моделей</div>
-        <div className="space-y-3">
-          {[
-            { name: 'WhisperX large-v3', metric: 'WER', val: '4.2%', avg: '2.8 мин', calls: 347 },
-            { name: 'pyannote 3.1', metric: 'DER', val: '8.1%', avg: '1.2 мин', calls: 347 },
-            { name: 'wav2vec2-emotion', metric: 'Accuracy', val: '87.3%', avg: '0.8 мин', calls: 334 },
-            { name: 'LLM Generation', metric: 'Quality', val: '94.5%', avg: '1.5 мин', calls: 334 },
-            { name: 'Silero VAD', metric: 'F1', val: '96.2%', avg: '0.3 мин', calls: 347 },
-          ].map(m => (
-            <div key={m.name} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg">
-              <div className="flex-1"><div className="text-[0.78rem] font-medium text-slate-700">{m.name}</div><div className="text-[0.65rem] text-slate-400">{m.calls} вызовов · ср. {m.avg}</div></div>
-              <div className="text-right"><div className="text-[0.78rem] font-bold text-slate-800">{m.val}</div><div className="text-[0.6rem] text-slate-400">{m.metric}</div></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
     {statTab === 'domains' && (
       <div className="bg-white rounded-xl border border-slate-200 p-5">
         <div className="text-[0.82rem] font-semibold text-slate-700 mb-3">Использование по доменам</div>
@@ -1957,7 +1936,7 @@ function AdminStats() {
       </div>
     )}
     {statTab === 'costs' && (
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <div className="text-[0.82rem] font-semibold text-slate-700 mb-3">Стоимость токенов</div>
           <div className="space-y-2">
@@ -1965,17 +1944,6 @@ function AdminStats() {
               <div key={c.l} className="flex items-center justify-between text-[0.75rem]">
                 <span className="text-slate-500">{c.l}</span>
                 <div><span className="font-bold text-slate-800">{c.v}</span><span className="text-slate-400 ml-2">{c.tok}</span></div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <div className="text-[0.82rem] font-semibold text-slate-700 mb-3">GPU utilization</div>
-          <div className="space-y-2">
-            {[{ l: 'GPU 0 (A100)', v: '67%', temp: '72°C' }, { l: 'VRAM', v: '31.2 / 80 GB', temp: '' }, { l: 'Задачи GPU сегодня', v: '14', temp: '' }].map(g => (
-              <div key={g.l} className="flex items-center justify-between text-[0.75rem]">
-                <span className="text-slate-500">{g.l}</span>
-                <div><span className="font-bold text-slate-800">{g.v}</span>{g.temp && <span className="text-slate-400 ml-2">{g.temp}</span>}</div>
               </div>
             ))}
           </div>
@@ -1999,7 +1967,7 @@ function AdminUsers() {
     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
       <div className="flex items-center justify-between px-5 py-3 bg-slate-50 border-b border-slate-200">
         <span className="text-[0.82rem] font-semibold text-slate-700">{users.length} пользователей</span>
-        <button className="px-3 py-1.5 bg-[#E52713] text-white rounded-lg text-[0.75rem] font-medium border-none cursor-pointer hover:bg-[#E52713]/90 transition-colors">+ Создать</button>
+        <span className="text-[0.7rem] text-slate-400">Создание через SSO</span>
       </div>
       <table className="w-full">
         <thead><tr className="text-[0.65rem] text-slate-400 uppercase tracking-wider"><th className="text-left px-5 py-2 font-semibold">Пользователь</th><th className="text-left px-4 py-2 font-semibold">Email</th><th className="text-center px-4 py-2 font-semibold">Роль</th><th className="text-left px-4 py-2 font-semibold">Домены</th><th className="text-center px-4 py-2 font-semibold">Статус</th></tr></thead>

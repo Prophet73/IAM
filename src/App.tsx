@@ -244,7 +244,7 @@ function Hero() {
   const forCompany = new URLSearchParams(window.location.search).get('for')
 
   const stats = [
-    { num: '4', label: 'продукта в production' },
+    { num: '5', label: 'продуктов на едином ядре' },
     { num: '~10', label: 'R&D прототипов' },
     { num: '1.5', label: 'года full-stack AI-разработки' },
     { num: '7+', label: 'лет в отрасли' },
@@ -264,7 +264,7 @@ function Hero() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
                 </span>
-                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">PropTech R&D & Product AI-Engineer</span>
+                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">ConTech R&D · AI Product Architect</span>
               </div>
               <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
                 {forCompany ? (
@@ -341,8 +341,8 @@ function Products() {
       <div className="max-w-[1280px] mx-auto px-8">
         <Reveal>
           <div className="mb-8">
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-1">Экосистема продуктов</h2>
-            <p className="text-muted text-[0.95rem]">Четыре production-решения и R&D прототип на едином инфраструктурном ядре.</p>
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-1">Продукты на платформенном ядре</h2>
+            <p className="text-muted text-[0.95rem]">Пять продуктов разной зрелости — production, пилот, прототип — на едином инфраструктурном ядре.</p>
           </div>
         </Reveal>
         <Reveal rootMargin="300px 0px">
@@ -367,10 +367,10 @@ function Products() {
 /* ── Approach (Methodology + BusinessValue) ── */
 function Approach() {
   const steps = [
-    { num: '01', title: 'Выявление узких мест', text: 'Иду к тем, кто делает процесс руками — на площадке и в отделе, — фиксируя болевые точки и пожелания напрямую. Без воронки внутренних переводчиков.' },
-    { num: '02', title: 'Быстрое прототипирование', text: 'Минимальный набор функций, который реально решает задачу. Прототип попадает в руки пользователя как можно раньше — без полировки ради полировки.' },
-    { num: '03', title: 'Валидация', text: 'Продукт приживается естественным путём. Успехом является просьба пользователей расширить функционал. В ином случае гипотеза убивается, не сжигая бюджеты.' },
-    { num: '04', title: 'Масштабирование', text: 'Успешный прототип переводится на единую инфраструктуру: SSO, ролевой доступ, метрики использования — узкие места процесса видны, развитие идёт на данных.' },
+    { num: '01', title: 'Выявление узких мест', text: 'Два канала. Проактивно — сам прихожу к тем, кто делает процесс руками на стройплощадке или в отделе. Реактивно — они приходят с задачей сами. Без воронки внутренних переводчиков.' },
+    { num: '02', title: 'Быстрое прототипирование', text: 'Минимальный набор функций под конкретную боль. Сначала ядро на реальных данных пользователя — потом разбор: что увидела система, чего не хватило, как делается сейчас.' },
+    { num: '03', title: 'Валидация', text: 'Гипотеза проверяется делом. Сначала пилот на группе пользователей — потом стратегический выбор: точечный инструмент, системный контур или закрытие, не сжигая бюджеты.' },
+    { num: '04', title: 'Масштабирование', text: 'Успешный прототип переводится на единую инфраструктуру: SSO, ролевой доступ, метрики использования. Руководство видит, кто и чем реально пользуется — развитие идёт на данных.' },
   ]
 
   const cards = [
@@ -424,7 +424,7 @@ function Approach() {
         {/* Business Value */}
         <Reveal>
           <SectionHeader
-            tag="Почему это работает"
+            tag="Что превращает прототип в продукт"
             tagColor="bg-green-soft text-green"
             title="Продуктовая AI-инженерия"
             subtitle="Большинство корпоративных AI-инициатив застревает на уровне демо. Три условия, которые превращают прототип в рабочий инструмент компании."
@@ -549,7 +549,7 @@ function Research() {
 /* ── Career ── */
 function Career() {
   const timeline = [
-    { date: '2024–н.в.', role: 'Департамент цифровой трансформации', place: 'Severin Development', desc: '4 продукта в production, ~10 прототипов. Full-cycle R&D — от идеи до внедрения', active: true },
+    { date: '2024–н.в.', role: 'Департамент цифровой трансформации', place: 'Severin Development', desc: '5 AI-продуктов на едином ядре (production / пилот / прототип), ~10 R&D-прототипов. Full-cycle — от идеи до внедрения', active: true },
     { date: '2024', role: 'Руководитель группы СК / Департамент качества', place: 'Severin Development', desc: 'Координация 20+ инженеров. Регламенты, шаблоны для проектных команд' },
     { date: '2021–2024', role: 'Инженер → ведущий инженер СК', place: 'Severin Development', desc: 'ЖК FORIVER (InGrad/Sminex) — 11 корпусов, 3 года на объекте, получение ЗОС' },
     { date: '2020–2021', role: 'Инженер СК', place: 'ТСК-ТИТУЛ', desc: 'Приёмка работ, проверка КС-2, накопительные. ЖК Discovery (MR Group), Савёловский-сити' },
@@ -570,9 +570,13 @@ function Career() {
           <SectionHeader
             tag="Опыт"
             tagColor="bg-amber-soft text-amber"
-            title="Строительство и цифровизация"
-            subtitle="7+ лет в строительной отрасли. Последние 1.5 года — продуктовая разработка полного цикла."
+            title="От стройплощадки к AI-архитектуре"
           />
+        </Reveal>
+        <Reveal>
+          <div className="mb-10 max-w-[760px] border-l-2 border-accent/30 pl-5 text-[0.95rem] text-text-primary/75 leading-relaxed">
+            <span className="text-accent font-semibold">Системотехника</span> — единая нить через 7 лет в строительстве, R&D-аспирантуру МГСУ и 1.5 года в AI-разработке. Отраслевой опыт научил проектировать логику систем; академическая школа — её исследовать; LLM-инструменты вместе с осознанной работой над архитектурой кода (паттерны, типизация, читаемость) — воплощать всё это без посредников и потери контекста.
+          </div>
         </Reveal>
         <div>
           {timeline.map((t, i) => (
@@ -654,7 +658,7 @@ function Contact() {
               +7 926 897-32-25
             </a>
             <a
-              href="https://t.me/nickkhromenok"
+              href="https://t.me/psykhrometer"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => tracker.track('contact_click', { channel: 'telegram' })}
@@ -663,24 +667,10 @@ function Contact() {
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
-              Telegram
+              @psykhrometer
             </a>
           </div>
 
-          {/* CV download */}
-          <div className="mt-8 flex justify-center">
-            <a
-              href="/cv-khromenok.pdf"
-              download="Khromenok_NV_CV.pdf"
-              onClick={() => tracker.track('cv_download')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-surface-2 border border-border text-text-primary text-sm font-semibold no-underline transition-colors hover:border-accent/40 hover:text-accent"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              Скачать резюме (PDF)
-            </a>
-          </div>
         </Reveal>
       </div>
 

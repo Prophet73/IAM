@@ -1,4 +1,9 @@
-const API = '/api/perf'
+// В одно-доменной развёртке (nginx reverse proxy) оставляем относительный путь.
+// Для двух-доменной — указать VITE_API_URL в .env (см. .env.example).
+const API = (import.meta.env.VITE_API_URL as string | undefined) || '/api/perf'
+// Session-replay (mousemove sampling) — тяжёлый трафик. По умолчанию включён только в dev,
+// в prod — только если явно выставлен флаг VITE_REPLAY.
+const REPLAY_ENABLED = !import.meta.env.PROD || import.meta.env.VITE_REPLAY === '1'
 const SESSION_GAP_MS = 4 * 60 * 60 * 1000
 const RECORDING_FLUSH_MS = 5_000
 const MOUSE_SAMPLE_MS = 150
@@ -61,8 +66,7 @@ class Tracker {
     this.setupScrollTracking()
     this.setupSectionObserver()
     this.setupPageLeave()
-    this.setupRecording()
-
+    if (REPLAY_ENABLED) this.setupRecording()
   }
 
   private async verifyVisit(): Promise<boolean> {

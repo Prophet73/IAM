@@ -1,3 +1,4 @@
+import os
 import secrets
 from datetime import datetime, timezone
 from typing import Optional
@@ -12,17 +13,24 @@ from database import SessionLocal, Visitor, Visit, Event, genuuid, utcnow
 
 app = FastAPI(title="Performance Monitor")
 
+# CORS: список разрешённых origin через env. В dev ставим "*" локально, в prod —
+# домены фронта через запятую: FRONTEND_ORIGIN="https://example.com,https://www.example.com"
+_origins_raw = os.environ.get("FRONTEND_ORIGIN", "*").strip()
+_allow_origins = ["*"] if _origins_raw == "*" else [o.strip() for o in _origins_raw.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_allow_origins,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 security = HTTPBasic()
 
-ADMIN_USER = "admin"
-ADMIN_PASS = "secret"
+ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
+try:
+    ADMIN_PASS = os.environ["ADMIN_PASS"]
+except KeyError as e:
+    raise RuntimeError("ADMIN_PASS env-переменная не задана. См. .env.example") from e
 
 
 def get_db():

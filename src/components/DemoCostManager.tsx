@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { tracker } from '../utils/tracker'
 
-type Screen = 'dashboard' | 'project' | 'analogs' | 'report' | 'deflators'
+type Screen = 'dashboard' | 'project' | 'analogs' | 'report' | 'deflators' | 'roadmap'
 
 const BRAND = '#059669'
 
@@ -20,11 +20,12 @@ const nav: { key: Screen; emoji: string; label: string; section?: string }[] = [
   { key: 'analogs', emoji: '🔍', label: 'Аналоги', section: 'АНАЛИЗ' },
   { key: 'report', emoji: '📄', label: 'Отчёт' },
   { key: 'deflators', emoji: '📈', label: 'Индексы цен', section: 'ИНСТРУМЕНТЫ' },
+  { key: 'roadmap', emoji: '🧭', label: 'Архитектура', section: 'РАЗВИТИЕ' },
 ]
 
 const titles: Record<Screen, string> = {
   dashboard: 'Дашборд', project: 'Анализ проекта', analogs: 'Поиск аналогов',
-  report: 'Сравнительный отчёт', deflators: 'Индексы цен',
+  report: 'Сравнительный отчёт', deflators: 'Индексы цен', roadmap: 'Архитектура и подход',
 }
 
 /* ── Number formatter ── */
@@ -593,7 +594,6 @@ function Modal({ onClose }: { onClose: () => void }) {
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-[0.65rem] font-bold" style={{ background: `${BRAND}15`, color: BRAND }}>НХ</div>
                 <div className="flex-1 min-w-0"><div className="text-[0.75rem] font-semibold text-slate-700 truncate">Хроменок Н.В.</div><div className="text-[0.6rem] text-slate-400">Администратор</div></div>
               </div>
-              <div className="text-[0.55rem] text-slate-400 text-center mt-2">v1.4 · Design by N. Khromenok & V. Vasin</div>
             </div>
           </div>
           {/* Content */}
@@ -602,7 +602,7 @@ function Modal({ onClose }: { onClose: () => void }) {
               <h2 className="text-[0.95rem] font-bold text-slate-800 m-0">{titles[screen]}</h2>
               <div className="flex items-center gap-3">
                 <span className="text-[0.72rem] text-slate-400">Портфель: 24 проекта</span>
-                <span className="text-[0.72rem] text-slate-400">19 февр. 2026</span>
+                <span className="text-[0.72rem] text-slate-400">{new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }).replace(' г.', '')}</span>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto">
@@ -611,6 +611,7 @@ function Modal({ onClose }: { onClose: () => void }) {
               {screen === 'analogs' && <PgAnalogs />}
               {screen === 'report' && <PgReport />}
               {screen === 'deflators' && <PgDeflators />}
+              {screen === 'roadmap' && <PgRoadmap />}
             </div>
           </div>
         </div>
@@ -1380,6 +1381,104 @@ function PgDeflators() {
         <button className="px-5 py-2.5 text-white rounded-xl text-[0.8rem] font-semibold border-none cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center gap-2" style={{ background: BRAND }}>
           + Добавить
         </button>
+      </div>
+    </div>
+  )
+}
+
+function PgRoadmap() {
+  const stages = [
+    { name: 'Концепция',         levels: 'Уровни 1–2',      desc: 'Первичная оценка по портфелю',         math: 'Аналоги, диапазоны цен по укрупнённым разделам' },
+    { name: 'Стадия П',          levels: 'Уровни 1–3',      desc: 'Проектная документация',                math: 'Сравнение с предпроектной оценкой' },
+    { name: 'Стадия РД',         levels: 'Уровни 1–4',      desc: 'Рабочая документация',                  math: 'Детальная проверка подрядных смет' },
+    { name: 'Завершённое',       levels: 'Фактические',     desc: 'Факт подрядчиков, КС-2, акты',          math: 'Удельные показатели по факту' },
+    { name: 'Системный анализ',  levels: 'Все уровни',      desc: 'Post-mortem проекта на портфеле',       math: 'Драйверы роста цен, отклонения' },
+  ]
+  const mathItems = [
+    { title: 'Индексация цен',          desc: 'Цены прошлых лет приводятся к актуальным по индексам удорожания. Любая историческая смета сопоставима с текущей.' },
+    { title: 'Сопоставление с аналогами', desc: 'Новый проект сравнивается с похожими из истории портфеля по разделам — диапазоны цен, отклонения, обоснование.' },
+    { title: 'Удельные показатели',     desc: 'Бетоноёмкость, металлоёмкость, трудоёмкость, удельная стоимость на м² по разделам — на фактических данных завершённых объектов.' },
+    { title: 'Драйверы роста цен',      desc: 'Post-construction анализ: где проект отклонился от концепции, какие разделы стали драйверами удорожания, что повторяется на портфеле.' },
+  ]
+  return (
+    <div className="p-6 space-y-5">
+      {/* Foundation */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="text-[0.7rem] font-bold uppercase tracking-wider text-slate-500 mb-2">Фундамент</div>
+        <div className="text-[0.95rem] font-bold text-slate-800 mb-2">Единый классификатор работ — 14 разделов × 4 уровня</div>
+        <div className="text-[0.78rem] text-slate-600 leading-relaxed">
+          Каждая позиция любой сметы получает место в общей иерархии: от земляных работ до отделки, от укрупнённых категорий до конкретных операций. На одном классификаторе работают все продуктовые сценарии — поэтому проекты разных лет, разных подрядчиков и разных стадий проектирования напрямую сравнимы по разделам.
+        </div>
+      </div>
+
+      {/* Lifecycle */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="text-[0.7rem] font-bold uppercase tracking-wider text-slate-500 mb-2">Жизненный цикл бюджета</div>
+        <div className="text-[0.95rem] font-bold text-slate-800 mb-1">Один классификатор — все стадии проекта</div>
+        <div className="text-[0.78rem] text-slate-500 leading-relaxed mb-4">
+          На каждой стадии заполняются всё более глубокие уровни иерархии. Бюджет движется по этой шкале — от первичной оценки концепции до post-mortem на портфеле компании. Система работает в обе стороны: вперёд (оценка → факт) и назад (факт → драйверы роста цен и обновление базы аналогов).
+        </div>
+        <div className="overflow-x-auto -mx-1 px-1">
+          <div className="flex items-stretch gap-1 min-w-[820px]">
+            {stages.map((s, i) => (
+              <React.Fragment key={s.name}>
+                <div className="flex-1 bg-emerald-50/40 border border-emerald-200/60 rounded-lg p-3">
+                  <div className="text-[0.78rem] font-bold text-emerald-800 mb-1">{s.name}</div>
+                  <div className="text-[0.62rem] uppercase tracking-wider text-emerald-700/80 font-semibold mb-2">{s.levels}</div>
+                  <div className="text-[0.68rem] text-slate-600 leading-snug mb-2">{s.desc}</div>
+                  <div className="text-[0.65rem] text-slate-500 italic leading-snug border-t border-emerald-200/40 pt-2">{s.math}</div>
+                </div>
+                {i < stages.length - 1 && (
+                  <div className="flex items-center text-emerald-400 px-0.5">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Math */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5">
+        <div className="text-[0.7rem] font-bold uppercase tracking-wider text-slate-500 mb-2">Математика</div>
+        <div className="text-[0.95rem] font-bold text-slate-800 mb-3">Что считается на едином классификаторе</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {mathItems.map(m => (
+            <div key={m.title} className="bg-slate-50 rounded-lg p-3">
+              <div className="text-[0.78rem] font-semibold text-slate-800 mb-1">{m.title}</div>
+              <div className="text-[0.7rem] text-slate-600 leading-snug">{m.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Узкое место + два задела */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="bg-amber-50/60 rounded-xl border border-amber-200 p-5">
+          <div className="text-[0.7rem] font-bold uppercase tracking-wider text-amber-700 mb-2">Текущее узкое место</div>
+          <div className="text-[0.85rem] font-bold text-slate-800 mb-2">Ручной разбор позиций</div>
+          <div className="text-[0.72rem] text-slate-600 leading-relaxed mb-2">
+            Разметку позиций по классификатору сегодня делает эксперт. Авто-классификация не реализована — мешает семантическая неоднозначность входных данных:
+          </div>
+          <div className="bg-white border border-amber-200/60 rounded-md p-2 text-[0.68rem] text-slate-700 italic leading-snug">
+            Позиция «шпаклёвка» в смете без контекста объекта — отделка квартир или паркинга? Разные расценки, без контекста неразрешимо.
+          </div>
+        </div>
+        <div className="bg-emerald-50/40 rounded-xl border border-emerald-200 p-5">
+          <div className="text-[0.7rem] font-bold uppercase tracking-wider text-emerald-700 mb-2">Технический задел</div>
+          <div className="text-[0.85rem] font-bold text-slate-800 mb-2">Гибрид по Парето</div>
+          <div className="text-[0.72rem] text-slate-600 leading-relaxed">
+            AI размечает все позиции автоматически, эксперт верифицирует только дорогие <span className="font-semibold text-slate-800">~20% позиций</span> — на них приходится ~80% бюджета сметы. На дешёвых остаётся остаточный риск ошибки, сопоставимый с риском ручного разбора, и денежный вес этой ошибки невелик.
+          </div>
+        </div>
+        <div className="bg-blue-50/40 rounded-xl border border-blue-200 p-5">
+          <div className="text-[0.7rem] font-bold uppercase tracking-wider text-blue-700 mb-2">Системный задел</div>
+          <div className="text-[0.85rem] font-bold text-slate-800 mb-2">Внутренний стандарт смет</div>
+          <div className="text-[0.72rem] text-slate-600 leading-relaxed">
+            Если компания — девелопер или подрядчик, формат смет регулируется на уровне <span className="font-semibold text-slate-800">внутренних стандартов</span>: фиксированные шаблоны, обязательная привязка позиций к разделу классификатора при формировании. Семантическая неоднозначность снимается на корню — без сложной AI-классификации.
+          </div>
+        </div>
       </div>
     </div>
   )

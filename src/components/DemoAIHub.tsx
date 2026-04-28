@@ -29,13 +29,13 @@ const nav: { key: Screen; icon: () => React.JSX.Element; label: string; admin?: 
   { key: 'users', icon: Ico.Users, label: 'Пользователи и группы' },
   { key: 'appAccess', icon: IcoAppWindow, label: 'Приложения и доступ' },
   { key: 'aiSlots', icon: IcoBot, label: 'Модели AI' },
-  { key: 'architecture', icon: IcoNetwork, label: 'Экосистема' },
+  { key: 'architecture', icon: IcoNetwork, label: 'Платформа' },
 ]
 
 const titles: Record<Screen, string> = {
   apps: 'Приложения', chat: 'AI-чат', prompts: 'Промпты', tools: 'Инструменты',
   monitoring: 'Панель администратора', users: 'Пользователи и группы',
-  appAccess: 'Приложения и доступ', aiSlots: 'Модели AI', architecture: 'Экосистема',
+  appAccess: 'Приложения и доступ', aiSlots: 'Модели AI', architecture: 'Платформа',
 }
 
 /* ===== EXPORT ===== */
@@ -148,7 +148,7 @@ function MobileTeaser({ onClose }: { onClose: () => void }) {
     </S>,
 
     /* 1 — Решение (SSO) */
-    <S key={1} title="Единая точка входа" caption="Active Directory (ADFS) + OAuth2. Один аккаунт — доступ ко всей экосистеме.">
+    <S key={1} title="Единая точка входа" caption="Active Directory (ADFS) + OAuth2. Один аккаунт — доступ ко всей корпоративной платформе.">
       <div className="w-full max-w-[260px] bg-white/[0.07] border border-white/10 rounded-2xl p-5">
         <div className="w-10 h-10 rounded-xl bg-[#E52713] flex items-center justify-center text-white text-[11px] font-bold mx-auto mb-3">AI</div>
         <div className="text-[11px] text-white/40 mb-4">Корпоративная авторизация</div>
@@ -373,7 +373,7 @@ function Modal({ onClose }: { onClose: () => void }) {
           <div className="flex-1 flex flex-col min-w-0 bg-[#FAFAFA]">
             <div className="h-14 flex items-center justify-between px-6 bg-white border-b border-gray-200 shrink-0">
               <h2 className="text-[0.95rem] font-bold text-gray-800 m-0">{titles[screen]}</h2>
-              <span className="text-[0.72rem] text-gray-400">16 февр. 2026</span>
+              <span className="text-[0.72rem] text-gray-400">{new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }).replace(' г.', '')}</span>
             </div>
             <div className="flex-1 overflow-y-auto">
               {screen === 'apps' && <PgApps />}
@@ -422,7 +422,8 @@ function PgApps() {
   const cats = ['Все', 'Аналитика', 'AI & ML', 'Финансы', 'Инструменты']
   const [cat, setCat] = useState('Все')
   const apps = [
-    { name: 'DataBook', desc: 'Интеллектуальный поиск предписаний строительного контроля', cat: 'Аналитика', users: 28, color: '#3B82F6' },
+    { name: 'DataBook', desc: 'Архив предписаний СК и нормативная библиотека', cat: 'Инструменты', users: 28, color: '#3B82F6' },
+    { name: 'Scanner', desc: 'AI-поиск по нормам + конструктор предписаний', cat: 'AI & ML', users: 19, color: '#06B6D4' },
     { name: 'AI-чат', desc: 'Корпоративный AI-ассистент для сотрудников', cat: 'AI & ML', users: 47, color: '#E52713' },
     { name: 'CostManager', desc: 'Контроль себестоимости строительных объектов', cat: 'Финансы', users: 15, color: '#10B981' },
     { name: 'Автопротокол', desc: 'ML-протоколирование совещаний', cat: 'AI & ML', users: 34, color: '#8B5CF6' },
@@ -1110,23 +1111,19 @@ function IntOAuth() {
 /* ===== AI SLOTS ===== */
 function PgAiSlots() {
   const slots = [
-    { key: 'fast', name: 'Быстрый ответ', desc: 'Повседневные вопросы сотрудников: формулировки, краткие справки, типовые письма', model: 'Gemini 2.5 Flash', accent: '#3B82F6', limit: 50, used: 34, icon: '⚡' },
-    { key: 'deep', name: 'Глубокий анализ', desc: 'Работа с большими документами: договоры, отчёты, нормативы. Отвечает вдумчиво', model: 'Gemini 2.5 Pro', accent: '#E52713', limit: 20, used: 11, icon: '◎' },
-    { key: 'image', name: 'Генерация изображений', desc: 'Иллюстрации для презентаций, схемы, визуальные концепции', model: 'Imagen 3', accent: '#8B5CF6', limit: 15, used: 4, icon: '✦' },
+    { key: 'fast', name: 'Быстрый ответ', desc: 'Повседневные вопросы сотрудников: формулировки, краткие справки, типовые письма', model: 'Gemini 3.1 Flash', accent: '#3B82F6', limit: 50, used: 34, icon: '⚡' },
+    { key: 'deep', name: 'Глубокий анализ', desc: 'Работа с большими документами: договоры, отчёты, нормативы. Отвечает вдумчиво', model: 'Gemini 3.1 Pro', accent: '#E52713', limit: 20, used: 11, icon: '◎' },
+    { key: 'image', name: 'Генерация изображений', desc: 'Иллюстрации для презентаций, схемы, визуальные концепции', model: 'Imagen 4', accent: '#8B5CF6', limit: 15, used: 4, icon: '✦' },
   ]
   const catalog = [
-    { name: 'Gemini 2.5 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: 'Глубокий анализ' },
-    { name: 'Gemini 2.5 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: 'Быстрый ответ' },
-    { name: 'Gemini 2.5 Flash-Lite', ctx: 'До 500 тыс.', files: true, images: true, usedIn: null },
-    { name: 'Gemini 2.0 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: null },
-    { name: 'Gemini 2.0 Flash-Lite', ctx: 'До 500 тыс.', files: true, images: false, usedIn: null },
-    { name: 'Gemini 1.5 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: null },
-    { name: 'Gemini 1.5 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: null },
-    { name: 'Gemini 1.5 Flash-8B', ctx: 'До 1 млн символов', files: true, images: false, usedIn: null },
-    { name: 'Imagen 3', ctx: '—', files: false, images: true, usedIn: 'Генерация изображений' },
-    { name: 'Imagen 3 Fast', ctx: '—', files: false, images: true, usedIn: null },
-    { name: 'Gemini Nano Banana', ctx: 'Редактор изображений', files: false, images: true, usedIn: null },
-    { name: 'Gemini 2.5 Pro Thinking', ctx: 'Рассуждающая модель', files: true, images: true, usedIn: null },
+    { name: 'Gemini 3.1 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: 'Глубокий анализ' },
+    { name: 'Gemini 3.1 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: 'Быстрый ответ' },
+    { name: 'Gemini 3 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: null },
+    { name: 'Gemini 3 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: null },
+    { name: 'Gemini 2.5 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: null },
+    { name: 'Gemini 2.5 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: null },
+    { name: 'Imagen 4', ctx: '—', files: false, images: true, usedIn: 'Генерация изображений' },
+    { name: 'Gemini Nano Banana 2', ctx: 'Редактор изображений', files: false, images: true, usedIn: null },
   ]
   return (
     <div className="p-6">
@@ -1211,8 +1208,11 @@ function PgArchitecture() {
   return (
     <div className="p-6">
       <div className="mb-5">
-        <div className="text-[0.95rem] font-bold text-gray-800 mb-1">Hub — центр экосистемы</div>
-        <div className="text-[0.78rem] text-gray-500 leading-relaxed max-w-[760px]">Один вход под корпоративным паролем открывает доступ ко всем внутренним продуктам. Сотрудник логинится в Hub — и дальше открывает любой сервис без повторных паролей. Руководитель в одной панели видит, кто чем пользуется и что делал.</div>
+        <div className="text-[0.95rem] font-bold text-gray-800 mb-2">Hub — инфраструктурное ядро внутренних AI-сервисов</div>
+        <div className="text-[0.78rem] text-gray-500 leading-relaxed max-w-[760px] space-y-3">
+          <p><span className="font-semibold text-gray-700">Принцип отделимости.</span> Инфраструктурный слой — единый вход, ролевой доступ, аудит — выносится в платформу один раз. Продуктовый слой — функции под конкретную боль — живёт отдельно и остаётся заменяемым. Hub стал тем самым фундаментом, на который садятся продукты компании: каждый сначала доводится до пилота на реальных пользователях и только потом подключается к общему контуру. При этом часть из них сознательно остаётся вне сквозных интеграций: нишевые инструменты под конкретный департамент (CostManager — под отдел экономики строительства) подключены к общему контуру безопасности, но работают автономно. Это осознанный архитектурный выбор, а не недоработка.</p>
+          <p><span className="font-semibold text-gray-700">Слон по частям.</span> Следующий архитектурный слой — превращение Puls в центр данных по проектам. Этап 1 — забрать на себя внутреннюю отчётность (то, что сегодня живёт в Excel и чатах). Этап 2 — подтянуть данные из корпоративных систем (1С, табели, ERP) и артефакты AI-сервисов: статистику и тексты предписаний из Scanner, риски из Автопротокола. Каждое приложение стабилизируется отдельно — это снижает риск «большой коробочной системы, которую так и не запустят».</p>
+        </div>
       </div>
 
       {/* Flow diagram */}

@@ -43,8 +43,8 @@ __pycache__/
 
 # Секреты и переменные окружения (хранится только .env.example)
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 /backend/.env
 
 # Генерируемые бандлы скриптов

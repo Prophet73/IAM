@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { tracker } from '../utils/tracker'
+import { MobileStories, StorySlide, PainSlide, StoryClosingSlide } from './MobileStories'
 
 /* ===== TYPES & DATA ===== */
 
@@ -21,7 +22,7 @@ const nav: { key: Screen; emoji: string; label: string; section?: string }[] = [
 ]
 
 const titles: Record<Screen, string> = {
-  databook:     'DataBook — архив выявленных предписаний',
+  databook:     'DataBook — архив выданных предписаний',
   docs:         'Docs — нормативная документация',
   scanner:      'Сканер + конструктор предписаний',
   citations:    'Нормативное обоснование',
@@ -469,191 +470,227 @@ export function DataBookDemo() {
   )
 }
 
-/* ═════════════════════ MOBILE TEASER ═════════════════════ */
-function MobileTeaser({ onClose }: { onClose: () => void }) {
-  const screens = ['intro', 'databook', 'scanner', 'document', 'admin'] as const
-  type Scr = typeof screens[number]
-  const [scr, setScr] = useState<Scr>('intro')
-  const idx = screens.indexOf(scr)
+/* ═════════════════════ MOBILE TEASER (Stories) ═════════════════════ */
+function ConstructorFlow() {
+  // Phased reveal: input → AI rewrite → citations → engineer approves → DOCX ready
+  const inputText = `«${CASE_ENGINEER_RAW}»`
+  const [typed, setTyped] = useState('')
+  const [phase, setPhase] = useState<0 | 1 | 2 | 3 | 4>(0)
 
-  const touchRef = useRef<{ x: number; y: number } | null>(null)
-  const handleTouchStart = (e: React.TouchEvent) => { touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY } }
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchRef.current) return
-    const dx = e.changedTouches[0].clientX - touchRef.current.x
-    const dy = e.changedTouches[0].clientY - touchRef.current.y
-    touchRef.current = null
-    if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx)) return
-    if (dx < 0 && idx < screens.length - 1) setScr(screens[idx + 1])
-    if (dx > 0 && idx > 0) setScr(screens[idx - 1])
-  }
+  useEffect(() => {
+    setTyped('')
+    setPhase(0)
+    let i = 0
+    const timeouts: ReturnType<typeof setTimeout>[] = []
+    const id = setInterval(() => {
+      i++
+      setTyped(inputText.slice(0, i))
+      if (i >= inputText.length) {
+        clearInterval(id)
+        timeouts.push(setTimeout(() => setPhase(1), 350))
+        timeouts.push(setTimeout(() => setPhase(2), 1100))
+        timeouts.push(setTimeout(() => setPhase(3), 1900))   // engineer approves
+        timeouts.push(setTimeout(() => setPhase(4), 2600))   // doc finalized
+      }
+    }, 32)
+    return () => {
+      clearInterval(id)
+      timeouts.forEach(clearTimeout)
+    }
+  }, [inputText])
 
-  const labels: Record<Scr, string> = { intro: 'О продукте', databook: 'DataBook', scanner: 'Сканер', document: 'Документ', admin: 'Админ' }
+  const inputDone = typed.length >= inputText.length
 
   return (
-    <div className="flex md:hidden flex-col h-full bg-[#F8FAFC]" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-      <div className="bg-white px-4 pt-4 pb-2 shrink-0">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] text-white font-bold" style={{ background: BRAND }}>SC</div>
-            <div>
-              <div className="text-sm font-bold text-slate-800">Scanner</div>
-              <div className="text-[9px] text-slate-400">DataBook + AI-конструктор</div>
-            </div>
-          </div>
-          <button onClick={onClose} className="w-7 h-7 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center border-none text-sm cursor-pointer">&times;</button>
+    <div className="w-full max-w-[320px] bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+      <div className="px-3.5 py-2.5 bg-slate-50/70 border-b border-slate-200 text-left">
+        <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Инженер ввёл</div>
+        <div className="text-[12px] text-slate-700 leading-snug min-h-[2.2em]">
+          {typed}
+          {!inputDone && <span className="type-caret" style={{ height: '0.95em' }}>&nbsp;</span>}
         </div>
       </div>
-      <div className="flex bg-white border-b border-slate-200/60 px-1 shrink-0 overflow-x-auto scrollbar-hidden">
-        {screens.map(s => (
-          <button key={s} onClick={() => setScr(s)}
-            className={`flex-1 px-2 py-2.5 text-[10px] font-semibold whitespace-nowrap transition-colors border-none cursor-pointer bg-transparent ${scr === s ? 'text-[#2563EB]' : 'text-slate-400'}`}
-            style={scr === s ? { borderBottom: `2px solid ${BRAND}` } : { borderBottom: '2px solid transparent' }}
-          >{labels[s]}</button>
+      {phase >= 1 && (
+        <div className="px-3.5 py-2.5 border-b border-slate-200 text-left animate-[storyStagger_0.4s_cubic-bezier(0.16,1,0.3,1)_both]">
+          <div className="text-[9px] font-bold text-[#2563EB] uppercase tracking-wider mb-0.5">AI переформулировал</div>
+          <div className="text-[11px] text-slate-700 leading-snug">{CASE_AI_TRANSLATED}</div>
+        </div>
+      )}
+      {phase >= 2 && (
+        <div className="px-3.5 py-2.5 text-left border-b border-slate-200 animate-[storyStagger_0.4s_cubic-bezier(0.16,1,0.3,1)_both]">
+          <div className="text-[9px] font-bold text-[#2563EB] uppercase tracking-wider mb-1.5">Найдено в нормативке</div>
+          <div className="space-y-1">
+            {CITATIONS.slice(0, 2).map(c => (
+              <div key={c.rank} className="border-l-2 border-[#2563EB]/40 pl-2">
+                <div className="text-[10px] font-semibold text-slate-700">{c.doc} · {c.clause}</div>
+                <div className="text-[10px] text-slate-500 leading-snug line-clamp-2">{c.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {phase >= 3 && (
+        <div className="px-3.5 py-2 bg-emerald-50/60 border-b border-slate-200 flex items-center justify-between animate-[storyStagger_0.4s_cubic-bezier(0.16,1,0.3,1)_both]">
+          <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+            Одобрено инженером
+          </span>
+          <span className="text-[9px] text-slate-500">последнее слово — за человеком</span>
+        </div>
+      )}
+      {phase >= 4 && (
+        <div className="px-3.5 py-2.5 bg-[#2563EB]/5 flex items-center justify-between animate-[storyStagger_0.4s_cubic-bezier(0.16,1,0.3,1)_both]">
+          <span className="text-[10px] font-bold text-[#2563EB]">📄 Готово: предписание №SC-127</span>
+          <span className="text-[9px] text-slate-400">по шаблону</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function MobileTeaser({ onClose }: { onClose: () => void }) {
+  const slides: React.ReactNode[] = [
+    /* 0 — Боль */
+    <PainSlide
+      key={0}
+      title="Выдача предписания — 4 этапа"
+      intro="Большая часть времени уходит на поиск нужного пункта норматива и оформление документа в Word."
+      pains={[
+        'Фиксация нарушения на площадке',
+        'Описание дефекта инженерным языком',
+        'Поиск пункта в нормативной документации',
+        'Оформление документа по шаблону',
+      ]}
+    />,
+
+    /* 1 — Три раздела */
+    <StorySlide
+      key={1}
+      title="Три раздела одной системы"
+      caption="Архив выданных предписаний, библиотека норм и AI-конструктор связаны общей разметкой."
+    >
+      <div className="w-full max-w-[320px] space-y-2">
+        {[
+          { icon: '📷', name: 'AI-конструктор', desc: 'Описание → формулировка → пункт нормы → Word' },
+          { icon: '📚', name: 'Архив предписаний', desc: 'Выявленные нарушения с тегами' },
+          { icon: '📋', name: 'Библиотека норм', desc: 'Пункты СП и ГОСТ с разметкой' },
+        ].map(r => (
+          <div key={r.name} className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 bg-white border border-slate-200 shadow-sm">
+            <div className="w-9 h-9 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-base shrink-0">{r.icon}</div>
+            <div className="text-left flex-1 min-w-0">
+              <div className="text-[13px] font-bold text-slate-800">{r.name}</div>
+              <div className="text-[11px] text-slate-500 leading-snug">{r.desc}</div>
+            </div>
+          </div>
         ))}
       </div>
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
-        {scr === 'intro' && <>
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Три сущности, один продукт</div>
-            <div className="space-y-2.5">
-              <div className="flex items-start gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-base shrink-0">📚</div>
-                <div>
-                  <div className="text-[12px] font-semibold text-slate-800">DataBook</div>
-                  <div className="text-[11px] text-slate-500 leading-snug">Архив дедуплицированных предписаний — классифицирован и размечен.</div>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-base shrink-0">📋</div>
-                <div>
-                  <div className="text-[12px] font-semibold text-slate-800">Библиотека нормативов</div>
-                  <div className="text-[11px] text-slate-500 leading-snug">Пункты СП/ГОСТ — размечены <b>по той же таксономии</b>. Это даёт симметрию для точного поиска.</div>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#2563EB]/10 flex items-center justify-center text-base shrink-0">📷</div>
-                <div>
-                  <div className="text-[12px] font-semibold text-slate-800">Сканер + конструктор</div>
-                  <div className="text-[11px] text-slate-500 leading-snug">Фото нарушения → AI описывает → находит пункты в библиотеке → готовый DOCX.</div>
-                </div>
-              </div>
+    </StorySlide>,
+
+    /* 2 — Конструктор: 4 шага */
+    <StorySlide
+      key={2}
+      title="AI-конструктор предписаний"
+      caption="AI готовит черновик и цитаты из реальной базы. Инженер проверяет и одобряет — ответственность остаётся на человеке."
+    >
+      <ConstructorFlow />
+    </StorySlide>,
+
+    /* 3 — Архив с тегами */
+    <StorySlide
+      key={3}
+      title="Архив выданных предписаний"
+      caption="Очищен от дублей и размечен. Используется для онбординга инженеров и калибровки качества AI."
+    >
+      <div className="w-full max-w-[320px] space-y-2">
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { v: ARCHIVE_STATS.workTypes, l: 'видов работ' },
+            { v: ARCHIVE_STATS.tagCats, l: 'категорий разметки' },
+            { v: '8', l: 'тегов на запись' },
+          ].map(s => (
+            <div key={s.l} className="bg-white border border-slate-200 rounded-xl p-2 text-center">
+              <div className="text-[15px] font-extrabold text-[#2563EB] leading-none">{s.v}</div>
+              <div className="text-[9px] text-slate-400 mt-1 leading-tight">{s.l}</div>
             </div>
-          </div>
-          <div className="bg-amber-50/60 border border-amber-200/50 rounded-xl p-3">
-            <div className="text-[10px] font-bold text-amber-700 uppercase tracking-wider mb-1">Статус</div>
-            <div className="text-[11px] text-slate-700">Пилот по охране труда. Архитектура универсальна — масштабируется на {WORK_TYPES.length - 2} вида работ.</div>
-          </div>
-        </>}
-        {scr === 'databook' && <>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-white rounded-xl p-2.5 border border-slate-200 text-center">
-              <div className="text-sm font-bold text-slate-800">{ARCHIVE_STATS.workTypes}</div>
-              <div className="text-[8px] text-slate-400 mt-0.5">видов работ</div>
-            </div>
-            <div className="bg-white rounded-xl p-2.5 border border-slate-200 text-center">
-              <div className="text-sm font-bold text-slate-800">{ARCHIVE_STATS.tagCats}</div>
-              <div className="text-[8px] text-slate-400 mt-0.5">категорий тегов</div>
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            {ARCHIVE.slice(0, 4).map(p => (
-              <div key={p.id} className="bg-white rounded-xl p-2.5 border border-slate-200">
-                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                  <span className="text-[9px] font-bold text-slate-700">{p.work}</span>
-                  <span className="text-[8px] text-slate-400">·</span>
-                  <span className="text-[8px] text-slate-500">{p.control}</span>
-                </div>
-                <div className="text-[10px] text-slate-700 leading-snug line-clamp-2">{p.text}</div>
-                <div className="flex flex-wrap gap-1 mt-1.5">
-                  {p.tags.slice(0, 3).map(t => (
-                    <span key={t.v} className={`text-[8px] px-1.5 py-0.5 rounded border ${TAG_COLOR[t.c] || ''}`}>{t.v}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </>}
-        {scr === 'scanner' && <>
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="relative aspect-video flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #334155 0%, #1e293b 100%)' }}>
-              <svg className="w-12 h-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
-            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">AI описал нарушение</div>
-            <div className="text-[11px] text-slate-700 leading-relaxed">{CASE_AI_TRANSLATED}</div>
-          </div>
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
-            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Найденное обоснование</div>
-            <div className="space-y-1.5">
-              {CITATIONS.slice(0, 3).map(c => (
-                <div key={c.rank} className="border-l-2 border-[#2563EB]/40 pl-2">
-                  <div className="text-[10px] font-semibold text-slate-700">{c.doc} · {c.clause}</div>
-                  <div className="text-[10px] text-slate-500 leading-snug line-clamp-2">{c.text}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>}
-        {scr === 'document' && <>
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="px-3 py-2 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
-              <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-[#2563EB]/10 text-[#2563EB]">DOCX</span>
-              <span className="text-[10px] text-slate-600">Предписание №SC-127</span>
-            </div>
-            <div className="p-3 space-y-2.5">
-              <div>
-                <div className="text-[9px] text-slate-400 mb-0.5">НАРУШЕНИЕ</div>
-                <div className="text-[10px] text-slate-700 leading-snug">Работа на высоте без страховочной привязи, без каски, без ограждения.</div>
-              </div>
-              <div>
-                <div className="text-[9px] text-slate-400 mb-1">ОБОСНОВАНИЕ</div>
-                <div className="space-y-1.5">
-                  {CITATIONS.slice(0, 2).map(c => (
-                    <div key={c.rank} className="border-l-2 border-[#2563EB]/30 pl-2">
-                      <div className="text-[9px] font-semibold text-slate-700">{c.doc} · {c.clause}</div>
-                      <div className="text-[9px] text-slate-500 italic leading-snug">«{c.text}»</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          <button className="w-full py-2.5 rounded-xl text-white text-[11px] font-semibold border-none shadow-sm" style={{ background: BRAND }}>📄 Скачать DOCX</button>
-        </>}
-        {scr === 'admin' && <>
-          <div className="grid grid-cols-2 gap-2">
-            {ADMIN_USAGE.map(s => (
-              <div key={s.label} className="bg-white rounded-xl p-2.5 border border-slate-200">
-                <div className="text-[8px] text-slate-400 uppercase font-bold tracking-wider">{s.label}</div>
-                <div className="text-lg font-bold text-slate-800 mt-1">{s.value}</div>
-                <div className="text-[8px] text-slate-400 mt-0.5">{s.sub}</div>
-              </div>
-            ))}
-          </div>
-          <div className="bg-white rounded-xl p-3 border border-slate-200">
-            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-2">Нерешённые запросы</div>
-            <div className="space-y-1.5">
-              {UNRESOLVED_CASES.slice(0, 3).map(c => (
-                <div key={c.q} className="border-l-2 border-amber-400/50 pl-2">
-                  <div className="text-[10px] text-slate-700 leading-snug">«{c.q}»</div>
-                  <div className="text-[9px] text-amber-700 mt-0.5">{c.reason} · {c.n}×</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>}
-      </div>
-      <div className="px-4 py-2.5 bg-white border-t border-slate-200/60 shrink-0">
-        <div className="flex justify-center gap-1.5 mb-1.5">
-          {screens.map((s, i) => (
-            <div key={s} className={`rounded-full transition-all ${i === idx ? 'w-4 h-1.5' : 'w-1.5 h-1.5 bg-slate-300'}`} style={i === idx ? { background: BRAND } : undefined} />
           ))}
         </div>
-        <p className="text-[9px] text-slate-400 text-center">Полноэкранная версия — на ПК</p>
+        {ARCHIVE.slice(0, 2).map(p => (
+          <div key={p.id} className="bg-white rounded-xl p-2.5 border border-slate-200 text-left">
+            <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+              <span className="text-[10px] font-bold text-slate-700">{p.work}</span>
+              <span className="text-[9px] text-slate-400">·</span>
+              <span className="text-[9px] text-slate-500">{p.control}</span>
+            </div>
+            <div className="text-[11px] text-slate-700 leading-snug line-clamp-2">{p.text}</div>
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {p.tags.slice(0, 3).map(t => (
+                <span key={t.v} className={`text-[9px] px-1.5 py-0.5 rounded border ${TAG_COLOR[t.c] || ''}`}>{t.v}</span>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
+    </StorySlide>,
+
+    /* 4 — Библиотека норм */
+    <StorySlide
+      key={4}
+      title="Библиотека норм с разметкой"
+      caption="Поиск требований по цепочке: вид работ → подвид → тип контроля."
+    >
+      <div className="w-full max-w-[320px] space-y-2">
+        <div className="bg-white border border-slate-200 rounded-xl p-3 text-left">
+          <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Цепочка фильтров</div>
+          <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+            <span className="px-2 py-1 rounded-md bg-[#2563EB]/10 text-[#2563EB] font-semibold">📐 Геодезия</span>
+            <span className="text-slate-300">›</span>
+            <span className="px-2 py-1 rounded-md bg-[#2563EB]/10 text-[#2563EB] font-semibold">Разбивка осей</span>
+            <span className="text-slate-300">›</span>
+            <span className="px-2 py-1 rounded-md bg-[#2563EB]/10 text-[#2563EB] font-semibold">Геодезический</span>
+          </div>
+        </div>
+        {NTD_CLAUSES.filter(c => c.workCode === '1' || c.workCode === '5').slice(0, 2).map(c => (
+          <div key={c.id} className="bg-white border border-slate-200 rounded-xl p-2.5 text-left">
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="text-[10px] font-bold text-slate-700">{c.doc}</span>
+              <span className="text-[9px] text-slate-400">·</span>
+              <span className="text-[9px] text-[#2563EB] font-semibold">{c.clause}</span>
+            </div>
+            <div className="text-[11px] text-slate-600 leading-snug line-clamp-3">{c.text}</div>
+          </div>
+        ))}
+      </div>
+    </StorySlide>,
+
+    /* 5 — Закрытие */
+    <StoryClosingSlide
+      key={5}
+      accent={BRAND}
+      onClose={onClose}
+      title="Пилот: охрана труда"
+      caption={`Подход универсальный — масштабируется на ${WORK_TYPES.length - 2} видов работ. Параллельно собирается единый архив выданных предписаний компании.`}
+    >
+      <div className="w-full max-w-[300px] space-y-1.5">
+        {[
+          { v: '4 этапа', l: 'в одном окне' },
+          { v: 'AI-помощник', l: 'инженер одобряет' },
+          { v: 'Без выдумок', l: 'цитаты только из базы' },
+        ].map(m => (
+          <div key={m.l} className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-3.5 py-2">
+            <span className="text-[12px] font-bold text-[#2563EB]">{m.v}</span>
+            <span className="text-[11px] text-slate-500">{m.l}</span>
+          </div>
+        ))}
+      </div>
+    </StoryClosingSlide>,
+  ]
+
+  return (
+    <MobileStories
+      brand={{ initials: 'SC', name: 'Scanner', sub: 'AI-конструктор предписаний', accent: BRAND }}
+      slides={slides}
+      onClose={onClose}
+    />
   )
 }
 
@@ -671,7 +708,7 @@ function Modal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="demo-modal-enter relative w-full max-w-[1400px] rounded-2xl overflow-hidden shadow-2xl flex flex-col" style={{ height: '90vh', maxHeight: '920px' }} onClick={e => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center cursor-pointer border-none transition-colors text-lg" aria-label="Close">&times;</button>
+        <button onClick={onClose} className="hidden md:flex absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white items-center justify-center cursor-pointer border-none transition-colors text-lg" aria-label="Close">&times;</button>
         <MobileTeaser onClose={onClose} />
         <div className="hidden md:flex flex-1 min-h-0">
           <div className="w-[240px] bg-white border-r border-slate-200 flex flex-col shrink-0">
@@ -1748,7 +1785,7 @@ function AdminUnresolved() {
 function AdminErrors() {
   const errors = [
     { ts: '2026-04-22 09:14', endpoint: '/api/databook/search', code: 500, msg: 'Timeout embedding service (>5s)', n: 3 },
-    { ts: '2026-04-21 17:02', endpoint: '/api/scanner/classify', code: 429, msg: 'Rate limit Gemini API', n: 1 },
+    { ts: '2026-04-21 17:02', endpoint: '/api/scanner/classify', code: 429, msg: 'Rate limit LLM API', n: 1 },
     { ts: '2026-04-20 11:48', endpoint: '/api/databook/search', code: 400, msg: 'Invalid tag category in filter', n: 2 },
   ]
   return (

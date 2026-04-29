@@ -129,7 +129,7 @@ async def check_user_access(
 
     except Exception as e:
         error_msg = str(e)
-        logger.error(f"Gemini error (model={model_name}): {error_msg}")
+        logger.error(f"LLM error (model={model_name}): {error_msg}")
         yield f"event: error\\ndata: {error_msg}\\n\\n"
 
 return StreamingResponse(
@@ -348,7 +348,7 @@ export function CodeShowcase() {
           </div>
           <h2 className="text-2xl font-bold mb-2">Фрагменты production-кода</h2>
           <p className="text-muted text-[0.92rem] max-w-[620px]">
-            Реальный код из рабочих проектов. FastAPI async, SQLAlchemy, Gemini API, numpy, xlsxwriter.
+            Реальный код из рабочих проектов. FastAPI async, SQLAlchemy, LLM API, numpy, xlsxwriter.
           </p>
         </div>
 

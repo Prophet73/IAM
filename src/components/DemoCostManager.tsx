@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { tracker } from '../utils/tracker'
+import { MobileStories, StorySlide, PainSlide, StoryClosingSlide } from './MobileStories'
 
 type Screen = 'dashboard' | 'project' | 'analogs' | 'report' | 'deflators' | 'roadmap'
 
@@ -58,500 +59,229 @@ export function DemoCostManager() {
   )
 }
 
-/* ===== MOBILE TEASER ===== */
+/* ===== MOBILE TEASER (Stories) ===== */
 function MobileTeaser({ onClose }: { onClose: () => void }) {
-  const B = '#059669'
-  const screens = ['projects', 'upload', 'analysis', 'compare', 'report'] as const
-  type Scr = typeof screens[number]
-  const [scr, setScr] = useState<Scr>('projects')
-  const idx = screens.indexOf(scr)
+  const B = BRAND
 
-  // Swipe
-  const touchRef = useRef<{ x: number; y: number } | null>(null)
-  const handleTouchStart = (e: React.TouchEvent) => { touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY } }
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchRef.current) return
-    const dx = e.changedTouches[0].clientX - touchRef.current.x
-    const dy = e.changedTouches[0].clientY - touchRef.current.y
-    touchRef.current = null
-    if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx)) return
-    if (dx < 0 && idx < screens.length - 1) setScr(screens[idx + 1])
-    if (dx > 0 && idx > 0) setScr(screens[idx - 1])
-  }
+  // Real classifier sections — 14 разделов, 4 уровня иерархии
+  const SECTIONS = [
+    { code: '7', name: '7. Отделочные работы', val: 18400, pct: 100 },
+    { code: '4', name: '4. Фундаменты, подземная часть', val: 24600, pct: 78 },
+    { code: '5', name: '5. Конструкции надземной части', val: 31200, pct: 95 },
+    { code: '8', name: '8. ВИС', val: 22800, pct: 72 },
+    { code: '6', name: '6. Фасады и кровля', val: 14200, pct: 45 },
+  ]
 
-  // Analysis drill-down (up to 4 levels like real classifier)
-  const [drillPath, setDrillPath] = useState<string[]>([])
-  useEffect(() => { if (scr !== 'analysis') setDrillPath([]) }, [scr])
-  const drillDown = (name: string) => setDrillPath(p => [...p, name])
-  const drillUp = (idx: number) => setDrillPath(p => p.slice(0, idx))
+  const slides: React.ReactNode[] = [
+    /* 0 — Боль */
+    <PainSlide
+      key={0}
+      title="Смета подрядчика — оценить негде"
+      intro="Своя история проектов разбросана по Excel разных форматов. Прошлые годы несопоставимы без приведения цен."
+      pains={[
+        'Нет быстрого способа оценить корректность цены',
+        'Справочные цены не учитывают специфику компании',
+        'Сравнение «на глаз», без обоснования по разделам',
+      ]}
+    />,
 
-  const labels: Record<Scr, string> = { projects: 'Проекты', upload: 'Загрузка', analysis: 'Аналитика', compare: 'Сравнение', report: 'Отчёт' }
+    /* 1 — Единый классификатор */
+    <StorySlide
+      key={1}
+      title="Единый классификатор работ"
+      caption="Основа системы: 14 разделов работ и 4 уровня детализации. Сметы любого формата раскладываются по этой структуре."
+    >
+      <div className="w-full max-w-[320px] bg-white border border-slate-200 rounded-xl shadow-sm p-3 text-left">
+        <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-2">Раздел → подраздел → работа → материал</div>
+        <div className="space-y-1.5">
+          {[
+            { lvl: 1, txt: '7. Отделочные работы', em: true },
+            { lvl: 2, txt: '7.4 МОП — Надземная' },
+            { lvl: 3, txt: '7.4.1 Устройство и отделка полов' },
+            { lvl: 4, txt: '7.4.1.4 Укладка керамогранита' },
+          ].map(r => (
+            <div key={r.txt} className="flex items-center gap-2" style={{ paddingLeft: (r.lvl - 1) * 12 }}>
+              <div className="w-1 h-1 rounded-full" style={{ background: B }} />
+              <span className={`text-[12px] ${r.em ? 'font-bold text-slate-800' : 'text-slate-600'}`}>{r.txt}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between">
+          <span className="text-[10px] text-slate-500">Всего разделов</span>
+          <span className="text-[15px] font-extrabold" style={{ color: B }}>14</span>
+        </div>
+      </div>
+    </StorySlide>,
 
-  return (
-    <div className="flex md:hidden flex-col h-full bg-[#F8F9FA]" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200/60 px-4 pt-3 pb-2 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] text-white font-bold shadow-sm" style={{ background: B, boxShadow: '0 2px 8px rgba(5,150,105,0.25)' }}>CM</div>
-          <div>
-            <div className="text-[13px] font-bold text-gray-800 leading-tight">CostManager</div>
-            <div className="text-[10px] text-gray-400">Контроль себестоимости</div>
+    /* 2 — Загрузка + индексы */
+    <StorySlide
+      key={2}
+      title="Загрузка + приведение цен"
+      caption="Excel автоматически раскладывается по классификатору. Индекс удорожания приводит цены прошлых лет к сегодняшним."
+    >
+      <div className="w-full max-w-[320px] space-y-2">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-3 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0" style={{ background: `${B}18` }}>📎</div>
+          <div className="text-left flex-1 min-w-0">
+            <div className="text-[12px] font-semibold text-slate-800 truncate">smeta_Объект-A_2026.xlsx</div>
+            <div className="text-[10px] text-slate-400">2 847 позиций · 14.2 МБ</div>
           </div>
         </div>
-        <button onClick={onClose} className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm border-none cursor-pointer">×</button>
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-3 text-left">
+          <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Индекс удорожания</div>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[11px] text-slate-500">2022 → 2026</span>
+            <span className="text-[14px] font-extrabold" style={{ color: B }}>×1.247</span>
+          </div>
+          <div className="text-[10px] text-slate-500 leading-snug">Цены прошлых лет автоматически приводятся к текущим — без этого сравнивать проекты разных лет некорректно.</div>
+        </div>
       </div>
+    </StorySlide>,
 
-      {/* Tabs */}
-      <div className="flex bg-white border-b border-gray-200/60 px-1 shrink-0 overflow-x-auto scrollbar-hidden">
-        {screens.map(s => (
-          <button key={s} onClick={() => setScr(s)}
-            className={`flex-1 px-2 py-2.5 text-[10px] font-semibold whitespace-nowrap transition-colors border-none cursor-pointer bg-transparent ${scr === s ? 'text-[#059669]' : 'text-gray-400'}`}
-            style={scr === s ? { borderBottom: `2px solid ${B}` } : { borderBottom: '2px solid transparent' }}
-          >{labels[s]}</button>
-        ))}
+    /* 3 — Затраты по разделам */
+    <StorySlide
+      key={3}
+      title="Затраты по разделам, ₽/м²"
+      caption="Можно раскрыть до конкретной работы — видно, на чём именно проект отличается от аналогов."
+    >
+      <div className="w-full max-w-[320px] bg-white border border-slate-200 rounded-xl shadow-sm p-3 text-left">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[11px] font-bold text-slate-700">ЖК «Объект-A»</span>
+          <span className="text-[10px] text-slate-500">128 500 ₽/м²</span>
+        </div>
+        <div className="space-y-2">
+          {SECTIONS.map((s, i) => (
+            <div key={s.code}>
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[11px] text-slate-700">{s.name}</span>
+                <span className="text-[11px] font-bold text-slate-800 tabular-nums">{fmt(s.val)}</span>
+              </div>
+              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bar-grow"
+                  style={{
+                    width: `${s.pct}%`,
+                    background: B,
+                    opacity: 0.4 + (s.pct / 100) * 0.6,
+                    animationDelay: `${200 + i * 90}ms`,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
+    </StorySlide>,
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-3">
-
-        {/* ── PROJECTS ── */}
-        {scr === 'projects' && (
-          <div className="animate-[fadeIn_0.2s_ease-out] space-y-2.5">
-            {/* KPI row */}
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { v: '12', l: 'Проектов', icon: '🏗' },
-                { v: '4.2 млрд', l: 'Общий бюджет', icon: '💰' },
-                { v: '128.5K', l: '₽/м² средняя', icon: '📊' },
-              ].map(k => (
-                <div key={k.l} className="bg-white rounded-xl border border-gray-200 p-2 text-center" style={{ borderTop: `2px solid ${B}` }}>
-                  <div className="text-sm mb-0.5">{k.icon}</div>
-                  <div className="text-[14px] font-extrabold text-gray-800">{k.v}</div>
-                  <div className="text-[7px] text-gray-400 font-medium">{k.l}</div>
-                </div>
-              ))}
-            </div>
-            {/* Project cards */}
-            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Проекты</div>
-            {[
-              { name: 'ЖК «Объект-A»', code: '1234', area: '45 200 м²', cost: '5.8 млрд ₽', status: 'В работе', sColor: B },
-              { name: 'ЖК «Объект-C»', code: '3045', area: '32 100 м²', cost: '3.2 млрд ₽', status: 'В работе', sColor: B },
-              { name: 'БЦ «Объект-B»', code: '2001', area: '18 700 м²', cost: '1.9 млрд ₽', status: 'Планируется', sColor: '#F59E0B' },
-              { name: 'Склад «Объект-D»', code: '4102', area: '8 400 м²', cost: '420 млн ₽', status: 'Завершено', sColor: '#64748B' },
-            ].map(p => (
-              <div key={p.code} className="bg-white rounded-xl border border-gray-200 p-3">
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="text-[11px] font-bold text-gray-800">{p.name}</div>
-                  <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full text-white" style={{ background: p.sColor }}>{p.status}</span>
-                </div>
-                <div className="flex items-center gap-3 text-[9px] text-gray-400">
-                  <span>Код: <span className="font-mono text-gray-600">{p.code}</span></span>
-                  <span>{p.area}</span>
-                  <span className="font-semibold text-gray-600">{p.cost}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ── UPLOAD ── */}
-        {scr === 'upload' && (
-          <div className="animate-[fadeIn_0.2s_ease-out] space-y-2.5">
-            {/* File upload */}
-            <div className="bg-gradient-to-br from-[#059669]/5 to-[#059669]/10 border border-[#059669]/15 rounded-xl p-3 text-center">
-              <div className="text-lg mb-1">📎</div>
-              <div className="text-[11px] font-semibold text-gray-800">smeta_Объект-A_2026.xlsx</div>
-              <div className="text-[9px] text-gray-400">Excel · 2 847 позиций · 14.2 МБ</div>
-            </div>
-
-            {/* Expected columns */}
-            <div className="bg-white rounded-xl border border-gray-200 p-2.5">
-              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Структура файла</div>
-              <div className="grid grid-cols-2 gap-1">
-                {['Наименование', 'Ед. изм.', 'Количество', 'Стоимость материалов', 'Стоимость работ', 'Итого'].map(c => (
-                  <div key={c} className="flex items-center gap-1.5">
-                    <svg className="w-2.5 h-2.5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
-                    <span className="text-[9px] text-gray-600">{c}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Deflator */}
-            <div className="bg-white rounded-xl border border-gray-200 p-2.5">
-              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Приведение цен к текущим</div>
-              <div className="flex items-center justify-between">
-                <span className="text-[9px] text-gray-500">Индекс удорожания 2026</span>
-                <span className="text-[10px] font-bold text-gray-800">×1.047</span>
-              </div>
-              <div className="text-[8px] text-gray-400 mt-1">Цены прошлых лет автоматически приводятся к текущим — чтобы корректно сравнивать проекты разных лет</div>
-            </div>
-
-            {/* Stack */}
-            <div className="flex flex-wrap gap-1 justify-center pt-1">
-              {['Flask', 'PostgreSQL', 'openpyxl', 'Chart.js', 'Bootstrap', 'LLM API'].map(t => (
-                <span key={t} className="px-1.5 py-0.5 bg-gray-100 rounded text-[8px] text-gray-400 font-medium">{t}</span>
-              ))}
+    /* 4 — Сравнение с аналогами */
+    <StorySlide
+      key={4}
+      title="Сравнение с аналогами"
+      caption="P10–P90 — диапазон сопоставимых проектов компании. Маркер — где находится текущий объект внутри коридора."
+    >
+      <div className="w-full max-w-[320px] space-y-2">
+        {/* Stat band — confidence interval */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between text-left">
+          <div>
+            <div className="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Коридор по аналогам</div>
+            <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold">
+              <span className="text-blue-500">P10: 105k</span>
+              <span className="text-slate-400">—</span>
+              <span className="text-emerald-600">Med: 125k</span>
+              <span className="text-slate-400">—</span>
+              <span className="text-blue-500">P90: 145k</span>
             </div>
           </div>
-        )}
-
-        {/* ── ANALYSIS ── */}
-        {scr === 'analysis' && (
-          <div className="animate-[fadeIn_0.2s_ease-out] space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="text-[12px] font-bold text-gray-800">ЖК «Объект-A» — Затраты</div>
-              <span className="text-[9px] text-gray-400">128 500 ₽/м²</span>
-            </div>
-
-            {/* Breadcrumb */}
-            {drillPath.length > 0 && (
-              <div className="flex items-center gap-1 text-[9px] flex-wrap">
-                <button onClick={() => drillUp(0)} className="text-[#059669] font-semibold bg-transparent border-none cursor-pointer p-0">Все категории</button>
-                {drillPath.map((p, i) => (
-                  <span key={i} className="flex items-center gap-1">
-                    <span className="text-gray-300">›</span>
-                    {i < drillPath.length - 1
-                      ? <button onClick={() => drillUp(i + 1)} className="text-[#059669] font-semibold bg-transparent border-none cursor-pointer p-0">{p}</button>
-                      : <span className="text-gray-600 font-medium">{p}</span>
-                    }
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Drill-down tree */}
-            <div className="bg-white rounded-xl border border-gray-200 p-3">
-              {(() => {
-                type Row = { code: string; name: string; val: number; pct: number; color: string; children?: boolean }
-                const levels: Record<string, Row[]> = {
-                  '': [
-                    { code: '7', name: '7. Отделочные работы', val: 18400, pct: 100, color: '#059669', children: true },
-                    { code: '4', name: '4. Фундаменты и подземная часть', val: 24600, pct: 78, color: '#10B981', children: true },
-                    { code: '5', name: '5. Конструкции надземной части', val: 31200, pct: 95, color: '#34D399', children: true },
-                    { code: '8', name: '8. Внутренние инж. системы (ВИС)', val: 22800, pct: 72, color: '#6EE7B7', children: true },
-                    { code: '6', name: '6. Фасады и кровля', val: 14200, pct: 45, color: '#A7F3D0', children: true },
-                    { code: '3', name: '3. Земляные работы', val: 8600, pct: 27, color: '#D1FAE5', children: true },
-                    { code: '2', name: '2. Подготовительные работы', val: 5200, pct: 16, color: '#ECFDF5', children: false },
-                    { code: '1', name: '1. ПИР и Разрешительная документация', val: 3500, pct: 11, color: '#F0FDF4', children: false },
-                  ],
-                  '7. Отделочные работы': [
-                    { code: '7.4', name: '7.4 Отделка МОП — Надземная часть', val: 5800, pct: 100, color: '#059669', children: true },
-                    { code: '7.6', name: '7.6 Отделка жилых — Fit-Out', val: 4200, pct: 72, color: '#10B981', children: true },
-                    { code: '7.5', name: '7.5 Отделка жилых — White Box', val: 3100, pct: 53, color: '#34D399', children: false },
-                    { code: '7.1', name: '7.1 Отделка паркинга', val: 2400, pct: 41, color: '#6EE7B7', children: false },
-                    { code: '7.3', name: '7.3 Отделка МОП — Подземная', val: 1600, pct: 28, color: '#A7F3D0', children: false },
-                    { code: '7.2', name: '7.2 Отделка техпомещений', val: 1300, pct: 22, color: '#D1FAE5', children: false },
-                  ],
-                  '7.4 Отделка МОП — Надземная часть': [
-                    { code: '7.4.1', name: '7.4.1 Устройство и отделка полов', val: 2200, pct: 100, color: '#059669', children: true },
-                    { code: '7.4.2', name: '7.4.2 Отделка стен', val: 1800, pct: 82, color: '#10B981', children: true },
-                    { code: '7.4.3', name: '7.4.3 Отделка потолков', val: 1400, pct: 64, color: '#34D399', children: true },
-                    { code: '7.4.4', name: '7.4.4 Декоративные элементы', val: 400, pct: 18, color: '#6EE7B7', children: false },
-                  ],
-                  '7.4.1 Устройство и отделка полов': [
-                    { code: '7.4.1.4', name: '7.4.1.4 Укладка керамогранита на пол', val: 860, pct: 100, color: '#059669', children: false },
-                    { code: '7.4.1.5', name: '7.4.1.5 Укладка натурального камня', val: 520, pct: 60, color: '#10B981', children: false },
-                    { code: '7.4.1.1', name: '7.4.1.1 Устройство ц/п стяжки пола', val: 380, pct: 44, color: '#34D399', children: false },
-                    { code: '7.4.1.3', name: '7.4.1.3 Устройство наливного пола', val: 280, pct: 33, color: '#6EE7B7', children: false },
-                    { code: '7.4.1.2', name: '7.4.1.2 Устройство полусухой стяжки', val: 160, pct: 19, color: '#A7F3D0', children: false },
-                  ],
-                }
-                const lastSegment = drillPath[drillPath.length - 1] || ''
-                const rows = levels[lastSegment] || levels['']
-                return (
-                  <>
-                    <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2">
-                      {drillPath.length === 0 ? 'Иерархия затрат (₽/м²)' : `${lastSegment} (₽/м²)`}
-                    </div>
-                    <div className="space-y-1.5">
-                      {rows.map(b => (
-                        <button key={b.code} onClick={() => b.children ? drillDown(b.name) : undefined}
-                          className={`w-full text-left bg-transparent border-none p-0 ${b.children ? 'cursor-pointer' : 'cursor-default'}`}>
-                          <div className="flex items-center justify-between mb-0.5">
-                            <span className="text-[9px] text-gray-700 font-medium flex items-center gap-1 flex-1 min-w-0">
-                              <span className="truncate">{b.name}</span>
-                              {b.children && <svg className="w-2.5 h-2.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>}
-                            </span>
-                            <span className="text-[9px] font-bold text-gray-800 shrink-0 ml-2">{fmt(b.val)}</span>
-                          </div>
-                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${b.pct}%`, background: b.color }} />
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )
-              })()}
-            </div>
-
-            {/* Cost summary */}
-            <div className="bg-white rounded-xl border border-gray-200 p-2.5">
-              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Стоимость проекта</div>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { l: 'В ценах сметы', v: '5.81 млрд ₽' },
-                  { l: 'В текущих ценах', v: '6.08 млрд ₽' },
-                  { l: 'За м² (по смете)', v: '128 500 ₽' },
-                  { l: 'За м² (текущие)', v: '134 500 ₽' },
-                ].map(s => (
-                  <div key={s.l}>
-                    <div className="text-[8px] text-gray-400">{s.l}</div>
-                    <div className="text-[11px] font-bold text-gray-800">{s.v}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="text-right">
+            <div className="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Оценка</div>
+            <div className="text-[10px] font-bold text-emerald-600">В норме</div>
           </div>
-        )}
+        </div>
 
-        {/* ── COMPARE ── */}
-        {scr === 'compare' && (
-          <div className="animate-[fadeIn_0.2s_ease-out] space-y-2.5">
-            {/* Controls */}
-            <div className="bg-white rounded-xl border border-gray-200 p-2.5 flex items-center gap-2 flex-wrap">
-              <span className="text-[8px] text-gray-400 font-bold">Метрика:</span>
-              {['₽/м²', 'Абсолют', '₽/кварт.', '₽/м³'].map((m, i) => (
-                <span key={m} className={`px-2 py-0.5 rounded-full text-[8px] font-semibold ${i === 0 ? 'bg-[#059669] text-white' : 'bg-gray-100 text-gray-400'}`}>{m}</span>
-              ))}
-              <span className="text-[8px] text-gray-300 mx-0.5">|</span>
-              {['Всего', 'Материалы', 'Работы'].map((c, i) => (
-                <span key={c} className={`px-2 py-0.5 rounded-full text-[8px] font-semibold ${i === 0 ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-400'}`}>{c}</span>
-              ))}
-            </div>
-
-            {/* KPI cards */}
-            <div className="space-y-1.5">
-              {[
-                { name: 'ЖК «Объект-A»', cost: '128 500', ref: true, delta: null, color: '#E52713' },
-                { name: 'ЖК «Level»', cost: '115 200', ref: false, delta: -10.4, color: '#3B82F6' },
-                { name: 'ЖК «Символ»', cost: '141 800', ref: false, delta: 10.3, color: '#F59E0B' },
-              ].map(p => (
-                <div key={p.name} className="bg-white rounded-xl border border-gray-200 p-2.5 flex items-center gap-2" style={{ borderLeft: `3px solid ${p.color}` }}>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-gray-800">{p.name}</span>
-                      {p.ref && <span className="text-[7px] font-bold px-1 py-0.5 rounded bg-red-50 text-red-500">ЭТАЛОН</span>}
+        {(() => {
+          const P10 = 105000, P90 = 145000
+          // Wider plot range so an out-of-band point is still visible on the bar
+          const PLOT_MIN = 95000, PLOT_MAX = 165000
+          const items = [
+            { name: 'ЖК «Объект-A»', val: 128500, ref: true,  delta: null, color: '#E52713' },
+            { name: 'Аналог 1',      val: 115200, ref: false, delta: -10.4, color: '#3B82F6' },
+            { name: 'Аналог 2',      val: 155000, ref: false, delta: 20.6,  color: '#F59E0B' },
+          ]
+          // Where P10 / P90 fall on the plot's full width
+          const p10Pct = ((P10 - PLOT_MIN) / (PLOT_MAX - PLOT_MIN)) * 100
+          const p90Pct = ((P90 - PLOT_MIN) / (PLOT_MAX - PLOT_MIN)) * 100
+          return items.map(p => {
+            const pct = Math.max(0, Math.min(100, ((p.val - PLOT_MIN) / (PLOT_MAX - PLOT_MIN)) * 100))
+            const inBand = p.val >= P10 && p.val <= P90
+            return (
+              <div key={p.name} className="bg-white border border-slate-200 rounded-xl px-3 pt-2 pb-2 shadow-sm" style={{ borderLeft: `3px solid ${p.color}` }}>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[12px] font-bold text-slate-800">{p.name}</span>
+                      {p.ref && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-600">ЭТАЛОН</span>}
+                      {!p.ref && !inBand && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-600">АНОМАЛИЯ</span>}
                     </div>
-                    <span className="text-[8px] text-gray-400">₽/м² · в текущих ценах</span>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-[13px] font-extrabold text-gray-800">{p.cost}</div>
+                    <span className="text-[9px] text-slate-400">{(p.val / 1000).toFixed(0)}k ₽/м² · {p.ref ? 'оцениваемый объект' : inBand ? 'в коридоре' : 'за пределами P90'}</span>
                   </div>
                   {p.delta !== null && (
-                    <span className={`text-[9px] font-bold px-1.5 py-1 rounded-lg shrink-0 ${p.delta < 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                    <span className={`text-[11px] font-bold px-1.5 py-1 rounded-lg shrink-0 ${p.delta < 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-500'}`}>
                       {p.delta > 0 ? '+' : ''}{p.delta}%
                     </span>
                   )}
                 </div>
-              ))}
-            </div>
-
-            {/* Grouped bar chart by category */}
-            <div className="bg-white rounded-xl border border-gray-200 p-2.5">
-              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-2">Сравнительный анализ (₽/м²)</div>
-              {[
-                { cat: '7. Отделочные', vals: [18400, 15200, 22100], max: 22100 },
-                { cat: '5. Надземная часть', vals: [31200, 28400, 34800], max: 34800 },
-                { cat: '4. Фундаменты', vals: [24600, 21800, 26200], max: 26200 },
-                { cat: '8. ВИС', vals: [22800, 19600, 25400], max: 25400 },
-                { cat: '6. Фасады', vals: [14200, 13800, 16100], max: 16100 },
-              ].map(c => (
-                <div key={c.cat} className="mb-2.5 last:mb-0">
-                  <div className="text-[9px] text-gray-600 font-medium mb-1">{c.cat}</div>
-                  <div className="space-y-0.5">
-                    {c.vals.map((v, i) => {
-                      const colors = ['#E52713', '#3B82F6', '#F59E0B']
-                      const names = ['Объект-A', 'Аналог 1', 'Аналог 2']
-                      const ref = c.vals[0]
-                      const dev = i > 0 ? Math.round(((v / ref) - 1) * 100) : null
-                      const devBad = dev !== null && Math.abs(dev) > 15
-                      return (
-                        <div key={i} className="flex items-center gap-1.5">
-                          <span className="text-[7px] text-gray-400 w-10 shrink-0">{names[i]}</span>
-                          <div className="flex-1 h-2.5 bg-gray-100 rounded-sm overflow-hidden">
-                            <div className="h-full rounded-sm" style={{ width: `${(v / c.max) * 100}%`, background: colors[i] }} />
-                          </div>
-                          <span className="text-[7px] font-bold text-gray-600 w-10 text-right shrink-0">{fmt(v)}</span>
-                          {dev !== null && (
-                            <span className={`text-[6px] font-bold w-8 text-right shrink-0 ${devBad ? (dev > 0 ? 'text-red-500' : 'text-green-600') : 'text-gray-400'}`}>
-                              {dev > 0 ? '+' : ''}{dev}%
-                            </span>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
+                {/* Mini plot: gray track with green P10–P90 band, marker for the project */}
+                <div className="relative h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className="absolute h-full bg-emerald-100"
+                    style={{ left: `${p10Pct}%`, width: `${p90Pct - p10Pct}%` }}
+                  />
+                  <div
+                    className="absolute h-full rounded-full"
+                    style={{ left: `${Math.max(0, pct - 1.5)}%`, width: '3px', background: p.color }}
+                  />
                 </div>
-              ))}
-              <div className="flex gap-3 mt-2 pt-2 border-t border-gray-100 justify-center">
-                {[{ c: '#E52713', l: 'Объект-A (эталон)' }, { c: '#3B82F6', l: 'Аналог 1' }, { c: '#F59E0B', l: 'Аналог 2' }].map(lg => (
-                  <div key={lg.l} className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm" style={{ background: lg.c }} /><span className="text-[7px] text-gray-400">{lg.l}</span></div>
-                ))}
-              </div>
-            </div>
-
-            {/* TEP table with deviation highlighting */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="flex items-center justify-between px-2.5 py-2 bg-gray-50 border-b border-gray-200">
-                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Сводка ТЭП</span>
-                <span className="text-[7px] text-gray-400">🔴 отклонение &gt;15%</span>
-              </div>
-              <div className="grid grid-cols-4 text-[8px] font-bold text-gray-400 uppercase border-b border-gray-200 bg-gray-50">
-                <div className="px-2 py-1.5">Параметр</div>
-                <div className="px-1.5 py-1.5 text-center" style={{ color: '#E52713' }}>Объект-A</div>
-                <div className="px-1.5 py-1.5 text-center" style={{ color: '#3B82F6' }}>Level</div>
-                <div className="px-1.5 py-1.5 text-center" style={{ color: '#F59E0B' }}>Символ</div>
-              </div>
-              {[
-                { p: 'Площадь надз.', vals: ['45 200', '38 600', '52 100'], u: 'м²', devs: [0, -14.6, 15.3] },
-                { p: 'Этажность', vals: ['25', '22', '30'], u: '', devs: [0, -12, 20] },
-                { p: 'Квартиры', vals: ['480', '340', '620'], u: '', devs: [0, -29.2, 29.2] },
-                { p: 'Паркинг', vals: ['450', '320', '580'], u: 'м/м', devs: [0, -28.9, 28.9] },
-                { p: 'Объём', vals: ['136K', '108K', '162K'], u: 'м³', devs: [0, -20.6, 19.1] },
-                { p: 'Класс', vals: ['Комф+', 'Комф', 'Бизн'], u: '', devs: [0, 0, 0] },
-              ].map((r, ri) => (
-                <div key={r.p} className={`grid grid-cols-4 text-[9px] border-b border-gray-100 last:border-0 ${ri % 2 ? 'bg-gray-50/30' : ''}`}>
-                  <div className="px-2 py-1.5 text-gray-500 font-medium">{r.p}</div>
-                  {r.vals.map((v, j) => {
-                    const d = r.devs[j]
-                    const hl = Math.abs(d) > 15 ? (d > 0 ? 'bg-red-50' : 'bg-green-50') : ''
-                    return (
-                      <div key={j} className={`px-1.5 py-1.5 text-center ${j === 0 ? 'font-bold text-gray-800' : 'text-gray-600'} ${hl}`}>
-                        {v}{r.u && <span className="text-[6px] text-gray-400 ml-0.5">{r.u}</span>}
-                      </div>
-                    )
-                  })}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── REPORT ── */}
-        {scr === 'report' && (
-          <div className="animate-[fadeIn_0.2s_ease-out] space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">XLSX-отчёт</div>
-              <span className="text-[8px] text-gray-400">analogs_comparison_report.xlsx</span>
-            </div>
-
-            {/* Sheet tabs mock */}
-            <div className="flex gap-0.5 overflow-x-auto scrollbar-hidden">
-              {[
-                { name: 'Титульный лист', color: '#64748B' },
-                { name: 'Сравнительный анализ', color: '#059669' },
-                { name: 'ПС Level', color: '#3B82F6' },
-                { name: 'Валидация по рынку', color: '#E52713' },
-              ].map((sh, i) => (
-                <div key={sh.name} className="px-2 py-1 rounded-t-lg text-[7px] font-bold whitespace-nowrap" style={{ background: i === 1 ? 'white' : '#f1f5f9', color: sh.color, borderBottom: i === 1 ? `2px solid ${sh.color}` : 'none' }}>{sh.name}</div>
-              ))}
-            </div>
-
-            {/* Mini spreadsheet — Сравнительный анализ */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              {/* Excel-like header */}
-              <div className="bg-[#E2EFDA] px-2 py-1.5 border-b border-gray-200 flex items-center justify-between">
-                <span className="text-[8px] font-bold text-gray-700">Сравнительный анализ</span>
-                <div className="flex gap-1">
-                  <span className="w-3 h-3 rounded-sm" style={{ background: '#E2EFDA', border: '1px solid #A9D18E' }} />
-                  <span className="w-3 h-3 rounded-sm" style={{ background: '#FDE9D9', border: '1px solid #F8CBAC' }} />
-                  <span className="w-3 h-3 rounded-sm" style={{ background: '#DEEAF6', border: '1px solid #BDD7EE' }} />
+                <div className="relative h-3 mt-0.5 text-[7px] text-slate-400 font-mono">
+                  <span className="absolute -translate-x-1/2" style={{ left: `${p10Pct}%` }}>P10</span>
+                  <span className="absolute -translate-x-1/2" style={{ left: `${(p10Pct + p90Pct) / 2}%` }}>Med</span>
+                  <span className="absolute -translate-x-1/2" style={{ left: `${p90Pct}%` }}>P90</span>
                 </div>
               </div>
-              {/* Column headers */}
-              <div className="overflow-x-auto">
-                <div className="min-w-[500px]">
-                  <div className="grid grid-cols-[120px_1fr_1fr_1fr_60px_60px] text-[6px] font-bold uppercase border-b border-gray-300 bg-[#DEEAF6]">
-                    <div className="px-1.5 py-1 border-r border-gray-300">Категория</div>
-                    <div className="px-1 py-1 border-r border-gray-300 text-center" style={{ background: '#E2EFDA' }}>Объект-A (эталон)</div>
-                    <div className="px-1 py-1 border-r border-gray-300 text-center" style={{ background: '#FDE9D9' }}>Level</div>
-                    <div className="px-1 py-1 border-r border-gray-300 text-center" style={{ background: '#DEEAF6' }}>Символ</div>
-                    <div className="px-1 py-1 border-r border-gray-300 text-center">Откл.%</div>
-                    <div className="px-1 py-1 text-center">Доля%</div>
-                  </div>
-                  <div className="grid grid-cols-[120px_1fr_1fr_1fr_60px_60px] text-[6px] border-b border-gray-300 bg-[#DEEAF6]/30">
-                    <div className="px-1.5 py-0.5 border-r border-gray-200 text-gray-400">Уд/м² | Мат | Раб</div>
-                    <div className="px-1 py-0.5 border-r border-gray-200 text-gray-400 text-center">Всего | Мат | Раб</div>
-                    <div className="px-1 py-0.5 border-r border-gray-200 text-gray-400 text-center">Всего | Мат | Раб</div>
-                    <div className="px-1 py-0.5 border-r border-gray-200 text-gray-400 text-center">Всего | Мат | Раб</div>
-                    <div className="px-1 py-0.5 border-r border-gray-200 text-gray-400 text-center">от ср.</div>
-                    <div className="px-1 py-0.5 text-gray-400 text-center">от итого</div>
-                  </div>
-                  {/* Data rows */}
-                  {[
-                    { cat: 'ИТОГО', vals: ['128 500', '115 200', '141 800'], dev: '', share: '100%', bold: true, bg: '#EAECEE' },
-                    { cat: '7. Отделочные работы', vals: ['18 400', '15 200', '22 100'], dev: '-1.2%', share: '14.3%', bold: true, bg: '' },
-                    { cat: '  7.4 МОП — Надземная', vals: ['5 800', '4 900', '7 200'], dev: '+3.8%', share: '4.5%', bold: false, bg: '' },
-                    { cat: '    7.4.1 Полы', vals: ['2 200', '1 800', '2 900'], dev: '+4.2%', share: '1.7%', bold: false, bg: '' },
-                    { cat: '5. Надземная часть', vals: ['31 200', '28 400', '34 800'], dev: '-0.8%', share: '24.3%', bold: true, bg: '' },
-                    { cat: '4. Фундаменты', vals: ['24 600', '21 800', '26 200'], dev: '+1.7%', share: '19.1%', bold: true, bg: '' },
-                    { cat: '8. ВИС', vals: ['22 800', '19 600', '25 400'], dev: '-2.4%', share: '17.7%', bold: true, bg: '' },
-                  ].map((r, i) => (
-                    <div key={i} className={`grid grid-cols-[120px_1fr_1fr_1fr_60px_60px] text-[7px] border-b border-gray-100 ${r.bold ? 'font-bold' : ''}`} style={r.bg ? { background: r.bg } : undefined}>
-                      <div className="px-1.5 py-1 border-r border-gray-200 text-gray-700 truncate">{r.cat}</div>
-                      <div className="px-1 py-1 border-r border-gray-200 text-center text-gray-800" style={{ background: r.bold ? '#E2EFDA30' : undefined }}>{r.vals[0]}</div>
-                      <div className="px-1 py-1 border-r border-gray-200 text-center text-gray-600" style={{ background: r.bold ? '#FDE9D930' : undefined }}>{r.vals[1]}</div>
-                      <div className="px-1 py-1 border-r border-gray-200 text-center text-gray-600" style={{ background: r.bold ? '#DEEAF630' : undefined }}>{r.vals[2]}</div>
-                      <div className={`px-1 py-1 border-r border-gray-200 text-center ${r.dev.startsWith('+') ? 'text-red-500' : r.dev.startsWith('-') ? 'text-green-600' : 'text-gray-400'}`}>{r.dev}</div>
-                      <div className="px-1 py-1 text-center text-gray-500">{r.share}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Validation sheet preview */}
-            <div className="bg-white rounded-xl border border-gray-200 p-2.5">
-              <div className="text-[9px] font-bold text-gray-700 mb-2">Проверка по рынку (эталон)</div>
-              <div className="space-y-1.5">
-                {[
-                  { cat: '7. Отделочные', ref: 18400, p10: 14200, med: 17800, p90: 23100, pos: 'В рынке' },
-                  { cat: '5. Надземная', ref: 31200, p10: 26800, med: 30500, p90: 35200, pos: 'В рынке' },
-                  { cat: '4. Фундаменты', ref: 24600, p10: 18900, med: 22100, p90: 27400, pos: 'Выше P50' },
-                  { cat: '8. ВИС', ref: 22800, p10: 19200, med: 21600, p90: 26800, pos: 'В рынке' },
-                ].map(r => {
-                  const pct = ((r.ref - r.p10) / (r.p90 - r.p10)) * 100
-                  return (
-                    <div key={r.cat}>
-                      <div className="flex items-center justify-between mb-0.5">
-                        <span className="text-[8px] text-gray-600 font-medium">{r.cat}</span>
-                        <span className="text-[8px] font-bold text-gray-800">{fmt(r.ref)} ₽/м²</span>
-                      </div>
-                      <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="absolute h-full bg-[#059669]/15 rounded-full" style={{ left: '0%', width: '100%' }} />
-                        <div className="absolute h-full rounded-full" style={{ left: `${Math.max(0, pct - 2)}%`, width: '4px', background: '#E52713' }} />
-                      </div>
-                      <div className="flex justify-between text-[6px] text-gray-400 mt-0.5">
-                        <span>P10: {fmt(r.p10)}</span>
-                        <span>Med: {fmt(r.med)}</span>
-                        <span>P90: {fmt(r.p90)}</span>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Export */}
-            <button className="w-full py-2.5 text-white rounded-xl text-[11px] font-bold border-none cursor-default flex items-center justify-center gap-2 shadow-sm" style={{ background: B, boxShadow: '0 4px 12px rgba(5,150,105,0.25)' }}>
-              📊 Скачать XLSX (4 листа)
-            </button>
-          </div>
-        )}
+            )
+          })
+        })()}
       </div>
+    </StorySlide>,
 
-      {/* Footer */}
-      <div className="px-4 py-2.5 bg-white border-t border-gray-200/60 shrink-0">
-        <div className="flex justify-center gap-1.5 mb-1.5">
-          {screens.map((s, i) => (
-            <div key={s} className={`rounded-full transition-all ${i === idx ? 'w-4 h-1.5' : 'w-1.5 h-1.5 bg-gray-300'}`} style={i === idx ? { background: B } : undefined} />
-          ))}
-        </div>
-        <p className="text-[9px] text-gray-400 text-center">Полноэкранная версия с живым интерактивным демо доступна на ПК</p>
+    /* 5 — Закрытие */
+    <StoryClosingSlide
+      key={5}
+      accent={B}
+      onClose={onClose}
+      title="Пилот в работе"
+      caption="Применялся на реальных оценках смет подрядчиков. Решение по цене — с обоснованием по разделам, а не «на глаз»."
+    >
+      <div className="w-full max-w-[300px] space-y-1.5">
+        {[
+          { v: 'Своя история', l: 'не справочники' },
+          { v: 'С учётом удорожания', l: 'к текущим ценам' },
+          { v: 'Excel-отчёт', l: '4 листа на выходе' },
+        ].map(m => (
+          <div key={m.l} className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-3.5 py-2">
+            <span className="text-[12px] font-bold" style={{ color: B }}>{m.v}</span>
+            <span className="text-[11px] text-slate-500">{m.l}</span>
+          </div>
+        ))}
       </div>
-    </div>
+    </StoryClosingSlide>,
+  ]
+
+  return (
+    <MobileStories
+      brand={{ initials: 'СМ', name: 'CostManager', sub: 'Анализ смет строительства', accent: B }}
+      slides={slides}
+      onClose={onClose}
+    />
   )
 }
 
@@ -569,7 +299,7 @@ function Modal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="demo-modal-enter relative w-full max-w-[1400px] rounded-2xl overflow-hidden shadow-2xl flex flex-col" style={{ height: '90vh', maxHeight: '920px' }} onClick={e => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center cursor-pointer border-none transition-colors text-lg" aria-label="Close">&times;</button>
+        <button onClick={onClose} className="hidden md:flex absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white items-center justify-center cursor-pointer border-none transition-colors text-lg" aria-label="Close">&times;</button>
         {/* Mobile teaser */}
         <MobileTeaser onClose={onClose} />
         <div className="hidden md:flex flex-1 min-h-0">

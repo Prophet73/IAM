@@ -89,7 +89,7 @@ export default function Architecture() {
                 { label: 'FastAPI Gateway', color: 'text-accent', items: ['OAuth2/SSO ADFS', 'Error Middleware', 'Upload Validation'] },
                 { label: 'Redis Broker', color: 'text-red', items: ['Job State Store', 'Celery Queue', 'TTL = 24h'] },
                 { label: 'GPU Worker (c=1)', color: 'text-purple', items: ['WhisperX (ASR)', 'Pyannote 3.1', 'Wav2Vec2 (Emotions)'], border: 'border-l-2 border-l-purple' },
-                { label: 'LLM Worker (c=3)', color: 'text-green', items: ['Gemini 2.5 Pro/Flash', 'Reports Gen', 'Structured Output'], border: 'border-l-2 border-l-green' },
+                { label: 'LLM Worker (c=3)', color: 'text-green', items: ['Claude / GPT', 'Reports Gen', 'Structured Output'], border: 'border-l-2 border-l-green' },
               ].map((block) => (
                 <div key={block.label} className={`bg-surface-2 border border-border p-4 rounded-xl ${block.border ?? ''}`}>
                   <div className={`${block.color} font-semibold text-sm mb-2`}>{block.label}</div>
@@ -203,7 +203,7 @@ export default function Architecture() {
             {
               problem: 'LLM-вызовы стоят денег. Непонятно, сколько тратит каждый домен и на какие модели.',
               solution: 'Token tracker на каждый job: input/output токены, модель (Flash vs Pro), расчёт стоимости. Агрегация в admin dashboard с фильтрами по периоду.',
-              tech: ['Token tracker', 'Gemini billing', 'PostgreSQL aggregates'],
+              tech: ['Token tracker', 'LLM billing', 'PostgreSQL aggregates'],
             },
           ]}
         />
@@ -217,9 +217,9 @@ export default function Architecture() {
           description="LLM-провайдеры падают, возвращают мусор, превышают rate limits. Система должна генерировать отчёты несмотря ни на что."
           cards={[
             {
-              problem: 'Gemini Pro возвращает 503 или таймаутит при перегрузке. Отчёт не генерируется.',
+              problem: 'LLM-провайдер возвращает 503 или таймаутит при перегрузке. Отчёт не генерируется.',
               solution: 'Retry на основной модели → автоматический каскад: Pro → Flash → следующий fallback. Адаптивные таймауты под тип ошибки (503 vs timeout vs rate limit).',
-              tech: ['Gemini API', 'retry logic', 'FALLBACK_MODELS chain'],
+              tech: ['LLM API', 'retry logic', 'FALLBACK_MODELS chain'],
             },
             {
               problem: 'LLM возвращает "почти JSON" — с markdown-обёрткой, лишними символами, невалидной структурой.',

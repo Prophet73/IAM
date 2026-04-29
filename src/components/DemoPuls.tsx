@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { tracker } from '../utils/tracker'
+import { MobileStories, StorySlide, PainSlide, StoryClosingSlide } from './MobileStories'
 
 /* ═══════════════════════════════════════════════════════════
    TYPES
@@ -274,499 +276,176 @@ const TONE_BG: Record<Tone, string> = {
 
 
 /* ═══════════════════════════════════════════════════════════
-   MOBILE TEASER
+   MOBILE TEASER (Stories)
    ═══════════════════════════════════════════════════════════ */
 function MobileTeaser({ onClose }: { onClose: () => void }) {
-  const B = '#2563EB'
-  const screens = ['projects', 'pm', 'operations', 'pmu', 'director'] as const
-  type Scr = typeof screens[number]
-  const [scr, setScr] = useState<Scr>('projects')
-  const idx = screens.indexOf(scr)
+  const B = '#4F46E5' // indigo
 
-  // Swipe
-  const touchRef = useRef<{ x: number; y: number } | null>(null)
-  const handleTouchStart = (e: React.TouchEvent) => { touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY } }
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!touchRef.current) return
-    const dx = e.changedTouches[0].clientX - touchRef.current.x
-    const dy = e.changedTouches[0].clientY - touchRef.current.y
-    touchRef.current = null
-    if (Math.abs(dx) < 40 || Math.abs(dy) > Math.abs(dx)) return
-    if (dx < 0 && idx < screens.length - 1) setScr(screens[idx + 1])
-    if (dx > 0 && idx > 0) setScr(screens[idx - 1])
-  }
+  const ROLES = [
+    { initials: 'И',  name: 'Инженер',          desc: 'Журнал смены, операционные отчёты' },
+    { initials: 'РП', name: 'Руководитель проекта', desc: 'Команда, договор, табели, проблемы', em: true },
+    { initials: 'К',  name: 'Куратор',          desc: 'Группа объектов одного направления' },
+    { initials: 'Д',  name: 'Директор',         desc: 'Портфельная картина — KPI, риски' },
+  ]
 
-  // PM sub-tab
-  const [pmTab, setPmTab] = useState<'team' | 'contract' | 'attendance' | 'issues'>('team')
-  useEffect(() => { if (scr !== 'pm') setPmTab('team') }, [scr])
+  const slides: ReactNode[] = [
+    /* 0 — Боль */
+    <PainSlide
+      key={0}
+      title="Технический заказчик — десятки объектов"
+      intro="Экономика проектов, риски, готовность по этапам, рабочие группы, оплаты, отклонения по работам — каждый показатель в своей системе."
+      pains={[
+        'Excel-справки и реестры в разных форматах',
+        'Выгрузки из 1С и других учётных систем',
+        'Оперативная переписка по почте и в чатах',
+        'Свести всё в единую картину — трудоёмко',
+      ]}
+    />,
 
-  // Director tab
-  const [dirTab, setDirTab] = useState<'portfolio' | 'finance' | 'staff'>('portfolio')
-  useEffect(() => { if (scr !== 'director') setDirTab('portfolio') }, [scr])
-
-  const labels: Record<Scr, string> = { projects: 'Проекты', pm: 'Кабинет РП', operations: 'Операционка', pmu: 'ПМЮ', director: 'Портфель' }
-
-  return (
-    <div className="flex md:hidden flex-col h-full bg-[#F8FAFC]" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-      {/* Header */}
-      <div className="bg-white px-4 pt-4 pb-2 shrink-0">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[9px] text-white font-bold" style={{ background: B }}>P</div>
-            <div><div className="text-sm font-bold text-slate-800">Puls</div><div className="text-[9px] text-slate-400">Оперативный контроль объектов</div></div>
+    /* 1 — Ролевые интерфейсы */
+    <StorySlide
+      key={1}
+      title="5 ролей — 5 рабочих экранов"
+      caption="У каждой роли свой набор данных и действий. Система собирается модулями — каждый стабилизируется отдельно, без «большой коробки, которую так и не запустят»."
+    >
+      <div className="w-full max-w-[320px] space-y-1.5">
+        {ROLES.map(r => (
+          <div
+            key={r.name}
+            className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border ${r.em ? 'bg-white shadow-sm' : 'bg-white/60'}`}
+            style={r.em ? { borderColor: `${B}66` } : { borderColor: '#e2e8f0' }}
+          >
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-[12px] font-bold text-white shrink-0"
+              style={{ background: r.em ? B : '#94a3b8' }}
+            >
+              {r.initials}
+            </div>
+            <div className="text-left flex-1 min-w-0">
+              <div className="text-[12px] font-bold text-slate-800">{r.name}</div>
+              <div className="text-[11px] text-slate-500 leading-snug">{r.desc}</div>
+            </div>
+            {r.em && <span className="text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider" style={{ background: `${B}1a`, color: B }}>есть</span>}
           </div>
-          <button onClick={onClose} className="w-7 h-7 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center border-none text-sm cursor-pointer">&times;</button>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex bg-white border-b border-slate-200/60 px-1 shrink-0 overflow-x-auto scrollbar-hidden">
-        {screens.map(s => (
-          <button key={s} onClick={() => setScr(s)}
-            className={`flex-1 px-1.5 py-2.5 text-[9px] font-semibold whitespace-nowrap transition-colors border-none cursor-pointer bg-transparent ${scr === s ? 'text-[#2563EB]' : 'text-slate-400'}`}
-            style={scr === s ? { borderBottom: `2px solid ${B}` } : { borderBottom: '2px solid transparent' }}
-          >{labels[s]}</button>
         ))}
       </div>
+    </StorySlide>,
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
-
-        {/* ─── PROJECTS ─── */}
-        {scr === 'projects' && <>
-          <div className="text-[9px] text-slate-400 px-1">Выберите проект для работы</div>
+    /* 2 — Кабинет РП: 6 разделов */
+    <StorySlide
+      key={2}
+      title="Кабинет руководителя проекта"
+      caption="Один объект — все данные в одном месте. Команда, договор, табель, ход работ, проблемы, экономика."
+    >
+      <div className="w-full max-w-[320px] bg-white border border-slate-200 rounded-xl shadow-sm p-3 text-left">
+        <div className="text-[11px] font-bold text-slate-700 mb-1">БЦ «Магеллан», корп. А1</div>
+        <div className="text-[9px] text-slate-400 mb-3">РП: Иванов А.С. · 67% готовности</div>
+        <div className="grid grid-cols-2 gap-1.5">
           {[
-            { code: 'MGL-A1', name: 'БЦ «Магеллан», корп. А1', pct: 67, status: 'В работе', color: 'green', team: 8, issues: 3 },
-            { code: 'RES-A', name: 'ЖК «Объект-A» корп. 7-11', pct: 89, status: 'В работе', color: 'green', team: 12, issues: 1 },
-            { code: 'RES-B', name: 'ЖК «Объект-B» корп. 3', pct: 34, status: 'В работе', color: 'green', team: 6, issues: 5 },
-            { code: 'OFF-01', name: 'Офисный центр Сириус', pct: 12, status: 'Планирование', color: 'amber', team: 3, issues: 0 },
-          ].map((p, i) => (
-            <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm cursor-pointer" onClick={() => setScr('pm')}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-[8px] font-mono font-bold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded">{p.code}</span>
-                  <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full bg-${p.color}-100 text-${p.color}-700`}>{p.status}</span>
-                </div>
-                <span className="text-[9px] text-slate-300">→</span>
-              </div>
-              <div className="text-[11px] font-semibold text-slate-800 mb-2">{p.name}</div>
-              <div className="flex items-center gap-3">
-                <div className="flex-1">
-                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-blue-500" style={{ width: `${p.pct}%` }} />
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold text-slate-600">{p.pct}%</span>
-                <span className="text-[8px] text-slate-400">👥{p.team}</span>
-                {p.issues > 0 && <span className="text-[8px] text-red-500">⚠{p.issues}</span>}
-              </div>
+            { l: 'Команда',    v: '24 / 28', sub: 'факт / штат' },
+            { l: 'Договор',    v: '4.85 М ₽', sub: 'в месяц' },
+            { l: 'Табель',     v: '176 ч',   sub: 'норма марта' },
+            { l: 'Проблемы',   v: '7',        sub: '3 критич.', warn: true },
+          ].map(c => (
+            <div key={c.l} className="rounded-lg bg-slate-50 px-2.5 py-1.5">
+              <div className="text-[9px] text-slate-400 uppercase font-bold tracking-wider">{c.l}</div>
+              <div className={`text-[14px] font-extrabold ${c.warn ? 'text-rose-500' : 'text-slate-800'} tabular-nums`}>{c.v}</div>
+              <div className="text-[9px] text-slate-400">{c.sub}</div>
             </div>
-          ))}
-        </>}
-
-        {/* ─── PM WORKSPACE ─── */}
-        {scr === 'pm' && <>
-          {/* Project header */}
-          <div className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-bold text-slate-800">БЦ «Магеллан», корп. А1</span>
-              <span className="text-[8px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">67%</span>
-            </div>
-            <div className="text-[9px] text-slate-400">РП: Иванов А.С. · Срок: 15.12.2026</div>
-          </div>
-
-          {/* PM sub-tabs */}
-          <div className="flex gap-1 overflow-x-auto scrollbar-hidden">
-            {([['team', 'Команда'], ['contract', 'Контракт'], ['attendance', 'Табель'], ['issues', 'Проблемы']] as const).map(([k, l]) => (
-              <button key={k} onClick={() => setPmTab(k)}
-                className={`shrink-0 text-[9px] px-2.5 py-1.5 rounded-lg font-semibold border-none cursor-pointer transition-colors ${pmTab === k ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-white text-slate-400'}`}
-              >{l}</button>
-            ))}
-          </div>
-
-          {/* Team */}
-          {pmTab === 'team' && <>
-            <div className="text-[9px] text-slate-400 px-1">Штатное расписание: план / факт</div>
-            {[
-              { pos: 'Ведущий инженер СК', plan: 1, fact: 1, name: 'Петров И.А.' },
-              { pos: 'Инженер СК', plan: 4, fact: 3, name: 'Сидоров, Козлов, Морозов' },
-              { pos: 'Инженер ОТК', plan: 2, fact: 2, name: 'Волков Д., Лебедев К.' },
-              { pos: 'Геодезист', plan: 1, fact: 1, name: 'Новиков Р.С.' },
-            ].map((r, i) => (
-              <div key={i} className="bg-white rounded-lg p-2.5 border border-slate-200 flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] font-semibold text-slate-700">{r.pos}</div>
-                  <div className="text-[8px] text-slate-400">{r.name}</div>
-                </div>
-                <div className={`text-[10px] font-bold ${r.fact < r.plan ? 'text-red-500' : 'text-green-600'}`}>{r.fact}/{r.plan}</div>
-              </div>
-            ))}
-          </>}
-
-          {/* Contract */}
-          {pmTab === 'contract' && <>
-            <div className="bg-white rounded-xl p-3 border border-slate-200 space-y-2">
-              <div className="flex justify-between"><span className="text-[9px] text-slate-400">Контракт</span><span className="text-[10px] font-mono font-semibold text-slate-700">ДУ-2024/087</span></div>
-              <div className="flex justify-between"><span className="text-[9px] text-slate-400">Стоимость/мес</span><span className="text-[10px] font-semibold text-slate-700">2 450 000 ₽</span></div>
-              <div className="flex justify-between"><span className="text-[9px] text-slate-400">Срок</span><span className="text-[10px] font-semibold text-slate-700">01.03.2024 — 15.12.2026</span></div>
-              <div className="flex justify-between"><span className="text-[9px] text-slate-400">ДС</span><span className="text-[10px] font-semibold text-slate-700">2 (продление + штат)</span></div>
-            </div>
-            <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1">Оплаты</div>
-            {[
-              { month: 'Янв 2026', sum: '2 450 000', status: 'Оплачен', st: 'green' },
-              { month: 'Фев 2026', sum: '2 450 000', status: 'Акт подписан', st: 'blue' },
-              { month: 'Мар 2026', sum: '2 450 000', status: 'Акт отправлен', st: 'amber' },
-            ].map((p, i) => (
-              <div key={i} className="bg-white rounded-lg p-2.5 border border-slate-200 flex items-center justify-between">
-                <div><div className="text-[10px] font-semibold text-slate-700">{p.month}</div><div className="text-[9px] text-slate-400">{p.sum} ₽</div></div>
-                <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full bg-${p.st}-100 text-${p.st}-700`}>{p.status}</span>
-              </div>
-            ))}
-          </>}
-
-          {/* Attendance */}
-          {pmTab === 'attendance' && <>
-            <div className="text-[9px] text-slate-400 px-1">Март 2026 · Норма: 22 дн / 176 ч</div>
-            <div className="bg-white rounded-xl p-2.5 border border-slate-200">
-              {/* Mini calendar header */}
-              <div className="grid grid-cols-7 gap-px mb-1">
-                {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map(d => (
-                  <div key={d} className="text-[7px] text-slate-400 text-center font-semibold">{d}</div>
-                ))}
-              </div>
-              {/* Calendar days */}
-              <div className="grid grid-cols-7 gap-px">
-                {/* March 2026 starts on Sunday, offset 6 */}
-                {Array.from({ length: 6 }, () => null).map((_, i) => <div key={`e${i}`} />)}
-                {Array.from({ length: 31 }, (_, i) => i + 1).map(d => {
-                  const isWeekend = [1, 7, 8, 14, 15, 21, 22, 28, 29].includes(d)
-                  const isVacation = d >= 16 && d <= 20
-                  const isSick = d === 10
-                  const today = d === 6
-                  return (
-                    <div key={d} className={`w-full aspect-square rounded-sm flex items-center justify-center text-[7px] font-medium
-                      ${isVacation ? 'bg-purple-100 text-purple-600' : isSick ? 'bg-red-100 text-red-500' : isWeekend ? 'bg-slate-50 text-slate-300' : today ? 'bg-blue-500 text-white' : 'text-slate-600'}
-                    `}>{d}</div>
-                  )
-                })}
-              </div>
-              <div className="flex gap-3 mt-2 pt-2 border-t border-slate-100">
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-blue-500" /><span className="text-[7px] text-slate-400">Сегодня</span></div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-purple-100" /><span className="text-[7px] text-slate-400">Отпуск</span></div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-red-100" /><span className="text-[7px] text-slate-400">Больничный</span></div>
-              </div>
-            </div>
-            {/* Engineer stats */}
-            {[
-              { name: 'Петров И.А.', hours: '44/176', rate: '100%' },
-              { name: 'Сидоров К.М.', hours: '36/176', rate: '82%' },
-              { name: 'Козлов Д.В.', hours: '44/176', rate: '100%' },
-            ].map((e, i) => (
-              <div key={i} className="bg-white rounded-lg p-2 border border-slate-200 flex items-center justify-between">
-                <span className="text-[10px] text-slate-700">{e.name}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[9px] text-slate-400">{e.hours}ч</span>
-                  <span className={`text-[9px] font-bold ${e.rate === '100%' ? 'text-green-600' : 'text-amber-500'}`}>{e.rate}</span>
-                </div>
-              </div>
-            ))}
-          </>}
-
-          {/* Issues */}
-          {pmTab === 'issues' && <>
-            <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hidden">
-              {['Все (9)', 'Критичные (2)', 'В работе (4)', 'Решено (3)'].map((f, i) => (
-                <span key={f} className={`shrink-0 text-[8px] px-2 py-1 rounded-full font-medium ${i === 0 ? 'bg-[#2563EB]/10 text-[#2563EB]' : 'bg-white text-slate-400 border border-slate-200'}`}>{f}</span>
-              ))}
-            </div>
-            {[
-              { title: 'Задержка поставки арматуры', cat: 'СМР', priority: 'КРИТИЧНАЯ', pColor: 'red', days: 12, status: 'В работе' },
-              { title: 'Просрочка акта КС-2 за январь', cat: 'Финансы', priority: 'ВЫСОКАЯ', pColor: 'orange', days: 8, status: 'В работе' },
-              { title: 'Несогласованные изменения в РД', cat: 'РД', priority: 'КРИТИЧНАЯ', pColor: 'red', days: 5, status: 'Выявлена' },
-              { title: 'Замечания Ростехнадзора п.3.2', cat: 'ИРД', priority: 'СРЕДНЯЯ', pColor: 'amber', days: 20, status: 'В работе' },
-            ].map((issue, i) => (
-              <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm" style={{ borderLeft: `3px solid ${issue.pColor === 'red' ? '#ef4444' : issue.pColor === 'orange' ? '#f97316' : '#f59e0b'}` }}>
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded bg-${issue.pColor}-100 text-${issue.pColor}-600`}>{issue.priority}</span>
-                  <span className="text-[8px] text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded">{issue.cat}</span>
-                </div>
-                <div className="text-[10px] font-semibold text-slate-700 mb-1">{issue.title}</div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[8px] text-slate-400">{issue.days} дн. открыта</span>
-                  <span className="text-[8px] font-medium text-slate-500">{issue.status}</span>
-                </div>
-              </div>
-            ))}
-          </>}
-        </>}
-
-        {/* ─── OPERATIONS ─── */}
-        {scr === 'operations' && <>
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200/50">
-            <div className="text-[10px] font-bold text-blue-800 mb-1">Операционная отчётность</div>
-            <div className="text-[9px] text-blue-600 leading-relaxed">Инженеры и РП фиксируют прогресс по этапам и проблемы на объектах. Данные консолидируются в портфельную картину наверх.</div>
-          </div>
-
-          {/* Progress updates */}
-          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1">Прогресс по этапам</div>
-          {[
-            { obj: 'Блок 1 · Монолит', stage: 'Перекрытие отм. +12.6', pct: 78, delta: '+12%', status: 'В срок' },
-            { obj: 'Блок 1 · Стены', stage: 'Армирование 3 этаж', pct: 45, delta: '+8%', status: 'Отстаёт' },
-          ].map((p, i) => (
-            <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-semibold text-slate-700">{p.obj}</span>
-                <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${p.status === 'В срок' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>{p.status}</span>
-              </div>
-              <div className="text-[10px] text-slate-600 mb-1.5">{p.stage}</div>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full bg-blue-500" style={{ width: `${p.pct}%` }} />
-                </div>
-                <span className="text-[10px] font-bold text-slate-600">{p.pct}%</span>
-                <span className="text-[8px] text-green-600 font-semibold">{p.delta}</span>
-              </div>
-            </div>
-          ))}
-
-          {/* Critical issues */}
-          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1 mt-1">Критические проблемы</div>
-          {[
-            { cat: 'Снабжение', text: 'Задержка поставки арматуры А500С', daysAgo: 18, priority: 'critical' },
-            { cat: 'Персонал', text: 'Дефицит сварщиков НАКС 6 разряда', daysAgo: 14, priority: 'critical' },
-            { cat: 'Качество', text: 'Превышение допуска по осадке фундамента', daysAgo: 8, priority: 'critical' },
-          ].map((p, i) => (
-            <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-red-100 text-red-600">{p.cat}</span>
-                <span className="text-[8px] ml-auto text-slate-400">{p.daysAgo} дн. назад</span>
-              </div>
-              <div className="text-[10px] text-slate-700">{p.text}</div>
-            </div>
-          ))}
-
-          {/* Flow arrow */}
-          <div className="flex items-center justify-center py-1">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200/50">
-              <span className="text-[9px] text-blue-600 font-semibold">Данные → ПМЮ → Директор</span>
-              <svg className="w-3 h-3 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
-          </div>
-        </>}
-
-        {/* ─── PMU ─── */}
-        {scr === 'pmu' && <>
-          <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl p-3 border border-violet-200/50">
-            <div className="text-[10px] font-bold text-violet-800 mb-1">ПМЮ — мультипроектный контроль</div>
-            <div className="text-[9px] text-violet-600 leading-relaxed">Консолидация данных всех проектов. Критичные проблемы, сроки контрактов, загрузка персонала.</div>
-          </div>
-
-          {/* Filters */}
-          <div className="flex gap-1 overflow-x-auto scrollbar-hidden">
-            {[
-              { l: 'Все (4)', active: true },
-              { l: 'Критичные (1)', active: false },
-              { l: 'Истекают <90д (1)', active: false },
-              { l: 'Недобор (2)', active: false },
-            ].map((f, i) => (
-              <span key={i} className={`shrink-0 text-[8px] px-2 py-1 rounded-full font-medium ${f.active ? 'bg-violet-100 text-violet-700' : 'bg-white text-slate-400 border border-slate-200'}`}>{f.l}</span>
-            ))}
-          </div>
-
-          {/* Project cards with consolidated metrics */}
-          {[
-            { name: 'БЦ «Магеллан»', pct: 67, critical: 2, staff: '7/8', contract: 'OK', cColor: 'green' },
-            { name: 'ЖК «Объект-A» к.7-11', pct: 89, critical: 0, staff: '12/12', contract: '<60д', cColor: 'amber' },
-            { name: 'ЖК «Объект-B» к.3', pct: 34, critical: 1, staff: '5/6', contract: 'OK', cColor: 'green' },
-          ].map((p, i) => (
-            <div key={i} className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-slate-800">{p.name}</span>
-                <span className="text-[10px] font-bold text-blue-600">{p.pct}%</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="text-center p-1.5 rounded-lg bg-slate-50">
-                  <div className={`text-[11px] font-bold ${p.critical > 0 ? 'text-red-500' : 'text-green-600'}`}>{p.critical}</div>
-                  <div className="text-[7px] text-slate-400">Критичных</div>
-                </div>
-                <div className="text-center p-1.5 rounded-lg bg-slate-50">
-                  <div className={`text-[11px] font-bold ${p.staff.split('/')[0] !== p.staff.split('/')[1] ? 'text-amber-500' : 'text-slate-700'}`}>{p.staff}</div>
-                  <div className="text-[7px] text-slate-400">Персонал</div>
-                </div>
-                <div className="text-center p-1.5 rounded-lg bg-slate-50">
-                  <div className={`text-[11px] font-bold text-${p.cColor}-600`}>{p.contract}</div>
-                  <div className="text-[7px] text-slate-400">Контракт</div>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* Critical issues across projects */}
-          <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1">Критичные проблемы</div>
-          {[
-            { project: 'Магеллан', issue: 'Задержка поставки арматуры', days: 12 },
-            { project: 'Магеллан', issue: 'Несогласованные изменения в РД', days: 5 },
-            { project: 'Объект-B', issue: 'Подрядчик приостановил работы', days: 3 },
-          ].map((c, i) => (
-            <div key={i} className="bg-red-50 rounded-lg p-2.5 border border-red-200/50 flex items-start gap-2">
-              <span className="text-[8px] font-bold text-red-500 mt-0.5">!</span>
-              <div className="flex-1">
-                <div className="text-[10px] font-semibold text-red-700">{c.issue}</div>
-                <div className="text-[8px] text-red-400">{c.project} · {c.days} дн.</div>
-              </div>
-            </div>
-          ))}
-        </>}
-
-        {/* ─── DIRECTOR PORTFOLIO ─── */}
-        {scr === 'director' && <>
-          <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl p-3">
-            <div className="text-[10px] font-bold text-white mb-1">Портфельный дашборд</div>
-            <div className="text-[9px] text-slate-300 leading-relaxed">Консолидированная аналитика: загрузка, финансы, контракты, риски.</div>
-          </div>
-
-          {/* Director sub-tabs */}
-          <div className="flex gap-1">
-            {([['portfolio', 'Обзор'], ['finance', 'Финансы'], ['staff', 'Персонал']] as const).map(([k, l]) => (
-              <button key={k} onClick={() => setDirTab(k)}
-                className={`flex-1 text-[9px] py-1.5 rounded-lg font-semibold border-none cursor-pointer transition-colors ${dirTab === k ? 'bg-slate-800 text-white' : 'bg-white text-slate-400'}`}
-              >{l}</button>
-            ))}
-          </div>
-
-          {dirTab === 'portfolio' && <>
-            {/* KPI cards */}
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { icon: '👷', label: 'Загрузка', val: '87%', sub: '24/28 на объектах', trend: '+3%' },
-                { icon: '💰', label: 'Выручка/чел', val: '312K', sub: '₽/мес на человека', trend: '+8%' },
-                { icon: '📋', label: 'Контракты', val: '4', sub: '1 истекает <90д', trend: '' },
-                { icon: '📈', label: 'Маржа', val: '34%', sub: 'средняя по портфелю', trend: '+2%' },
-              ].map((k, i) => (
-                <div key={i} className="bg-white rounded-xl p-2.5 border border-slate-200 shadow-sm">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-xs">{k.icon}</span>
-                    <span className="text-[9px] text-slate-400">{k.label}</span>
-                    {k.trend && <span className="text-[8px] text-green-500 ml-auto">{k.trend}</span>}
-                  </div>
-                  <div className="text-base font-bold text-slate-800">{k.val}</div>
-                  <div className="text-[8px] text-slate-400">{k.sub}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Risk summary */}
-            <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1">Риски</div>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: 'Критичных проблем', val: '3', color: 'red' },
-                { label: 'Срыв сроков', val: '1', color: 'amber' },
-                { label: 'Истекающие контракты', val: '1', color: 'amber' },
-                { label: 'Недобор персонала', val: '2', color: 'orange' },
-              ].map((r, i) => (
-                <div key={i} className={`rounded-lg p-2 border bg-${r.color}-50 border-${r.color}-200/50`}>
-                  <div className={`text-sm font-bold text-${r.color}-600`}>{r.val}</div>
-                  <div className="text-[8px] text-slate-500">{r.label}</div>
-                </div>
-              ))}
-            </div>
-          </>}
-
-          {dirTab === 'finance' && <>
-            {/* Monthly revenue/costs chart mock */}
-            <div className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
-              <div className="text-[10px] font-semibold text-slate-700 mb-2">Выручка и затраты, млн ₽</div>
-              <div className="flex items-end gap-1.5 h-24">
-                {[
-                  { m: 'Окт', rev: 8.2, cost: 5.4 }, { m: 'Ноя', rev: 8.5, cost: 5.6 }, { m: 'Дек', rev: 9.1, cost: 5.8 },
-                  { m: 'Янв', rev: 8.8, cost: 5.5 }, { m: 'Фев', rev: 9.4, cost: 6.0 }, { m: 'Мар', rev: 9.8, cost: 6.1 },
-                ].map((d, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
-                    <div className="w-full flex gap-px justify-center" style={{ height: '100%', alignItems: 'flex-end' }}>
-                      <div className="w-2 rounded-t bg-blue-400" style={{ height: `${(d.rev / 10) * 100}%` }} />
-                      <div className="w-2 rounded-t bg-slate-300" style={{ height: `${(d.cost / 10) * 100}%` }} />
-                    </div>
-                    <span className="text-[7px] text-slate-400">{d.m}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-4 mt-2 pt-2 border-t border-slate-100">
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-blue-400" /><span className="text-[7px] text-slate-400">Выручка</span></div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-slate-300" /><span className="text-[7px] text-slate-400">Затраты</span></div>
-              </div>
-            </div>
-
-            {/* Per-project finance */}
-            {[
-              { name: 'IND-1',    rev: '2.45M', margin: '32%' },
-              { name: 'Объект-A', rev: '3.80M', margin: '38%' },
-              { name: 'Объект-B', rev: '1.95M', margin: '29%' },
-              { name: 'OFF-01',   rev: '1.60M', margin: '35%' },
-            ].map((p, i) => (
-              <div key={i} className="bg-white rounded-lg p-2.5 border border-slate-200 flex items-center justify-between">
-                <span className="text-[10px] font-semibold text-slate-700">{p.name}</span>
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] text-slate-500">{p.rev}</span>
-                  <span className="text-[10px] font-bold text-green-600">{p.margin}</span>
-                </div>
-              </div>
-            ))}
-          </>}
-
-          {dirTab === 'staff' && <>
-            {/* Utilization chart */}
-            <div className="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
-              <div className="text-[10px] font-semibold text-slate-700 mb-2">Загрузка персонала</div>
-              <div className="flex items-end gap-1 h-20">
-                {[
-                  { m: 'Окт', pct: 78 }, { m: 'Ноя', pct: 82 }, { m: 'Дек', pct: 80 },
-                  { m: 'Янв', pct: 85 }, { m: 'Фев', pct: 84 }, { m: 'Мар', pct: 87 },
-                  { m: 'Апр', pct: 90, forecast: true }, { m: 'Май', pct: 92, forecast: true },
-                ].map((d, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
-                    <div className={`w-full rounded-t ${(d as { forecast?: boolean }).forecast ? 'bg-blue-200 border border-dashed border-blue-300' : 'bg-blue-500'}`} style={{ height: `${d.pct}%` }} />
-                    <span className="text-[6px] text-slate-400">{d.m}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-3 mt-2 pt-2 border-t border-slate-100">
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-blue-500" /><span className="text-[7px] text-slate-400">Факт</span></div>
-                <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-sm bg-blue-200 border border-dashed border-blue-300" /><span className="text-[7px] text-slate-400">Прогноз</span></div>
-              </div>
-            </div>
-
-            {/* By position */}
-            <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider px-1">По должностям</div>
-            {[
-              { pos: 'Ведущий инженер СК', total: 4, on: 4 },
-              { pos: 'Инженер СК', total: 14, on: 12 },
-              { pos: 'Инженер ОТК', total: 6, on: 5 },
-              { pos: 'Геодезист', total: 4, on: 3 },
-            ].map((s, i) => (
-              <div key={i} className="bg-white rounded-lg p-2.5 border border-slate-200">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] text-slate-700">{s.pos}</span>
-                  <span className={`text-[10px] font-bold ${s.on < s.total ? 'text-amber-500' : 'text-green-600'}`}>{s.on}/{s.total}</span>
-                </div>
-                <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full bg-blue-500" style={{ width: `${(s.on / s.total) * 100}%` }} />
-                </div>
-              </div>
-            ))}
-          </>}
-        </>}
-      </div>
-
-      {/* Footer */}
-      <div className="px-4 py-2.5 bg-white border-t border-slate-200/60 shrink-0">
-        <div className="flex justify-center gap-1.5 mb-1.5">
-          {screens.map((s, i) => (
-            <div key={s} className={`rounded-full transition-all ${i === idx ? 'w-4 h-1.5' : 'w-1.5 h-1.5 bg-slate-300'}`} style={i === idx ? { background: B } : undefined} />
           ))}
         </div>
-        <p className="text-[9px] text-slate-400 text-center">Полноэкранная версия с живым интерактивным демо доступна на ПК</p>
       </div>
-    </div>
+    </StorySlide>,
+
+    /* 3 — Договор → штат → табель */
+    <StorySlide
+      key={3}
+      title="Договор → штатное расписание → табель"
+      caption="Главная связка: штат пересчитывается под договор, фактическая загрузка сравнивается с планом."
+    >
+      <div className="w-full max-w-[320px] space-y-2">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-3 flex items-center justify-between">
+          <div className="text-left">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Договор</div>
+            <div className="text-[12px] font-semibold text-slate-700 mt-0.5">ГК-2024/0341 · 8 чел.</div>
+          </div>
+          <div className="text-[10px] text-slate-500">→</div>
+        </div>
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-3 text-left">
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Команда: план / факт</div>
+          {[
+            { pos: 'Ведущий инженер', plan: 1, fact: 1 },
+            { pos: 'Инженер СК', plan: 4, fact: 3, bad: true },
+            { pos: 'Инженер ОТК', plan: 2, fact: 2 },
+            { pos: 'Геодезист', plan: 1, fact: 1 },
+          ].map(r => (
+            <div key={r.pos} className="flex items-center justify-between py-1">
+              <span className="text-[11px] text-slate-700">{r.pos}</span>
+              <span className={`text-[11px] font-bold tabular-nums ${r.bad ? 'text-rose-500' : 'text-emerald-600'}`}>{r.fact}/{r.plan}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </StorySlide>,
+
+    /* 4 — Журнал проблем */
+    <StorySlide
+      key={4}
+      title="Журнал проблем по объекту"
+      caption="Категория, приоритет, сколько дней открыта. Критичные автоматически уходят куратору и в портфельную картину."
+    >
+      <div className="w-full max-w-[320px] space-y-1.5">
+        {ISSUES_DATA.slice(0, 3).map(i => {
+          const pColor = i.priority === 'critical' ? '#ef4444' : i.priority === 'high' ? '#f97316' : '#94a3b8'
+          return (
+            <div
+              key={i.id}
+              className="bg-white border border-slate-200 rounded-xl shadow-sm px-3 py-2 text-left"
+              style={{ borderLeft: `3px solid ${pColor}` }}
+            >
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: `${pColor}1a`, color: pColor }}>
+                  {i.priority === 'critical' ? 'КРИТИЧНАЯ' : i.priority === 'high' ? 'ВЫСОКАЯ' : 'СРЕДНЯЯ'}
+                </span>
+                <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded ${i.catColor}`}>{i.category}</span>
+              </div>
+              <div className="text-[11px] font-semibold text-slate-700 leading-snug">{i.title}</div>
+              <div className="text-[9px] text-slate-400 mt-0.5">{i.daysAgo} дн. открыта</div>
+            </div>
+          )
+        })}
+      </div>
+    </StorySlide>,
+
+    /* 5 — Закрытие */
+    <StoryClosingSlide
+      key={5}
+      accent={B}
+      onClose={onClose}
+      title="Прототип — фундамент"
+      caption="Реализован кабинет руководителя проекта с 6 разделами. Единый источник правды: от заявленной экономики по договору до фактического табеля людей на объекте."
+    >
+      <div className="w-full max-w-[300px] space-y-1.5">
+        {[
+          { v: 'Договор vs факт', l: 'штат и табель против контракта' },
+          { v: 'Проектные показатели', l: 'риски, сроки, объёмы работ' },
+          { v: 'От инженера до директора', l: 'каждая роль со своим срезом' },
+        ].map(m => (
+          <div key={m.l} className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-3.5 py-2 gap-2">
+            <span className="text-[11px] font-bold shrink-0" style={{ color: B }}>{m.v}</span>
+            <span className="text-[10px] text-slate-500 text-right">{m.l}</span>
+          </div>
+        ))}
+      </div>
+    </StoryClosingSlide>,
+  ]
+
+  return (
+    <MobileStories
+      brand={{ initials: 'P', name: 'Puls', sub: 'Управление портфелем объектов', accent: B }}
+      slides={slides}
+      onClose={onClose}
+    />
   )
 }
 

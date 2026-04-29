@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { tracker } from '../utils/tracker'
+import { MobileStories, StorySlide, PainSlide, StoryClosingSlide } from './MobileStories'
 
 type Screen = 'apps' | 'chat' | 'prompts' | 'tools' | 'monitoring' | 'users' | 'appAccess' | 'aiSlots' | 'architecture'
 
@@ -63,267 +64,241 @@ export function DemoAIHub() {
   )
 }
 
-/* ===== MOBILE TEASER (Stories format) ===== */
-function MobileTeaser({ onClose }: { onClose: () => void }) {
-  const TOTAL = 6
-  const DURATION = 5000 // ms per slide
-  const TICK = 50
-  const [activeSlide, setActiveSlide] = useState(0)
-  const [progress, setProgress] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
-
-  // Auto-advance timer
+/* ===== MOBILE TEASER (Stories) ===== */
+function ChatCascade({ accent }: { accent: string }) {
+  // 0: just user bubble · 1: typing dots · 2: AI bubble visible
+  const [phase, setPhase] = useState<0 | 1 | 2>(0)
   useEffect(() => {
-    if (isPaused) return
-    const id = setInterval(() => {
-      setProgress(prev => {
-        const next = prev + (100 / (DURATION / TICK))
-        if (next >= 100) {
-          setActiveSlide(s => {
-            if (s < TOTAL - 1) return s + 1
-            return s // stay on last
-          })
-          return 0
-        }
-        return next
-      })
-    }, TICK)
-    return () => clearInterval(id)
-  }, [isPaused, activeSlide])
+    setPhase(0)
+    const t1 = setTimeout(() => setPhase(1), 700)
+    const t2 = setTimeout(() => setPhase(2), 1700)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [])
 
-  // Reset progress on slide change
-  useEffect(() => { setProgress(0) }, [activeSlide])
-
-  const goNext = () => { if (activeSlide < TOTAL - 1) { setActiveSlide(s => s + 1) } }
-  const goPrev = () => { if (activeSlide > 0) { setActiveSlide(s => s - 1) } }
-
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    if (x < rect.width / 3) goPrev()
-    else goNext()
-  }
-
-  const IcoEye = () => (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-    </svg>
-  )
-  const IcoEyeOff = () => (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-      <line x1="1" y1="1" x2="23" y2="23"/>
-    </svg>
-  )
-
-  /* ── Slide layout: title top → visual center → caption bottom ── */
-  const S = ({ title, children, caption }: { title: string; children: React.ReactNode; caption: string }) => (
-    <div className="flex flex-col items-center h-full px-6 pt-14 pb-6 text-center">
-      <h2 className="text-[22px] font-extrabold text-white mb-auto leading-tight">{title}</h2>
-      <div className="w-full flex-1 flex items-center justify-center py-4">{children}</div>
-      <p className="text-[14px] text-white/50 leading-relaxed max-w-[300px] mt-auto">{caption}</p>
-    </div>
-  )
-
-  /* ── Slides ── */
-  const slides: React.ReactNode[] = [
-    /* 0 — Проблема */
-    <S key={0} title="Зоопарк систем?" caption="Десятки паролей, нет контроля доступов и понимания — кто чем пользуется.">
-      <div className="grid grid-cols-3 gap-2.5 w-full max-w-[280px]">
-        {[
-          { name: 'Смета', color: '#10B981', pw: '••••••' },
-          { name: 'Почта', color: '#3B82F6', pw: '••••••••' },
-          { name: 'CRM', color: '#8B5CF6', pw: '•••••' },
-          { name: 'Склад', color: '#F59E0B', pw: '•••••••' },
-          { name: 'Кадры', color: '#EC4899', pw: '••••••' },
-          { name: '1С', color: '#6B7280', pw: '••••' },
-        ].map(a => (
-          <div key={a.name} className="bg-white/5 border border-white/10 rounded-xl p-2.5 flex flex-col items-center gap-1.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold text-white" style={{ background: a.color }}>{a.name.slice(0,2)}</div>
-            <div className="text-[10px] text-white/50">{a.name}</div>
-            <div className="text-[9px] text-red-400/60 font-mono">{a.pw}</div>
-          </div>
-        ))}
-      </div>
-    </S>,
-
-    /* 1 — Решение (SSO) */
-    <S key={1} title="Единая точка входа" caption="Active Directory (ADFS) + OAuth2. Один аккаунт — доступ ко всей корпоративной платформе.">
-      <div className="w-full max-w-[260px] bg-white/[0.07] border border-white/10 rounded-2xl p-5">
-        <div className="w-10 h-10 rounded-xl bg-[#E52713] flex items-center justify-center text-white text-[11px] font-bold mx-auto mb-3">AI</div>
-        <div className="text-[11px] text-white/40 mb-4">Корпоративная авторизация</div>
-        <div className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 mb-2 text-left">
-          <div className="text-[10px] text-white/30 mb-0.5">Логин</div>
-          <div className="text-[12px] text-white/70 font-mono">ivanov@company.ru</div>
-        </div>
-        <div className="bg-[#E52713] rounded-lg py-2.5 text-center text-[12px] text-white font-semibold mb-3">Войти через ADFS</div>
-        <div className="flex items-center justify-center gap-3">
-          {[
-            { n: 'DataBook', c: '#3B82F6' },
-            { n: 'CM', c: '#10B981' },
-            { n: 'АП', c: '#8B5CF6' },
-            { n: 'Puls', c: '#F59E0B' },
-          ].map(s => (
-            <div key={s.n} className="w-9 h-9 rounded-lg flex items-center justify-center text-[8px] text-white font-medium" style={{ background: `${s.c}30` }}>{s.n}</div>
-          ))}
-        </div>
-        <div className="text-[9px] text-white/25 mt-2">→ один вход — все сервисы</div>
-      </div>
-    </S>,
-
-    /* 2 — Разграничение доступов */
-    <S key={2} title="Изоляция доступов" caption="Каждый департамент видит только свои сервисы. Лишних данных — ноль.">
-      <div className="w-full max-w-[300px] space-y-3">
-        {[
-          { dept: 'Сметный отдел', app: 'CostManager', visible: true },
-          { dept: 'Стройка', app: 'Автопротокол', visible: true },
-          { dept: 'HR', app: 'Скрыто', visible: false },
-        ].map(r => (
-          <div key={r.dept} className={`flex items-center justify-between rounded-xl px-4 py-3 ${r.visible ? 'bg-white/10 border border-white/10' : 'bg-white/5 border border-white/5 opacity-50'}`}>
-            <div className="text-left">
-              <div className="text-[13px] font-semibold text-white">{r.dept}</div>
-              <div className="text-[11px] text-white/40">{r.app}</div>
-            </div>
-            <div className={r.visible ? 'text-green-400' : 'text-red-400'}>{r.visible ? <IcoEye /> : <IcoEyeOff />}</div>
-          </div>
-        ))}
-      </div>
-    </S>,
-
-    /* 3 — Мониторинг и аудит */
-    <S key={3} title="Контроль" caption="Статистика, история входов и аудит действий — в реальном времени.">
-      <div className="w-full max-w-[310px] bg-white/[0.05] border border-white/10 rounded-2xl p-4">
-        {/* KPI row */}
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          {[
-            { v: '142', l: 'Сессии', c: 'text-white' },
-            { v: '47', l: 'Юзеры', c: 'text-green-400' },
-            { v: '1.2K', l: 'Запросы', c: 'text-[#E52713]' },
-          ].map(k => (
-            <div key={k.l} className="text-center">
-              <div className={`text-xl font-extrabold ${k.c}`}>{k.v}</div>
-              <div className="text-[9px] text-white/35 uppercase tracking-wider">{k.l}</div>
-            </div>
-          ))}
-        </div>
-        {/* Mini bar chart */}
-        <div className="flex items-end gap-1.5 h-[56px] px-1 mb-1.5">
-          {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 50].map((h, i) => (
-            <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}%`, background: i === 9 ? '#E52713' : 'rgba(255,255,255,0.12)' }} />
-          ))}
-        </div>
-        <div className="flex justify-between text-[8px] text-white/20 px-1 mb-3">
-          <span>Янв</span><span>Фев</span><span>Мар</span>
-        </div>
-        {/* Activity log */}
-        <div className="pt-3 border-t border-white/5 space-y-1.5">
-          {[
-            { user: 'Петров П.', action: 'Вход в DataBook', time: '2 мин' },
-            { user: 'Иванова Е.', action: 'AI-чат · 3 запроса', time: '5 мин' },
-            { user: 'Козлов Д.', action: 'Экспорт отчёта', time: '12 мин' },
-          ].map((l, i) => (
-            <div key={i} className="flex items-center justify-between text-[10px]">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[7px] text-white/50 font-medium">{l.user.split(' ').map(w => w[0]).join('')}</div>
-                <div className="text-left">
-                  <div className="text-white/60">{l.user}</div>
-                  <div className="text-white/25">{l.action}</div>
-                </div>
-              </div>
-              <span className="text-white/20">{l.time}</span>
-            </div>
-          ))}
+  return (
+    <div className="w-full max-w-[300px] space-y-2">
+      <div className="flex justify-end">
+        <div
+          className="story-stagger text-white rounded-2xl rounded-br-md px-3.5 py-2 text-[12px] leading-relaxed text-left max-w-[85%]"
+          style={{ background: accent, animationDelay: '0ms' }}
+        >
+          Составь письмо подрядчику о задержке сроков
         </div>
       </div>
-    </S>,
 
-    /* 4 — AI-Чат */
-    <S key={4} title="Корпоративный AI" caption="Безопасный AI-ассистент с промптами и контролем токенов по сотрудникам.">
-      <div className="w-full max-w-[300px] space-y-2.5">
-        {/* User bubble */}
-        <div className="flex justify-end">
-          <div className="bg-[#E52713] text-white rounded-2xl rounded-br-md px-3.5 py-2 text-[12px] leading-relaxed text-left max-w-[85%]">
-            Составь письмо подрядчику о задержке сроков
-          </div>
-        </div>
-        {/* AI bubble */}
-        <div className="flex items-start gap-2">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#E52713] to-[#C91F0F] flex items-center justify-center shrink-0">
+      {phase === 1 && (
+        <div className="flex items-start gap-2 animate-[storyStagger_0.3s_cubic-bezier(0.16,1,0.3,1)_both]">
+          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: accent }}>
             <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8.5" cy="16" r="1.5"/><circle cx="15.5" cy="16" r="1.5"/><path d="M12 2v5M8 8h8"/></svg>
           </div>
-          <div className="bg-white/10 border border-white/10 rounded-2xl rounded-tl-md px-3.5 py-2 text-[12px] text-white/70 leading-relaxed text-left max-w-[82%] whitespace-pre-line">
+          <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-md px-3.5 py-2.5 shadow-sm flex items-end gap-1" style={{ color: accent }}>
+            <span className="type-dot" style={{ animationDelay: '0ms' }} />
+            <span className="type-dot" style={{ animationDelay: '180ms' }} />
+            <span className="type-dot" style={{ animationDelay: '360ms' }} />
+          </div>
+        </div>
+      )}
+
+      {phase >= 2 && (
+        <div className="flex items-start gap-2 animate-[storyStagger_0.4s_cubic-bezier(0.16,1,0.3,1)_both]">
+          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: accent }}>
+            <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="8.5" cy="16" r="1.5"/><circle cx="15.5" cy="16" r="1.5"/><path d="M12 2v5M8 8h8"/></svg>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-md px-3.5 py-2 text-[12px] text-slate-700 leading-relaxed text-left max-w-[82%] whitespace-pre-line shadow-sm">
             {'Исх. №156/ИТ от 16.02.2026\n\nУважаемый Иван Иванович!\nВ связи с нарушением сроков по Корпусу 3...'}
           </div>
         </div>
-        {/* Token counter */}
-        <div className="flex justify-center">
-          <div className="bg-white/5 border border-white/10 rounded-full px-3 py-1 text-[10px] text-white/30">
-            43 из 50 сообщений · Gemini SSE
-          </div>
+      )}
+
+      <div className="flex justify-center pt-1">
+        <div
+          className="story-stagger bg-white border border-slate-200 rounded-full px-3 py-1 text-[10px] text-slate-500 shadow-sm"
+          style={{ animationDelay: '600ms' }}
+        >
+          43 из 50 сообщений · лимит дня
         </div>
       </div>
-    </S>,
+    </div>
+  )
+}
 
-    /* 5 — Управление ролями */
-    <div key={5} className="flex flex-col items-center h-full px-6 pt-14 pb-6 text-center">
-      <h2 className="text-[22px] font-extrabold text-white mb-5 leading-tight">Управление ролями</h2>
-      <div className="w-full max-w-[300px] space-y-2 mb-auto">
+function MobileTeaser({ onClose }: { onClose: () => void }) {
+  const ACCENT = '#E52713'
+
+  const slides: React.ReactNode[] = [
+    /* 0 — Боль */
+    <PainSlide
+      key={0}
+      title="Зоопарк систем?"
+      intro="Каждый внутренний сервис — отдельный вход и свой пароль. У руководства нет единой картины доступов."
+      pains={[
+        'Десятки паролей у одного сотрудника',
+        'Не отследить — кто и что делал',
+        'Доступ закрывается «вручную» по каждой системе',
+      ]}
+    />,
+
+    /* 1 — Витрина + единый вход */
+    <StorySlide
+      key={1}
+      title="Витрина + единый вход"
+      caption="Корпоративная учётная запись открывает все сервисы. Без сторонних подписок и личных аккаунтов сотрудников на чужих сайтах."
+    >
+      <div className="w-full max-w-[300px] bg-white border border-slate-200 rounded-xl shadow-sm p-4 text-center">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[11px] font-bold mx-auto mb-3" style={{ background: ACCENT }}>AI</div>
+        <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mb-2 text-left">
+          <div className="text-[10px] text-slate-400 mb-0.5">Корпоративный логин</div>
+          <div className="text-[12px] text-slate-700 font-mono">ivanov@company.ru</div>
+        </div>
+        <div className="rounded-lg py-2.5 text-center text-[12px] text-white font-semibold mb-3" style={{ background: ACCENT }}>Войти под корпоративной учёткой</div>
+        <div className="flex items-center justify-center gap-2.5">
+          {[
+            { n: 'SC', c: '#2563EB' },
+            { n: 'CM', c: '#059669' },
+            { n: 'АП', c: '#8B5CF6' },
+            { n: 'P',  c: '#4F46E5' },
+          ].map(s => (
+            <div key={s.n} className="w-9 h-9 rounded-lg flex items-center justify-center text-[10px] text-white font-bold shadow-sm" style={{ background: s.c }}>{s.n}</div>
+          ))}
+        </div>
+        <div className="text-[10px] text-slate-400 mt-2">→ один вход — все сервисы</div>
+      </div>
+    </StorySlide>,
+
+    /* 2 — Каталог приложений */
+    <StorySlide
+      key={2}
+      title="Каталог корпоративных приложений"
+      caption="Витрина внутренних сервисов с категориями. Сотрудник видит только то, к чему у него есть доступ."
+    >
+      <div className="w-full max-w-[320px] space-y-1.5">
         {[
-          { role: 'Owner', desc: 'Суперадмин — раздаёт админки и доступы', color: '#F59E0B' },
-          { role: 'Admin', desc: 'Полный доступ, CRUD пользователей', color: '#E52713' },
-          { role: 'User', desc: 'Доступ к назначенным сервисам', color: '#3B82F6' },
+          { name: 'Scanner',      desc: 'AI-поиск по нормам + конструктор предписаний',     cat: 'AI',         color: '#2563EB' },
+          { name: 'Автопротокол', desc: 'Автоматическое протоколирование совещаний',         cat: 'AI',         color: '#8B5CF6' },
+          { name: 'CostManager',  desc: 'Анализ смет по базе реализованных проектов',        cat: 'Финансы',    color: '#059669' },
+          { name: 'Puls',         desc: 'Управление портфелем объектов',                     cat: 'Управление', color: '#4F46E5' },
+          { name: 'AI-чат',       desc: 'Корпоративный AI-ассистент с готовыми запросами',   cat: 'AI',         color: ACCENT  },
+        ].map(a => (
+          <div key={a.name} className="bg-white border border-slate-200 rounded-xl shadow-sm px-3 py-2 flex items-center gap-3">
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center text-[10px] font-bold shrink-0"
+              style={{ background: `${a.color}15`, color: a.color }}
+            >
+              {a.name.slice(0, 2).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="text-[12px] font-bold text-slate-800 leading-tight">{a.name}</div>
+              <div className="text-[10px] text-slate-500 leading-snug truncate">{a.desc}</div>
+            </div>
+            <span
+              className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+              style={{ background: `${a.color}15`, color: a.color }}
+            >
+              {a.cat}
+            </span>
+          </div>
+        ))}
+      </div>
+    </StorySlide>,
+
+    /* 3 — Корп. AI-ассистент */
+    <StorySlide
+      key={3}
+      title="Корпоративный AI"
+      caption="Безопасный чат с библиотекой готовых запросов. Какие AI-модели доступны и с какими лимитами — решает администратор."
+    >
+      <ChatCascade accent={ACCENT} />
+    </StorySlide>,
+
+    /* 4 — Работа с документами */
+    <StorySlide
+      key={4}
+      title="Работа с документами"
+      caption="Базовые утилиты в закрытом корпоративном контуре. Никаких утечек смет, чертежей и договоров в публичные сервисы или сторонние Telegram-боты."
+    >
+      <div className="w-full max-w-[300px] grid grid-cols-2 gap-2">
+        {[
+          { ico: '🔤', name: 'Распознавание', desc: 'Скан / фото → текст' },
+          { ico: '📄', name: 'PDF → Word', desc: 'Конвертация' },
+          { ico: '🖼', name: 'Изображения', desc: 'Сжатие, обрезка' },
+          { ico: '🧮', name: 'Excel', desc: 'Объединение, чистка' },
+        ].map(u => (
+          <div key={u.name} className="bg-white border border-slate-200 rounded-xl p-3 flex flex-col items-start gap-1 shadow-sm">
+            <div className="text-xl mb-0.5">{u.ico}</div>
+            <div className="text-[12px] font-bold text-slate-800">{u.name}</div>
+            <div className="text-[10px] text-slate-500 leading-snug">{u.desc}</div>
+          </div>
+        ))}
+      </div>
+    </StorySlide>,
+
+    /* 5 — Управление ролями + аудит */
+    <StorySlide
+      key={5}
+      title="Контроль и аудит"
+      caption="Права настраиваются по ролям, отделам и группам. Журнал действий и уведомления о сбоях — встроены."
+    >
+      <div className="w-full max-w-[320px] space-y-2">
+        {[
+          { role: 'Владелец', short: 'В', desc: 'Раздаёт администраторские права', color: '#F59E0B' },
+          { role: 'Админ',    short: 'А', desc: 'Управляет пользователями и группами', color: ACCENT },
+          { role: 'Сотрудник', short: 'С', desc: 'Видит только назначенные сервисы', color: '#3B82F6' },
         ].map(r => (
-          <div key={r.role} className="flex items-center gap-3 rounded-xl px-4 py-3 bg-white/10 border border-white/10">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold text-white shrink-0" style={{ background: r.color }}>{r.role[0]}</div>
+          <div key={r.role} className="flex items-center gap-3 rounded-xl px-3.5 py-2 bg-white border border-slate-200 shadow-sm">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-[12px] font-bold text-white shrink-0" style={{ background: r.color }}>{r.short}</div>
             <div className="text-left flex-1 min-w-0">
-              <div className="text-[13px] font-semibold text-white">{r.role}</div>
-              <div className="text-[11px] text-white/40 leading-tight">{r.desc}</div>
+              <div className="text-[12px] font-bold text-slate-800">{r.role}</div>
+              <div className="text-[10px] text-slate-500 leading-snug">{r.desc}</div>
             </div>
           </div>
         ))}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-left">
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Активность сегодня</div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            {[
+              { v: '142', l: 'входов' },
+              { v: '47', l: 'сотрудников' },
+              { v: '1.2K', l: 'запросов' },
+            ].map(k => (
+              <div key={k.l}>
+                <div className="text-[14px] font-extrabold" style={{ color: ACCENT }}>{k.v}</div>
+                <div className="text-[9px] text-slate-400 uppercase">{k.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-      <p className="text-[13px] text-white/40 leading-relaxed max-w-[280px] mb-5">
-        RBAC, группы, аудит-лог и лимиты AI — всё в админ-панели.
-      </p>
-      <button
-        onClick={onClose}
-        className="px-8 py-3.5 rounded-2xl bg-[#E52713] text-white text-[15px] font-bold border-none cursor-pointer shadow-lg shadow-red-500/30 active:scale-95 transition-transform mb-2"
-      >
-        Закрыть превью
-      </button>
-      <div className="flex items-center gap-1.5 text-[11px] text-white/30">
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        <span>Полноэкранное демо — на ПК</span>
-      </div>
-    </div>,
-  ]
+    </StorySlide>,
 
-  return (
-    <div
-      className="flex md:hidden flex-col h-full bg-[#0a0a0f] relative select-none"
-      onClick={handleClick}
-      onTouchStart={() => setIsPaused(true)}
-      onTouchEnd={() => setIsPaused(false)}
+    /* 6 — Закрытие */
+    <StoryClosingSlide
+      key={6}
+      accent={ACCENT}
+      onClose={onClose}
+      title="В работе · корпоративный контур"
+      caption="Сотруднику — один вход. Руководителю — прозрачная картина действий. Безопасности — доступ закрывается в один клик."
     >
-      {/* Progress bars */}
-      <div className="absolute top-0 left-0 right-0 z-30 flex gap-1 px-3 pt-3">
-        {Array.from({ length: TOTAL }).map((_, i) => (
-          <div key={i} className="flex-1 h-[3px] rounded-full bg-white/20 overflow-hidden">
-            <div
-              className="h-full bg-white rounded-full transition-none"
-              style={{ width: `${i < activeSlide ? 100 : i === activeSlide ? progress : 0}%` }}
-            />
+      <div className="w-full max-w-[300px] space-y-1.5">
+        {[
+          { v: 'Один пароль', l: 'на все сервисы' },
+          { v: 'Корпоративный AI', l: 'без сторонних подписок' },
+          { v: 'Права + журнал', l: 'роли × отделы × действия' },
+        ].map(m => (
+          <div key={m.l} className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-3.5 py-2">
+            <span className="text-[12px] font-bold" style={{ color: ACCENT }}>{m.v}</span>
+            <span className="text-[11px] text-slate-500">{m.l}</span>
           </div>
         ))}
       </div>
+    </StoryClosingSlide>,
+  ]
 
-      {/* Close button is rendered by parent Modal */}
-
-      {/* Slide content — key on activeSlide so fadeIn only fires on slide change */}
-      <div key={activeSlide} className="flex-1 min-h-0 animate-[fadeIn_0.35s_ease-out]">
-        {slides[activeSlide]}
-      </div>
-    </div>
+  return (
+    <MobileStories
+      brand={{ initials: 'AI', name: 'AI-Hub', sub: 'Корпоративный AI-контур', accent: ACCENT }}
+      slides={slides}
+      onClose={onClose}
+    />
   )
 }
 
@@ -341,7 +316,7 @@ function Modal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div className="demo-modal-enter relative w-full max-w-[1400px] rounded-2xl overflow-hidden shadow-2xl flex flex-col" style={{ height: '90vh', maxHeight: '920px' }} onClick={e => e.stopPropagation()}>
-        <button onClick={onClose} className="absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white flex items-center justify-center cursor-pointer border-none transition-colors text-lg" aria-label="Close">&times;</button>
+        <button onClick={onClose} className="hidden md:flex absolute top-3 right-3 z-50 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 text-white items-center justify-center cursor-pointer border-none transition-colors text-lg" aria-label="Close">&times;</button>
         {/* Mobile teaser */}
         <MobileTeaser onClose={onClose} />
         <div className="hidden md:flex flex-1 min-h-0">
@@ -425,10 +400,9 @@ function PgApps() {
     { name: 'DataBook', desc: 'Архив предписаний СК и нормативная библиотека', cat: 'Инструменты', users: 28, color: '#3B82F6' },
     { name: 'Scanner', desc: 'AI-поиск по нормам + конструктор предписаний', cat: 'AI & ML', users: 19, color: '#06B6D4' },
     { name: 'AI-чат', desc: 'Корпоративный AI-ассистент для сотрудников', cat: 'AI & ML', users: 47, color: '#E52713' },
-    { name: 'CostManager', desc: 'Контроль себестоимости строительных объектов', cat: 'Финансы', users: 15, color: '#10B981' },
+    { name: 'CostManager', desc: 'Стоимостной анализ по базе объектов-аналогов', cat: 'Финансы', users: 15, color: '#10B981' },
     { name: 'Автопротокол', desc: 'ML-протоколирование совещаний', cat: 'AI & ML', users: 34, color: '#8B5CF6' },
     { name: 'Puls', desc: 'ERP-прототип управления строительными проектами', cat: 'Аналитика', users: 12, color: '#F59E0B' },
-    { name: 'Сметный калькулятор', desc: 'Быстрые расчёты на основе нормативной базы', cat: 'Инструменты', users: 41, color: '#6B7280' },
   ]
   const list = cat === 'Все' ? apps : apps.filter(a => a.cat === cat)
   return (
@@ -1111,19 +1085,19 @@ function IntOAuth() {
 /* ===== AI SLOTS ===== */
 function PgAiSlots() {
   const slots = [
-    { key: 'fast', name: 'Быстрый ответ', desc: 'Повседневные вопросы сотрудников: формулировки, краткие справки, типовые письма', model: 'Gemini 3.1 Flash', accent: '#3B82F6', limit: 50, used: 34, icon: '⚡' },
-    { key: 'deep', name: 'Глубокий анализ', desc: 'Работа с большими документами: договоры, отчёты, нормативы. Отвечает вдумчиво', model: 'Gemini 3.1 Pro', accent: '#E52713', limit: 20, used: 11, icon: '◎' },
-    { key: 'image', name: 'Генерация изображений', desc: 'Иллюстрации для презентаций, схемы, визуальные концепции', model: 'Imagen 4', accent: '#8B5CF6', limit: 15, used: 4, icon: '✦' },
+    { key: 'fast', name: 'Быстрый ответ', desc: 'Повседневные вопросы сотрудников: формулировки, краткие справки, типовые письма', model: 'Claude Haiku 4.5', accent: '#3B82F6', limit: 50, used: 34, icon: '⚡' },
+    { key: 'deep', name: 'Глубокий анализ', desc: 'Работа с большими документами: договоры, отчёты, нормативы. Отвечает вдумчиво', model: 'Claude Opus 4.7', accent: '#E52713', limit: 20, used: 11, icon: '◎' },
+    { key: 'image', name: 'Генерация изображений', desc: 'Иллюстрации для презентаций, схемы, визуальные концепции', model: 'FLUX Pro', accent: '#8B5CF6', limit: 15, used: 4, icon: '✦' },
   ]
   const catalog = [
-    { name: 'Gemini 3.1 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: 'Глубокий анализ' },
-    { name: 'Gemini 3.1 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: 'Быстрый ответ' },
-    { name: 'Gemini 3 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: null },
-    { name: 'Gemini 3 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: null },
-    { name: 'Gemini 2.5 Pro', ctx: 'До 2 млн символов', files: true, images: true, usedIn: null },
-    { name: 'Gemini 2.5 Flash', ctx: 'До 1 млн символов', files: true, images: true, usedIn: null },
-    { name: 'Imagen 4', ctx: '—', files: false, images: true, usedIn: 'Генерация изображений' },
-    { name: 'Gemini Nano Banana 2', ctx: 'Редактор изображений', files: false, images: true, usedIn: null },
+    { name: 'Claude Opus 4.7',   ctx: 'До 1 млн символов', files: true,  images: true,  usedIn: 'Глубокий анализ' },
+    { name: 'Claude Sonnet 4.6', ctx: 'До 1 млн символов', files: true,  images: true,  usedIn: null },
+    { name: 'Claude Haiku 4.5',  ctx: 'До 200 тыс. символов', files: true, images: true, usedIn: 'Быстрый ответ' },
+    { name: 'GPT-5',             ctx: 'До 400 тыс. символов', files: true, images: true, usedIn: null },
+    { name: 'GPT-5 mini',        ctx: 'До 400 тыс. символов', files: true, images: true, usedIn: null },
+    { name: 'Llama 3.3 (локальная)', ctx: 'До 128 тыс. символов', files: true, images: false, usedIn: null },
+    { name: 'FLUX Pro',          ctx: '—', files: false, images: true, usedIn: 'Генерация изображений' },
+    { name: 'Stable Diffusion XL', ctx: 'Редактор изображений', files: false, images: true, usedIn: null },
   ]
   return (
     <div className="p-6">

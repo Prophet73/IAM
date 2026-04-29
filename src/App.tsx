@@ -54,8 +54,12 @@ function TerminalModal({ onClose }: { onClose: () => void }) {
     '> Frontend: React 19 + TypeScript + Tailwind v4',
     '> Method: Agentic Workflow',
     '> Manual lines of code: 0',
-    '> Built via: Claude Code Orchestration',
+    '> Frontend engineering: AI-Augmented (Claude Code · Opus 4.7)',
+    '> Architecture & Core: Human Intelligence',
     '> Status: Ready for production',
+    '',
+    '> Privacy note: session anonymized.',
+    '> Mouse coordinates — purely to flex web-analytics skills.',
     '',
     '> Спасибо, что дочитали до конца.',
     '> Буду рад пообщаться — на связи!',
@@ -245,7 +249,7 @@ function Hero() {
 
   const stats = [
     { num: '5', label: 'продуктов на едином ядре' },
-    { num: '~10', label: 'R&D прототипов' },
+    { num: '~10', label: 'быстрых PoC (1–4 недели)' },
     { num: '1.5', label: 'года full-stack AI-разработки' },
     { num: '7+', label: 'лет в отрасли' },
   ]
@@ -282,7 +286,7 @@ function Hero() {
                 )}
               </h1>
               <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[640px]">
-                Полный цикл от выявленной боли до деплоя: прототип за 2–4 недели → проверка на пользователях → корпоративный контур с SSO, ролями и аудитом, если задача стоит того. Без эффекта «сломанного телефона» между бизнесом и IT.
+                Полный цикл от выявленной боли до рабочей системы. Проверка гипотез — быстрыми PoC за 1–4 недели. Далее — адаптация под ресурсы заказчика: разработка продукта под ключ (Full-Stack + AI), создание AI-ядра под внутреннюю команду или работа в штате. Без эффекта «сломанного телефона» между бизнесом и IT.
               </p>
               {/* CTA кнопки */}
               <div className="flex flex-col sm:flex-row gap-3 animate-blur-fade delay-300">
@@ -368,8 +372,8 @@ function Products() {
 function Approach() {
   const steps = [
     { num: '01', title: 'Выявление узких мест', text: 'Два канала. Проактивно — сам прихожу к тем, кто делает процесс руками на стройплощадке или в отделе. Реактивно — они приходят с задачей сами. Без воронки внутренних переводчиков.' },
-    { num: '02', title: 'Быстрое прототипирование', text: 'Минимальный набор функций под конкретную боль. Сначала ядро на реальных данных пользователя — потом разбор: что увидела система, чего не хватило, как делается сейчас.' },
-    { num: '03', title: 'Валидация', text: 'Гипотеза проверяется делом. Сначала пилот на группе пользователей — потом стратегический выбор: точечный инструмент, системный контур или закрытие, не сжигая бюджеты.' },
+    { num: '02', title: 'Быстрое прототипирование', text: 'Минимальный набор функций под конкретную боль. Сначала ядро на реальных данных пользователя — затем разбор: что система увидела, чего не хватило, как делается сейчас.' },
+    { num: '03', title: 'Валидация', text: 'Гипотеза проверяется делом. Сначала пилот на группе пользователей — затем стратегический выбор: точечный инструмент, системный контур или закрытие, не сжигая бюджеты.' },
     { num: '04', title: 'Масштабирование', text: 'Успешный прототип переводится на единую инфраструктуру: SSO, ролевой доступ, метрики использования. Руководство видит, кто и чем реально пользуется — развитие идёт на данных.' },
   ]
 
@@ -383,7 +387,7 @@ function Approach() {
     {
       num: '02',
       title: 'Разбор задачи до болта',
-      text: 'Агентные системы проектируются как заводской конвейер: каждый шаг изолирован, варианты сравниваются по метрикам, финал валидируется на независимых данных. Гипотеза, не прошедшая оценку, убивается до вложений в масштабирование.',
+      text: 'Агентные системы проектируются как заводской конвейер: каждый шаг изолирован, варианты сравниваются по метрикам, финал валидируется на независимых данных. Гипотеза, не прошедшая оценку, отбраковывается до вложений в масштабирование.',
       metric: 'Измеримое качество вместо ощущений',
     },
     {
@@ -456,10 +460,10 @@ function Approach() {
 /* ── Research (R&D + Experiments) ── */
 function Research() {
   const experiments: { desc: string; result?: string; tags: string[] }[] = [
-    { desc: 'RAG-консультант по строительным нормам с гибридным поиском', result: '→ переосмыслен в Scanner', tags: ['RAG', 'Gemini', 'Embeddings'] },
+    { desc: 'RAG-консультант по строительным нормам с гибридным поиском', result: '→ переосмыслен в Scanner', tags: ['RAG', 'LLM', 'Embeddings'] },
     { desc: 'Автоклассификация элементов BIM-моделей через LLM', result: '→ PoC, передан БИМ-отделу', tags: ['Ollama', 'IFC', 'ML'] },
-    { desc: 'AI-сравнение спецификаций в PDF-документации', result: '→ PoC, передан коллеге', tags: ['PyMuPDF', 'Gemini', 'PDF.js'] },
-    { desc: 'Real-time перевод аудио на совещаниях', result: '→ вырос в offline-пайплайн Автопротокола', tags: ['Whisper', 'WebSocket', 'Gemini'] },
+    { desc: 'AI-сравнение спецификаций в PDF-документации', result: '→ PoC, передан коллеге', tags: ['PyMuPDF', 'LLM', 'PDF.js'] },
+    { desc: 'Real-time перевод аудио на совещаниях', result: '→ вырос в offline-пайплайн Автопротокола', tags: ['Whisper', 'WebSocket', 'LLM'] },
     { desc: 'Парсинг и структурирование данных для финансово-технического аудита', result: '→ PoC, тесты в ФТА', tags: ['Python', 'BeautifulSoup'] },
     { desc: 'AI-ассистент по документации бизнес-процессов', result: '→ учебный RAG', tags: ['RAG', 'BM25', 'ChromaDB'] },
   ]
@@ -467,7 +471,7 @@ function Research() {
   const items = [
     {
       title: 'LLM и AI-агенты',
-      text: 'Agentic Workflows, RAG с гибридным поиском, Structured Output, prompt engineering. Работа с Gemini, Claude, GPT, локальный инференс (Ollama).',
+      text: 'Agentic Workflows, RAG с гибридным поиском, Structured Output, prompt engineering. Работа с Claude, GPT, локальный инференс (Ollama).',
       tags: [{ label: 'MCP Protocol', color: 'bg-purple-soft text-purple' }, { label: 'RAG', color: 'bg-purple-soft text-purple' }, { label: 'Ollama', color: 'bg-purple-soft text-purple' }],
     },
     {
@@ -549,8 +553,8 @@ function Research() {
 /* ── Career ── */
 function Career() {
   const timeline = [
-    { date: '2024–н.в.', role: 'Департамент цифровой трансформации', place: 'Severin Development', desc: '5 AI-продуктов на едином ядре (production / пилот / прототип), ~10 R&D-прототипов. Full-cycle — от идеи до внедрения', active: true },
-    { date: '2024', role: 'Руководитель группы СК / Департамент качества', place: 'Severin Development', desc: 'Координация 20+ инженеров. Регламенты, шаблоны для проектных команд' },
+    { date: '2024–н.в.', role: 'Департамент цифровой трансформации', place: 'Severin Development', desc: '5 продуктов на едином инфраструктурном ядре — 3 AI-центричных + 2 платформенных, разной зрелости (от прототипа до production). ~10 коротких PoC для проверки гипотез. Full-cycle — от боли на стройке до деплоя.', active: true },
+    { date: '2024', role: 'Руководитель группы СК / Департамент качества', place: 'Severin Development', desc: 'Координация 20+ инженеров. Выстраивание процессов, регламенты, шаблоны для проектных команд.' },
     { date: '2021–2024', role: 'Инженер → ведущий инженер СК', place: 'Severin Development', desc: 'ЖК FORIVER (InGrad/Sminex) — 11 корпусов, 3 года на объекте, получение ЗОС' },
     { date: '2020–2021', role: 'Инженер СК', place: 'ТСК-ТИТУЛ', desc: 'Приёмка работ, проверка КС-2, накопительные. ЖК Discovery (MR Group), Савёловский-сити' },
     { date: '2018–2020', role: 'Строительно-технический эксперт', place: 'Судебная экспертиза', desc: 'Экспертиза и финансово-технический аудит. АО АККУЮ НУКЛЕАР, ВЦ «Павловопосадские платки»' },
@@ -632,7 +636,7 @@ function Contact() {
 
           {/* Subtitle */}
           <p className="text-muted text-lg leading-relaxed max-w-2xl mx-auto">
-            Работаю с компаниями, где цифровизация — инженерная задача с измеримым результатом, а не маркетинговый слайд. Формат работы — под конкретную задачу.
+            Создаю AI-решения, которые снимают рутину с сотрудников и дают руководству прозрачность. Инженерный подход: от выявленной боли до деплоя в корпоративный контур. Формат — под конкретный кейс.
           </p>
 
           {/* Contacts row: email · phone (center) · telegram */}
@@ -640,12 +644,13 @@ function Contact() {
             <a
               href="mailto:KhromenokNV@mail.ru"
               onClick={() => tracker.track('contact_click', { channel: 'email' })}
-              className="inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
+              className="group inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
               </svg>
-              KhromenokNV@mail.ru
+              <span className="group-hover:hidden">email</span>
+              <span className="hidden group-hover:inline">KhromenokNV@mail.ru</span>
             </a>
             <a
               href="tel:+79268973225"
@@ -662,12 +667,13 @@ function Contact() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => tracker.track('contact_click', { channel: 'telegram' })}
-              className="inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
+              className="group inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
-              @psykhrometer
+              <span className="group-hover:hidden">telegram</span>
+              <span className="hidden group-hover:inline">@psykhrometer</span>
             </a>
           </div>
 

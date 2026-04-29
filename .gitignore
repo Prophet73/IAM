@@ -59,3 +59,6 @@ __pycache__/
 
 # Review screenshots (локальные снапшоты из dev-сессий)
 /.review/
+
+# Временная рабочая папка
+/.tmp/

@@ -54,7 +54,7 @@ function TerminalModal({ onClose }: { onClose: () => void }) {
     '> Frontend: React 19 + TypeScript + Tailwind v4',
     '> Method: Agentic Workflow',
     '> Manual lines of code: 0',
-    '> Frontend engineering: AI-Augmented (Claude Code · Opus 4.7)',
+    '> Frontend engineering: AI-Augmented (Claude Code · Opus 4.8)',
     '> Architecture & Core: Human Intelligence',
     '> Status: Ready for production',
     '',
@@ -279,12 +279,13 @@ function Hero() {
                   </>
                 ) : (
                   <>
-                    <span className="text-text-primary">AI-продукты и R&D для строительства</span>
+                    <span className="text-text-primary">Инженер-строитель, который сам строит </span>
+                    <span className="text-accent italic font-serif">AI-продукты для отрасли</span>
                   </>
                 )}
               </h1>
               <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[640px]">
-                Полный цикл от выявленной боли до рабочей системы. Проверка гипотез — быстрыми PoC за 1–4 недели. Далее — адаптация под ресурсы заказчика: разработка продукта под ключ (Full-Stack + AI), создание AI-ядра под внутреннюю команду или работа в штате. Без эффекта «сломанного телефона» между бизнесом и IT.
+                7 лет в строительстве + 1.5 года создания AI-продуктов. Прохожу весь путь сам: от боли на площадке до production-системы в корпоративном контуре — без «сломанного телефона» между бизнесом и IT. Ниже — продукты и как я их делаю.
               </p>
             </div>
 
@@ -323,7 +324,7 @@ function Products() {
         <Reveal>
           <div className="mb-8">
             <h2 className="font-display text-2xl md:text-3xl font-bold mb-1">Продукты на платформенном ядре</h2>
-            <p className="text-muted text-[0.95rem]">Пять продуктов разной зрелости — production, пилот, прототип — на едином инфраструктурном ядре.</p>
+            <p className="text-muted text-[0.95rem]">Пять продуктов разной зрелости — production, пилот, прототип. Единый вход и управление доступом — через AI-Hub (SSO).</p>
           </div>
         </Reveal>
         <Reveal rootMargin="300px 0px">
@@ -556,7 +557,7 @@ function Career() {
         </Reveal>
         <Reveal>
           <div className="mb-10 max-w-[760px] border-l-2 border-accent/30 pl-5 text-[0.95rem] text-text-primary/75 leading-relaxed">
-            <span className="text-accent font-semibold">Системотехника</span> — единая нить через 7 лет в строительстве, R&D-аспирантуру МГСУ и 1.5 года в AI-разработке. Отраслевой опыт научил проектировать логику систем; академическая школа — её исследовать; LLM-инструменты вместе с осознанной работой над архитектурой кода (паттерны, типизация, читаемость) — воплощать всё это без посредников и потери контекста.
+            <span className="text-accent font-semibold">Системотехника</span> — единая нить через 7 лет в строительстве, R&D-аспирантуру МГСУ и 1.5 года в AI-разработке. Отраслевой опыт научил проектировать логику систем; академическая школа — её исследовать; AI-инструменты вместе с осознанными архитектурными и продуктовыми решениями — воплощать всё это в работающие системы без посредников и потери контекста.
           </div>
         </Reveal>
         <div>

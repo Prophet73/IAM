@@ -4,34 +4,29 @@
 <meta charset="utf-8">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { width: 1200px; height: 630px; overflow: hidden; }
+  body { width: 1200px; height: 630px; overflow: hidden; background: #0a0a0a; }
   .og {
     width: 1200px;
     height: 630px;
-    background: linear-gradient(135deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%);
+    background: radial-gradient(ellipse at top right, rgba(196,167,125,0.12) 0%, transparent 60%);
+    background-color: #0a0a0a;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 80px;
     font-family: 'Inter', system-ui, sans-serif;
-    color: #fff;
+    color: #f0f0f0;
     position: relative;
-  }
-  .og::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(ellipse at 30% 50%, rgba(196,167,125,0.10) 0%, transparent 60%);
   }
   .badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(196,167,125,0.15);
-    border: 1px solid rgba(196,167,125,0.35);
+    background: rgba(196, 167, 125, 0.15);
+    border: 1px solid rgba(196, 167, 125, 0.25);
     border-radius: 999px;
     padding: 8px 16px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     position: relative;
     width: fit-content;
   }
@@ -41,14 +36,14 @@
     border-radius: 50%;
   }
   .badge-text {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 3px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: #c4a77d;
   }
   h1 {
-    font-size: 56px;
+    font-size: 52px;
     font-weight: 800;
     line-height: 1.15;
     margin-bottom: 24px;
@@ -56,51 +51,68 @@
   }
   h1 span { color: #c4a77d; font-style: italic; font-family: 'Playfair Display', serif; }
   .subtitle {
-    font-size: 20px;
-    color: rgba(255,255,255,0.6);
+    font-size: 18px;
+    color: rgba(240, 240, 240, 0.7);
     line-height: 1.6;
-    max-width: 700px;
+    max-width: 900px;
     position: relative;
   }
   .stats {
     display: flex;
-    gap: 48px;
-    margin-top: 40px;
+    gap: 40px;
+    margin-top: 48px;
     position: relative;
   }
+  .stat-block {
+    display: flex;
+    flex-direction: column;
+  }
   .stat-num {
-    font-size: 32px;
+    font-size: 40px;
     font-weight: 800;
     color: #c4a77d;
+    line-height: 1;
+    margin-bottom: 4px;
   }
   .stat-label {
     font-size: 13px;
-    color: rgba(255,255,255,0.5);
-    margin-top: 2px;
+    font-weight: 500;
+    color: #9a9a9a;
+    max-width: 200px;
+    line-height: 1.4;
   }
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="og">
   <div class="badge">
     <div class="badge-dot"></div>
-    <div class="badge-text">PropTech R&D & Product AI-Engineer</div>
+    <div class="badge-text" style="letter-spacing: 0.05em;">ConTech R&D · AI Product Architect</div>
   </div>
-  <h1>Продуктовая разработка и <span>цифровизация строительства</span></h1>
-  <div class="subtitle">Объединяю 7+ лет в строительной отрасли с продуктовым R&D. Без «испорченного телефона» между бизнесом и IT.</div>
+  <h1 style="font-family: 'Inter', sans-serif;">
+    AI-продукты и R&D для строительства —<br/>
+    <span>на стыке отраслевого опыта и системного мышления</span>
+  </h1>
+  <div class="subtitle">
+    Полный цикл от выявленной боли до рабочей системы.
+  </div>
   <div class="stats">
-    <div>
-      <div class="stat-num">4</div>
-      <div class="stat-label">продукта в production</div>
+    <div class="stat-block">
+      <div class="stat-num">5</div>
+      <div class="stat-label">продуктов на едином ядре</div>
     </div>
-    <div>
+    <div class="stat-block">
       <div class="stat-num">~10</div>
-      <div class="stat-label">прототипов за 1.5 года</div>
+      <div class="stat-label">быстрых PoC (1–4 недели)</div>
     </div>
-    <div>
+    <div class="stat-block">
+      <div class="stat-num">1.5</div>
+      <div class="stat-label">года full-stack AI-разработки</div>
+    </div>
+    <div class="stat-block">
       <div class="stat-num">7+</div>
-      <div class="stat-label">лет в строительстве</div>
+      <div class="stat-label">лет в отрасли</div>
     </div>
   </div>
 </div>

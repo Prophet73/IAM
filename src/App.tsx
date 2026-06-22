@@ -279,36 +279,13 @@ function Hero() {
                   </>
                 ) : (
                   <>
-                    <span className="text-text-primary">AI-продукты и R&D для строительства —</span>
-                    <br/>
-                    <span className="text-accent italic font-serif">на стыке отраслевого опыта и системного мышления</span>
+                    <span className="text-text-primary">AI-продукты и R&D для строительства</span>
                   </>
                 )}
               </h1>
               <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[640px]">
                 Полный цикл от выявленной боли до рабочей системы. Проверка гипотез — быстрыми PoC за 1–4 недели. Далее — адаптация под ресурсы заказчика: разработка продукта под ключ (Full-Stack + AI), создание AI-ядра под внутреннюю команду или работа в штате. Без эффекта «сломанного телефона» между бизнесом и IT.
               </p>
-              {/* CTA кнопки */}
-              <div className="flex flex-col sm:flex-row gap-3 animate-blur-fade delay-300">
-                <a
-                  href="#products"
-                  className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-accent text-white rounded-xl text-sm font-semibold no-underline transition-all hover:brightness-110 active:scale-[0.98] shadow-lg shadow-accent/20"
-                >
-                  Продукты
-                </a>
-                <a
-                  href="#approach"
-                  className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
-                >
-                  Подход
-                </a>
-                <a
-                  href="#research"
-                  className="inline-flex justify-center items-center gap-2 px-6 py-3 bg-surface-2 border border-border text-text-primary rounded-xl text-sm font-semibold no-underline transition-colors hover:border-accent/30 hover:text-accent"
-                >
-                  R&D
-                </a>
-              </div>
             </div>
 
             {/* Hero artifact: isometric stack */}
@@ -405,7 +382,7 @@ function Approach() {
         {/* Methodology */}
         <Reveal>
           <SectionHeader
-            tag="Как создаются продукты"
+            tag="Как я создаю продукты"
             tagColor="bg-purple-soft text-purple"
             title="От прототипов к рабочим системам"
             subtitle="Главный барьер цифровизации — не технологии и не бюджет, а разрыв в глубине понимания предметной области. Я проектирую архитектуру напрямую из домена — без длинной цепочки согласований и бесконечных совещаний."
@@ -642,7 +619,9 @@ function Contact() {
           {/* Contacts row: email · phone (center) · telegram */}
           <div className="flex flex-wrap items-center justify-center gap-8 mt-10">
             <a
-              href="mailto:KhromenokNV@mail.ru"
+              href="#"
+              onMouseEnter={(e) => e.currentTarget.href = `mailto:${['KhromenokNV', 'mail.ru'].join('@')}`}
+              onTouchStart={(e) => e.currentTarget.href = `mailto:${['KhromenokNV', 'mail.ru'].join('@')}`}
               onClick={() => tracker.track('contact_click', { channel: 'email' })}
               className="group inline-flex items-center gap-2 text-sm text-muted hover:text-text-primary transition-colors no-underline"
             >
@@ -650,20 +629,24 @@ function Contact() {
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
               </svg>
               <span className="group-hover:hidden">email</span>
-              <span className="hidden group-hover:inline">KhromenokNV@mail.ru</span>
+              <span className="hidden group-hover:inline">{['KhromenokNV', 'mail.ru'].join('@')}</span>
             </a>
             <a
-              href="tel:+79268973225"
+              href="#"
+              onMouseEnter={(e) => e.currentTarget.href = `tel:+${[7, 926, 897, 32, 25].join('')}`}
+              onTouchStart={(e) => e.currentTarget.href = `tel:+${[7, 926, 897, 32, 25].join('')}`}
               onClick={() => tracker.track('contact_click', { channel: 'phone' })}
               className="inline-flex items-center gap-2 text-base font-semibold text-text-primary hover:text-accent transition-colors no-underline"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
               </svg>
-              +7 926 897-32-25
+              +7 {['92', '6'].join('')} {['89', '7'].join('')}-{['3', '2'].join('')}-25
             </a>
             <a
-              href="https://t.me/psykhrometer"
+              href="#"
+              onMouseEnter={(e) => e.currentTarget.href = `https://${['t', 'me'].join('.')}/${['psyk', 'hrometer'].join('')}`}
+              onTouchStart={(e) => e.currentTarget.href = `https://${['t', 'me'].join('.')}/${['psyk', 'hrometer'].join('')}`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => tracker.track('contact_click', { channel: 'telegram' })}
@@ -673,7 +656,7 @@ function Contact() {
                 <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
               <span className="group-hover:hidden">telegram</span>
-              <span className="hidden group-hover:inline">@psykhrometer</span>
+              <span className="hidden group-hover:inline">@{['psyk', 'hrometer'].join('')}</span>
             </a>
           </div>
 

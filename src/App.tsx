@@ -318,6 +318,7 @@ function Hero() {
 
 /* ── Products ── */
 function Products() {
+  const orderedProducts = ['aihub', 'databook', 'autoprotocol', 'costmanager', 'puls'].map(id => products.find(p => p.id === id)!)
   return (
     <section id="products" className="py-24 section-fade-top">
       <div className="max-w-[1280px] mx-auto px-8">
@@ -330,7 +331,7 @@ function Products() {
         <Reveal rootMargin="300px 0px">
           <Suspense fallback={<div className="animate-pulse w-full h-32 bg-surface-2/50 border border-border rounded-xl" />}>
             <ProductsEcosystem
-              products={products}
+              products={orderedProducts}
               demos={{
                 aihub:        <DemoAIHub />,
                 databook:     <DataBookDemo />,

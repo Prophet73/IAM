@@ -3,6 +3,7 @@ export interface Product {
   name: string
   oneliner: string
   status: 'production' | 'pilot' | 'prototype'
+  flagship?: boolean
   metrics: { value: string; label: string }[]
   pain: string
   solution: string
@@ -69,6 +70,7 @@ export const products: Product[] = [
     name: 'Scanner',
     oneliner: 'RAG для строительного контроля — на размеченной базе НТД и архиве предписаний компании',
     status: 'pilot',
+    flagship: true,
     metrics: [
       { value: '61% → 84%', label: 'точная норма в коротком списке предложений: обычный поиск → движок Scanner' },
       { value: 'до ~96%', label: 'находит пригодную для цитирования норму (оценка LLM-судьёй, зависит от документа)' },

@@ -159,6 +159,7 @@ export function ProductsEcosystem({
                 <div className="flex items-center justify-center gap-1.5 mb-1">
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dotColor}`} />
                   <span className={`text-[9px] font-bold uppercase tracking-wider ${status.textColor}`}>{status.label}</span>
+                  {p.flagship && <span className="text-[9px] font-bold text-accent">★</span>}
                 </div>
                 <div className="font-bold text-sm text-text-primary leading-snug">{p.name}</div>
                 <div className="text-[10px] text-muted mt-0.5 leading-tight">{p.oneliner}</div>
@@ -240,6 +241,9 @@ function DetailCard({
             <div className="flex items-center gap-2 mb-1">
               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dotColor}`} />
               <span className={`text-[10px] font-bold uppercase tracking-wider ${status.textColor}`}>{status.label}</span>
+              {product.flagship && (
+                <span className="text-[10px] font-bold uppercase tracking-wider text-accent border border-accent/40 rounded px-1.5 py-0.5">★ Флагман</span>
+              )}
             </div>
             <h3 className="font-display text-xl font-bold text-text-primary">{product.name}</h3>
             <p className="text-muted text-xs mt-0.5">{product.oneliner}</p>

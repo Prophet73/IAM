@@ -263,19 +263,22 @@ function Hero() {
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-10 lg:gap-12 items-center">
             {/* Текст + CTA */}
             <div className="max-w-[640px]">
+              {forCompany && (
+                <div className="text-accent text-sm font-semibold mb-2 animate-blur-fade">Персонально для {forCompany}</div>
+              )}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 glass-panel rounded-full mb-6 animate-blur-fade border-accent/30">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
                 </span>
-                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">{forCompany ? `Подготовлено для команды ${forCompany}` : 'ConTech R&D · AI Product Architect'}</span>
+                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">ConTech R&D · Applied AI Architect</span>
               </div>
               <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
                 <span className="text-text-primary">Инженер-строитель, который сам строит </span>
                 <span className="text-accent">AI-продукты для отрасли</span>
               </h1>
               <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[640px]">
-                7 лет в строительстве + 2 года создания AI-продуктов. Прохожу весь путь сам: от боли на площадке до production-системы в корпоративном контуре — без «сломанного телефона» между бизнесом и IT. Ниже — продукты и как я их делаю.
+                7 лет в строительстве + 2 года в прикладном AI. Моя зона — AI-ядро продукта: домен, данные, поиск, агентные пайплайны, метрики качества. Продакшен-обвязку (инфра, фронт, интеграции) берёт команда — без «сломанного телефона» между бизнесом и IT. Ниже — продукты и как они устроены.
               </p>
             </div>
 

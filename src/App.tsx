@@ -273,9 +273,8 @@ function Hero() {
               <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
                 {forCompany ? (
                   <>
-                    <span className="text-text-primary">AI-продукты и R&D для</span>
-                    <br/>
-                    <span className="text-accent italic font-serif">команды {forCompany}</span>
+                    <span className="text-text-primary">Инженер-строитель, который сам строит AI-продукты — </span>
+                    <span className="text-accent italic font-serif">для команды {forCompany}</span>
                   </>
                 ) : (
                   <>

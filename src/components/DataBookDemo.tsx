@@ -2213,10 +2213,10 @@ function PgQuality() {
     { icon: '❌', label: 'Не по теме',           pct: 1,  color: 'bg-rose-400',     desc: 'Ответ нерелевантен' },
   ]
   const distribution = [
-    { label: 'В первом результате', pct: 57 },
-    { label: 'В первых 5',          pct: 77 },
-    { label: 'В первых 10',         pct: 83 },
-    { label: 'В первых 30',         pct: 91 },
+    { label: '1-е место', exact: 35, valid: 43 },
+    { label: 'Топ-5',     exact: 62, valid: 74 },
+    { label: 'Топ-10',    exact: 72, valid: 84 },
+    { label: 'Топ-30',    exact: 84, valid: 96 },
   ]
   return (
     <div className="p-6 max-w-[1100px] mx-auto space-y-4">
@@ -2240,8 +2240,8 @@ function PgQuality() {
               <div className="text-[0.68rem] opacity-80 mt-1 leading-snug">точное совпадение<br/>с экспертом</div>
             </div>
             <div>
-              <div className="text-3xl font-extrabold leading-none">91<span className="text-lg">%</span></div>
-              <div className="text-[0.68rem] opacity-80 mt-1 leading-snug">правильный пункт<br/>попал в выдачу</div>
+              <div className="text-3xl font-extrabold leading-none">84<span className="text-lg">%</span></div>
+              <div className="text-[0.68rem] opacity-80 mt-1 leading-snug">точный пункт<br/>в выдаче (топ-30)</div>
             </div>
           </div>
         </div>
@@ -2282,16 +2282,17 @@ function PgQuality() {
             <div key={d.label}>
               <div className="flex items-center justify-between mb-0.5">
                 <span className="text-[0.76rem] font-semibold text-slate-700">{d.label}</span>
-                <span className="text-[0.74rem] font-mono text-slate-700">{d.pct}%</span>
+                <span className="text-[0.72rem] font-mono text-slate-600">точный {d.exact}% · подходящая до {d.valid}%</span>
               </div>
-              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full rounded-full" style={{ width: `${d.pct}%`, background: BRAND }} />
+              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden relative">
+                <div className="h-full rounded-full absolute inset-y-0 left-0 bg-blue-200" style={{ width: `${d.valid}%` }} />
+                <div className="h-full rounded-full absolute inset-y-0 left-0" style={{ width: `${d.exact}%`, background: BRAND }} />
               </div>
             </div>
           ))}
         </div>
         <div className="mt-3 pt-3 border-t border-slate-100 text-[0.72rem] text-slate-600 leading-relaxed">
-          В половине запросов правильный пункт — уже первый в выдаче. В трёх четвертях случаев инженеру хватит пролистать пять результатов.
+          Синим — точный пункт эксперта, светлым — подходящая для цитирования норма (оценка AI-судьёй, до указанного %). Уже в первой пятёрке подходящая норма есть примерно в 3 из 4 случаев; короткий список (топ-30) покрывает до 96%.
         </div>
       </div>
 

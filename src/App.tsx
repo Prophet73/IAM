@@ -268,20 +268,11 @@ function Hero() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
                 </span>
-                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">ConTech R&D · AI Product Architect</span>
+                <span className="uppercase tracking-widest text-[10px] text-accent font-bold">{forCompany ? `Подготовлено для команды ${forCompany}` : 'ConTech R&D · AI Product Architect'}</span>
               </div>
               <h1 className="font-display text-[2rem] md:text-[2.5rem] font-extrabold leading-[1.2] mb-5 animate-blur-fade delay-100">
-                {forCompany ? (
-                  <>
-                    <span className="text-text-primary">Инженер-строитель, который сам строит AI-продукты — </span>
-                    <span className="text-accent italic font-serif">для команды {forCompany}</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-text-primary">Инженер-строитель, который сам строит </span>
-                    <span className="text-accent italic font-serif">AI-продукты для отрасли</span>
-                  </>
-                )}
+                <span className="text-text-primary">Инженер-строитель, который сам строит </span>
+                <span className="text-accent italic font-serif">AI-продукты для отрасли</span>
               </h1>
               <p className="text-[0.95rem] text-text-primary/70 leading-relaxed mb-8 animate-blur-fade delay-200 max-w-[640px]">
                 7 лет в строительстве + 2 года создания AI-продуктов. Прохожу весь путь сам: от боли на площадке до production-системы в корпоративном контуре — без «сломанного телефона» между бизнесом и IT. Ниже — продукты и как я их делаю.
